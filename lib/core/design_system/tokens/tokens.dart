@@ -4,6 +4,7 @@
 /// ```dart
 /// import 'package:padelhouse/core/design_system/tokens/tokens.dart';
 /// ```
+library;
 
 export 'app_colors.dart';
 export 'app_spacing.dart';

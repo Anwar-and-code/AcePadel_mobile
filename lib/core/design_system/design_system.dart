@@ -12,6 +12,7 @@
 /// - **Tokens**: Colors, spacing, typography, radius, shadows, animations, icons
 /// - **Theme**: Light and dark ThemeData configurations
 /// - **Components**: Buttons, cards, inputs, navigation, avatars, badges, typography
+library;
 
 // Design Tokens
 export 'tokens/tokens.dart';

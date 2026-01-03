@@ -4,6 +4,7 @@
 /// ```dart
 /// import 'package:padelhouse/core/design_system/components/components.dart';
 /// ```
+library;
 
 // Buttons
 export 'buttons/app_button.dart';

@@ -4,5 +4,6 @@
 /// ```dart
 /// import 'package:padelhouse/core/design_system/theme/theme.dart';
 /// ```
+library;
 
 export 'app_theme.dart';

@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import '../features/splash/screens/splash_screen.dart';
-import '../features/splash/screens/welcome_screen.dart';
-import '../features/auth/screens/phone_screen.dart';
-import '../features/auth/screens/otp_screen.dart';
+import '../features/onboarding/screens/onboarding_screen.dart';
+import '../features/auth/screens/email_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import 'main_shell.dart';
 
 class AppRouter {
   static const String splash = '/';
-  static const String welcome = '/welcome';
-  static const String authPhone = '/auth/phone';
-  static const String authOtp = '/auth/otp';
+  static const String onboarding = '/onboarding';
+  static const String authEmail = '/auth/email';
   static const String authRegister = '/auth/register';
   static const String main = '/main';
 
@@ -18,12 +16,10 @@ class AppRouter {
     switch (settings.name) {
       case splash:
         return _buildRoute(const SplashScreen(), settings);
-      case welcome:
-        return _buildRoute(const WelcomeScreen(), settings);
-      case authPhone:
-        return _buildRoute(const PhoneScreen(), settings);
-      case authOtp:
-        return _buildRoute(const OtpScreen(), settings);
+      case onboarding:
+        return _buildRoute(const OnboardingScreen(), settings);
+      case authEmail:
+        return _buildRoute(const EmailScreen(), settings);
       case authRegister:
         return _buildRoute(const RegisterScreen(), settings);
       case main:
