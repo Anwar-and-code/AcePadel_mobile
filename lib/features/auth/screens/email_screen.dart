@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import 'otp_screen.dart';
 
 class EmailScreen extends StatefulWidget {
   const EmailScreen({super.key});
@@ -10,42 +11,22 @@ class EmailScreen extends StatefulWidget {
 
 class _EmailScreenState extends State<EmailScreen> {
   final _emailController = TextEditingController();
-  final _otpController = TextEditingController();
   bool _isLogin = true;
   bool _acceptedTerms = false;
   bool _isLoading = false;
-  bool _otpSent = false;
-  int _resendCountdown = 0;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _otpController.dispose();
     super.dispose();
-  }
-
-  void _startResendCountdown() {
-    setState(() => _resendCountdown = 60);
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
-      if (!mounted) return false;
-      setState(() => _resendCountdown--);
-      return _resendCountdown > 0;
-    });
   }
 
   bool get _isFormValid {
     final hasEmail = _emailController.text.contains('@');
-    if (!_otpSent) {
-      // Before OTP is sent, check email and terms (for registration)
-      if (_isLogin) {
-        return hasEmail;
-      }
-      return hasEmail && _acceptedTerms;
-    } else {
-      // After OTP is sent, check if OTP code is complete (6 digits)
-      return _otpController.text.length == 6;
+    if (_isLogin) {
+      return hasEmail;
     }
+    return hasEmail && _acceptedTerms;
   }
 
   void _onSubmit() async {
@@ -53,57 +34,19 @@ class _EmailScreenState extends State<EmailScreen> {
 
     setState(() => _isLoading = true);
 
-    if (!_otpSent) {
-      // Send OTP to email
-      await Future.delayed(const Duration(seconds: 1));
-      
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _otpSent = true;
-        });
-        _startResendCountdown();
-        
-        // Show success message
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Code envoyé à ${_emailController.text}'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
-    } else {
-      // Verify OTP code
-      await Future.delayed(const Duration(seconds: 1));
-
-      if (mounted) {
-        setState(() => _isLoading = false);
-        
-        if (_isLogin) {
-          // Login -> Go to main app
-          Navigator.of(context).pushNamedAndRemoveUntil('/main', (route) => false);
-        } else {
-          // Register -> Go to complete profile
-          Navigator.of(context).pushNamed('/auth/register');
-        }
-      }
-    }
-  }
-
-  void _resendOtp() async {
-    if (_resendCountdown > 0) return;
-    
-    setState(() => _isLoading = true);
+    // Send OTP to email
     await Future.delayed(const Duration(seconds: 1));
     
     if (mounted) {
       setState(() => _isLoading = false);
-      _startResendCountdown();
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Code renvoyé avec succès'),
-          backgroundColor: AppColors.success,
+      // Navigate to OTP screen
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => OtpScreen(
+            email: _emailController.text,
+            isLogin: _isLogin,
+          ),
         ),
       );
     }
@@ -113,15 +56,6 @@ class _EmailScreenState extends State<EmailScreen> {
     setState(() {
       _isLogin = !_isLogin;
       _acceptedTerms = false;
-      _otpSent = false;
-      _otpController.clear();
-    });
-  }
-
-  void _changeEmail() {
-    setState(() {
-      _otpSent = false;
-      _otpController.clear();
     });
   }
 
@@ -196,62 +130,11 @@ class _EmailScreenState extends State<EmailScreen> {
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
                 onChanged: (_) => setState(() {}),
-                enabled: !_otpSent,
               ),
-
-              if (_otpSent) ...[
-                AppSpacing.vGapSm,
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _changeEmail,
-                    child: Text(
-                      'Changer d\'email',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.brandPrimary,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
 
               AppSpacing.vGapMd,
 
-              // OTP field (only shown after email is submitted)
-              if (_otpSent) ...[
-                AppTextField(
-                  controller: _otpController,
-                  label: 'Code de vérification',
-                  hint: '000000',
-                  prefixIcon: Icons.lock_outlined,
-                  keyboardType: TextInputType.number,
-                  onChanged: (_) => setState(() {}),
-                  maxLength: 6,
-                ),
-                AppSpacing.vGapSm,
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _resendCountdown > 0 ? null : _resendOtp,
-                    child: Text(
-                      _resendCountdown > 0
-                          ? 'Renvoyer le code ($_resendCountdown s)'
-                          : 'Renvoyer le code',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: _resendCountdown > 0
-                            ? AppColors.textDisabled
-                            : AppColors.brandPrimary,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-
-              if (_isLogin && !_otpSent) ...[
-                const SizedBox.shrink(),
-              ],
-
-              if (!_isLogin && !_otpSent) ...[
+              if (!_isLogin) ...[
                 AppSpacing.vGapMd,
 
                 // Terms checkbox
@@ -312,9 +195,7 @@ class _EmailScreenState extends State<EmailScreen> {
 
               // Submit button
               AppButton(
-                label: _otpSent
-                    ? 'Vérifier le code'
-                    : (_isLogin ? 'Envoyer le code' : "S'inscrire"),
+                label: _isLogin ? 'Envoyer le code' : "S'inscrire",
                 onPressed: _isFormValid ? _onSubmit : null,
                 variant: AppButtonVariant.primary,
                 size: AppButtonSize.large,

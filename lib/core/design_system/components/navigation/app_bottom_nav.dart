@@ -74,17 +74,19 @@ class AppBottomNavBar extends StatelessWidget {
         top: false,
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.sm,
+            horizontal: AppSpacing.xs,
             vertical: AppSpacing.xs,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(
               navItems.length,
-              (index) => _NavBarItem(
-                item: navItems[index],
-                isActive: index == currentIndex,
-                onTap: () => onTap(index),
+              (index) => Expanded(
+                child: _NavBarItem(
+                  item: navItems[index],
+                  isActive: index == currentIndex,
+                  onTap: () => onTap(index),
+                ),
               ),
             ),
           ),
@@ -140,11 +142,15 @@ class _NavBarItem extends StatelessWidget {
             AppSpacing.vGapXxs,
             Text(
               item.label,
+              maxLines: 1,
+              overflow: TextOverflow.visible,
+              textAlign: TextAlign.center,
               style: AppTypography.navLabel.copyWith(
                 color: isActive 
                     ? AppColors.navBarItemActive 
                     : AppColors.navBarItemInactive,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                fontSize: 11,
               ),
             ),
           ],

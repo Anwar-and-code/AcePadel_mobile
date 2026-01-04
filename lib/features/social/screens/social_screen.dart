@@ -239,12 +239,49 @@ class _ChatRoomScreen extends StatefulWidget {
 class _ChatRoomScreenState extends State<_ChatRoomScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  late List<Message> _messages;
+
+  @override
+  void initState() {
+    super.initState();
+    _messages = List.from(_sampleMessages);
+  }
   
   @override
   void dispose() {
     _messageController.dispose();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  void _sendMessage() {
+    final text = _messageController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _messages.add(
+        Message(
+          id: DateTime.now().toString(),
+          userName: 'Vous',
+          text: text,
+          time: '${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}',
+          isSentByMe: true,
+        ),
+      );
+    });
+
+    _messageController.clear();
+    
+    // Scroll to bottom after frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   @override
@@ -298,7 +335,9 @@ class _ChatRoomScreenState extends State<_ChatRoomScreen> {
         actions: [
           IconButton(
             icon: Icon(AppIcons.more, color: AppColors.iconPrimary),
-            onPressed: () {},
+            onPressed: () {
+              AppComingSoonModal.show(context);
+            },
           ),
         ],
       ),
@@ -309,9 +348,9 @@ class _ChatRoomScreenState extends State<_ChatRoomScreen> {
             child: ListView.builder(
               controller: _scrollController,
               padding: AppSpacing.screenPadding,
-              itemCount: _sampleMessages.length,
+              itemCount: _messages.length,
               itemBuilder: (context, index) {
-                final message = _sampleMessages[index];
+                final message = _messages[index];
                 return _MessageBubble(message: message);
               },
             ),
@@ -359,7 +398,9 @@ class _ChatRoomScreenState extends State<_ChatRoomScreen> {
                           Icons.attach_file,
                           color: AppColors.iconSecondary,
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          AppComingSoonModal.show(context);
+                        },
                       ),
                     ),
                     maxLines: null,
@@ -376,10 +417,7 @@ class _ChatRoomScreenState extends State<_ChatRoomScreen> {
                       Icons.send,
                       color: AppColors.white,
                     ),
-                    onPressed: () {
-                      // Send message
-                      _messageController.clear();
-                    },
+                    onPressed: _sendMessage,
                   ),
                 ),
               ],

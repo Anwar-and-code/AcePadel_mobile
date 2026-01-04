@@ -20,7 +20,20 @@ class HomeReservationsList extends StatelessWidget {
                 title: 'Réservations',
                 action: 'Voir tout',
                 onActionTap: () {
-                  DefaultTabController.of(context).animateTo(1);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Row(
+                        children: [
+                          Icon(AppIcons.calendar, color: AppColors.white),
+                          AppSpacing.hGapSm,
+                          Expanded(child: Text('Rendez-vous dans l\'onglet "Réservations"')),
+                        ],
+                      ),
+                      backgroundColor: AppColors.brandPrimary,
+                      duration: const Duration(seconds: 2),
+                      behavior: SnackBarBehavior.floating,
+                    ),
+                  );
                 },
               ),
             ),
@@ -37,7 +50,7 @@ class HomeReservationsList extends StatelessWidget {
             endTime: '20:30',
             price: '25 000 F',
             onTap: () {
-              DefaultTabController.of(context).animateTo(1);
+              AppComingSoonModal.show(context);
             },
           ),
           AppSpacing.vGapLg,

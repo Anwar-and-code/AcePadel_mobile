@@ -112,6 +112,19 @@ abstract final class AppAnimations {
   static const Curve splashCurve = curveEmphasized;
 
   // ==========================================================================
+  // FLUTTER ANIMATE PRESETS (2025)
+  // ==========================================================================
+  
+  /// Standard fade in for lists
+  static const Duration animateFadeIn = Duration(milliseconds: 400);
+  
+  /// Standard slide up for lists
+  static const Duration animateSlideUp = Duration(milliseconds: 400);
+  
+  /// Stagger delay for lists
+  static const Duration animateStagger = Duration(milliseconds: 50);
+
+  // ==========================================================================
   // STAGGER DELAYS (for sequential animations)
   // ==========================================================================
   

@@ -3,6 +3,7 @@ import '../../../core/design_system/design_system.dart';
 import '../widgets/home_banner_carousel.dart';
 import '../widgets/home_action_cards.dart';
 import '../widgets/home_reservations_list.dart';
+import '../../profile/screens/profile_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -57,8 +58,11 @@ class HomeScreen extends StatelessWidget {
                   greeting: 'Hello,',
                   avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
                   onAvatarTap: () {
-                    // Navigate to profile tab (index 4)
-                    DefaultTabController.of(context).animateTo(4);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ProfileScreen(),
+                      ),
+                    );
                   },
                 ),
               ),

@@ -56,7 +56,27 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
             itemBuilder: (context, index) {
               return Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: _BannerCard(banner: _banners[index]),
+              return Padding(
+                padding: AppSpacing.screenPaddingHorizontalOnly,
+                child: _BannerCard(
+                  banner: _banners[index],
+                  onNext: () {
+                    _pageController.nextPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                  onPrevious: () {
+                    _pageController.previousPage(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
+                  onTap: () {
+                    AppComingSoonModal.show(context);
+                  },
+                ),
+              );
               );
             },
           ),
@@ -72,9 +92,17 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
 }
 
 class _BannerCard extends StatelessWidget {
-  const _BannerCard({required this.banner});
+  const _BannerCard({
+    required this.banner,
+    this.onNext,
+    this.onPrevious,
+    this.onTap,
+  });
 
   final BannerItem banner;
+  final VoidCallback? onNext;
+  final VoidCallback? onPrevious;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -89,37 +117,40 @@ class _BannerCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Image
-            Image.network(
-              banner.imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: AppColors.neutral200,
-                  child: Center(
-                    child: Icon(
-                      AppIcons.image,
-                      size: 48,
-                      color: AppColors.neutral400,
+            InkWell(
+              onTap: onTap,
+              child: Image.network(
+                banner.imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: AppColors.neutral200,
+                    child: Center(
+                      child: Icon(
+                        AppIcons.image,
+                        size: 48,
+                        color: AppColors.neutral400,
+                      ),
                     ),
-                  ),
-                );
-              },
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Container(
-                  color: AppColors.neutral100,
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      value: loadingProgress.expectedTotalBytes != null
-                          ? loadingProgress.cumulativeBytesLoaded /
-                              loadingProgress.expectedTotalBytes!
-                          : null,
-                      color: AppColors.brandPrimary,
-                      strokeWidth: 2,
+                  );
+                },
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Container(
+                    color: AppColors.neutral100,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded /
+                                loadingProgress.expectedTotalBytes!
+                            : null,
+                        color: AppColors.brandPrimary,
+                        strokeWidth: 2,
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
 
             // Navigation arrows
@@ -130,7 +161,7 @@ class _BannerCard extends StatelessWidget {
               child: Center(
                 child: _NavigationArrow(
                   icon: AppIcons.chevronLeft,
-                  onTap: () {},
+                  onTap: onPrevious,
                 ),
               ),
             ),
@@ -141,7 +172,7 @@ class _BannerCard extends StatelessWidget {
               child: Center(
                 child: _NavigationArrow(
                   icon: AppIcons.chevronRight,
-                  onTap: () {},
+                  onTap: onNext,
                 ),
               ),
             ),

@@ -40,6 +40,9 @@ dependencies:
   
   # Phosphor Icons - Modern, flexible icon set
   phosphor_flutter: ^2.1.0
+  flutter_animate: ^4.5.2
+  gap: ^3.0.1
+  lottie: ^3.3.2
 
 dev_dependencies:
   flutter_test:

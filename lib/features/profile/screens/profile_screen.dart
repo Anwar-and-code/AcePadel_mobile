@@ -12,12 +12,17 @@ class ProfileScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Header with settings
+              // Header with back button and settings
               Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
+                    AppIconButton(
+                      icon: AppIcons.arrowBack,
+                      onPressed: () => Navigator.of(context).pop(),
+                      variant: AppButtonVariant.ghost,
+                    ),
                     Text(
                       'Profil',
                       style: AppTypography.titleLarge,
@@ -25,12 +30,7 @@ class ProfileScreen extends StatelessWidget {
                     AppIconButton(
                       icon: AppIcons.settings,
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Paramètres'),
-                            backgroundColor: AppColors.brandPrimary,
-                          ),
-                        );
+                        AppComingSoonModal.show(context);
                       },
                       variant: AppButtonVariant.ghost,
                     ),
@@ -282,32 +282,35 @@ class _ProfileMenuSection extends StatelessWidget {
           icon: AppIcons.profile,
           title: 'Informations personnelles',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Modifier les informations personnelles'),
-                backgroundColor: AppColors.brandPrimary,
-              ),
-            );
+            AppComingSoonModal.show(context);
           },
         ),
         _MenuItem(
           icon: AppIcons.history,
           title: 'Historique des réservations',
           onTap: () {
-            // Navigate to reservation tab and show history
-            DefaultTabController.of(context).animateTo(1);
+            // Navigate to reservation tab via bottom nav
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    Icon(AppIcons.calendar, color: AppColors.white),
+                    AppSpacing.hGapSm,
+                    Expanded(child: Text('Rendez-vous dans l\'onglet "Réservations"')),
+                  ],
+                ),
+                backgroundColor: AppColors.brandPrimary,
+                duration: const Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
           },
         ),
         _MenuItem(
           icon: AppIcons.favorite,
           title: 'Favoris',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Vos terrains favoris'),
-                backgroundColor: AppColors.brandPrimary,
-              ),
-            );
+            AppComingSoonModal.show(context);
           },
         ),
         _MenuItem(
@@ -332,36 +335,21 @@ class _ProfileMenuSection extends StatelessWidget {
           icon: AppIcons.help,
           title: 'Centre d\'aide',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Centre d\'aide - Besoin d\'assistance ?'),
-                backgroundColor: AppColors.brandPrimary,
-              ),
-            );
+            AppComingSoonModal.show(context);
           },
         ),
         _MenuItem(
           icon: AppIcons.info,
           title: 'À propos',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('PadelHouse v1.0.0'),
-                backgroundColor: AppColors.brandPrimary,
-              ),
-            );
+            AppComingSoonModal.show(context);
           },
         ),
         _MenuItem(
           icon: AppIcons.share,
           title: 'Partager l\'application',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Partager avec vos amis !'),
-                backgroundColor: AppColors.brandPrimary,
-              ),
-            );
+            AppComingSoonModal.show(context);
           },
         ),
 
@@ -376,24 +364,14 @@ class _ProfileMenuSection extends StatelessWidget {
           icon: Icons.description_outlined,
           title: 'Conditions d\'utilisation',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Conditions générales d\'utilisation'),
-                backgroundColor: AppColors.brandPrimary,
-              ),
-            );
+            AppComingSoonModal.show(context);
           },
         ),
         _MenuItem(
           icon: Icons.privacy_tip_outlined,
           title: 'Politique de confidentialité',
           onTap: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Politique de confidentialité'),
-                backgroundColor: AppColors.brandPrimary,
-              ),
-            );
+            AppComingSoonModal.show(context);
           },
         ),
       ],

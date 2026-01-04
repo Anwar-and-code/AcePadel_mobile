@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:gap/gap.dart';
+import '../../../../app/app_router.dart';
 import '../../../core/design_system/design_system.dart';
 
 class HomeActionCards extends StatelessWidget {
@@ -10,191 +13,214 @@ class HomeActionCards extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const AppSectionHeader(title: "Let's Padel"),
-        AppSpacing.vGapMd,
-        Row(
-          children: [
-            Expanded(
-              child: _ActionCard(
-                title: 'Réserver un terrain',
-                icon: AppIcons.sportsTennis,
-                imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',
-                onTap: () {
-                  // Navigate to reservation tab (index 1 in bottom nav)
-                  DefaultTabController.of(context).animateTo(1);
-                },
+        const Gap(16),
+        SizedBox(
+          height: 280, // Fixed height for the bento grid
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // LARGE CARD (Left)
+              Expanded(
+                flex: 5,
+                child: _BentoCard(
+                  title: 'Réserver\nun terrain',
+                  subtitle: 'Jouez maintenant',
+                  icon: AppIcons.sportsTennis,
+                  imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',
+                  color: AppColors.brandPrimary,
+                  isLarge: true,
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Row(
+                          children: [
+                            Icon(AppIcons.calendar, color: AppColors.white),
+                            const Gap(8),
+                            const Expanded(child: Text('Rendez-vous dans l\'onglet "Réservations"')),
+                          ],
+                        ),
+                        backgroundColor: AppColors.brandSecondary,
+                        duration: const Duration(seconds: 3),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
-            AppSpacing.hGapMd,
-            Expanded(
-              child: _ActionCard(
-                title: 'Voir les replays',
-                icon: AppIcons.playCircle,
-                imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=400&q=80',
-                onTap: () {
-                  // Show coming soon message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Fonctionnalité bientôt disponible'),
-                      backgroundColor: AppColors.brandPrimary,
+              const Gap(12),
+              // RIGHT COLUMN
+              Expanded(
+                flex: 4,
+                child: Column(
+                  children: [
+                    // TOP RIGHT CARD
+                    Expanded(
+                      child: _BentoCard(
+                        title: 'Replays',
+                        icon: AppIcons.playCircle,
+                        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=400&q=80',
+                        color: AppColors.brandSecondary,
+                        onTap: () => Navigator.pushNamed(context, AppRouter.replays),
+                      ),
                     ),
-                  );
-                },
+                    const Gap(12),
+                    // BOTTOM RIGHT CARD (New)
+                    Expanded(
+                      child: _BentoCard(
+                        title: 'Tournois',
+                        icon: AppIcons.trophy,
+                        // Use a darker/different image for contrast
+                        imageUrl: 'https://images.unsplash.com/photo-1628779238951-be2c9f256f27?w=400&q=80',
+                        color: AppColors.neutral700,
+                        onTap: () => Navigator.pushNamed(context, AppRouter.tournaments),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ],
+      ]
+      .animate(interval: 50.ms)
+      .fadeIn(duration: 400.ms)
+      .slideY(begin: 0.1, end: 0, curve: Curves.easeOutQuad),
     );
   }
 }
 
-class _ActionCard extends StatelessWidget {
-  const _ActionCard({
+class _BentoCard extends StatelessWidget {
+  const _BentoCard({
     required this.title,
+    this.subtitle,
     required this.icon,
     required this.imageUrl,
+    required this.color,
+    this.isLarge = false,
     this.onTap,
   });
 
   final String title;
+  final String? subtitle;
   final IconData icon;
   final String imageUrl;
+  final Color color;
+  final bool isLarge;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 140,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.15),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: AppColors.brandPrimary.withValues(alpha: 0.1),
-            blurRadius: 30,
-            offset: const Offset(0, 12),
-            spreadRadius: -5,
+            color: AppColors.black.withValues(alpha: 0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(24),
         child: Material(
-          color: Colors.transparent,
+          color: AppColors.surfaceDefault,
           child: InkWell(
             onTap: onTap,
             child: Stack(
               fit: StackFit.expand,
               children: [
-                // Background image
+                // 1. Background Image using NetworkImage
                 Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                          colors: [
-                            AppColors.neutral300,
-                            AppColors.neutral400,
-                          ],
-                        ),
-                      ),
-                      child: Center(
-                        child: Icon(
-                          icon,
-                          size: 48,
-                          color: AppColors.neutral600,
-                        ),
-                      ),
-                    );
-                  },
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      color: AppColors.neutral100,
-                      child: const Center(
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                        ),
-                      ),
-                    );
-                  },
+                  errorBuilder: (_, __, ___) => Container(color: AppColors.neutral300),
                 ),
 
-                // Modern multi-layer gradient overlay
+                // 2. Gradient Overlay (Glass/Dark)
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
                         AppColors.black.withValues(alpha: 0.3),
-                        AppColors.black.withValues(alpha: 0.7),
+                        AppColors.black.withValues(alpha: 0.8),
                       ],
-                      stops: const [0.0, 0.5, 1.0],
+                      stops: const [0.0, 0.4, 1.0],
                     ),
                   ),
                 ),
 
-                // Content with glassmorphism effect
-                Positioned(
-                  left: AppSpacing.md,
-                  bottom: AppSpacing.md,
-                  right: AppSpacing.md,
-                  child: Row(
+                // 3. Neon Glow Effect (subtle)
+                if (isLarge)
+                  Positioned(
+                    top: -20,
+                    right: -20,
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.neonGlow,
+                            blurRadius: 50,
+                            spreadRadius: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                // 4. Content
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
+                      // Icon Badge
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.25),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: AppColors.white.withValues(alpha: 0.3),
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.black.withValues(alpha: 0.1),
-                              blurRadius: 10,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
+                          color: AppColors.glassSurface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppColors.glassBorder),
                         ),
                         child: Icon(
                           icon,
-                          color: AppColors.white,
-                          size: 22,
+                          color: color,
+                          size: isLarge ? 28 : 20,
                         ),
                       ),
-                      AppSpacing.hGapSm,
-                      Expanded(
-                        child: Text(
-                          title,
-                          style: AppTypography.labelLarge.copyWith(
-                            color: AppColors.white,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.2,
-                            shadows: [
-                              Shadow(
-                                color: AppColors.black.withValues(alpha: 0.3),
-                                offset: const Offset(0, 2),
-                                blurRadius: 4,
-                              ),
-                            ],
+                      const Gap(12),
+                      
+                      // Text Content
+                      Text(
+                        title,
+                        style: isLarge 
+                          ? AppTypography.headlineSmall.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w700,
+                              height: 1.1,
+                            )
+                          : AppTypography.titleMedium.copyWith(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w600,
+                            ),
+                      ),
+                      
+                      if (subtitle != null && isLarge) ...[
+                        const Gap(4),
+                        Text(
+                          subtitle!,
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.neutral200,
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
+                      ],
                     ],
                   ),
                 ),

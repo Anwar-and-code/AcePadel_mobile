@@ -2,7 +2,14 @@ import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
 
 class OtpScreen extends StatefulWidget {
-  const OtpScreen({super.key});
+  final String email;
+  final bool isLogin;
+  
+  const OtpScreen({
+    super.key,
+    required this.email,
+    this.isLogin = true,
+  });
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -56,7 +63,14 @@ class _OtpScreenState extends State<OtpScreen> {
     
     if (mounted) {
       setState(() => _isVerifying = false);
-      Navigator.of(context).pushNamed('/auth/register');
+      
+      if (widget.isLogin) {
+        // Login -> Go to main app
+        Navigator.of(context).pushNamedAndRemoveUntil('/main', (route) => false);
+      } else {
+        // Register -> Go to complete profile
+        Navigator.of(context).pushNamed('/auth/register');
+      }
     }
   }
 
@@ -121,7 +135,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     
                     AppSpacing.vGapSm,
                     
-                    // Phone number
+                    // Email address
                     RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
@@ -129,9 +143,9 @@ class _OtpScreenState extends State<OtpScreen> {
                           color: AppColors.textSecondary,
                         ),
                         children: [
-                          const TextSpan(text: 'Un SMS sera envoyé au '),
+                          const TextSpan(text: 'Code envoyé à '),
                           TextSpan(
-                            text: '+225 07 77 46 56 00',
+                            text: widget.email,
                             style: TextStyle(
                               color: AppColors.brandSecondary,
                               fontWeight: FontWeight.w600,

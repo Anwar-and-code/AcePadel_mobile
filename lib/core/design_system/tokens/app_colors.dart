@@ -145,6 +145,12 @@ abstract final class AppColors {
   static const Color navBarItemInactive = neutral500;
   static const Color navBarItemActiveBackground = gold50;
   
+  // --- Modern 2025 Tokens ---
+  static const Color glassSurface = Color(0x99FFFFFF); // 60% opacity white
+  static const Color glassBorder = Color(0x33FFFFFF); // 20% opacity white
+  static const Color neonAccent = Color(0xFF00FF9D); // Cyberpunk Green/Cyan for pop
+  static const Color neonGlow = Color(0x6600FF9D); // Glow effect
+  
   // --- Reservation Card Colors (from screenshots) ---
   static const Color reservationTimeBadge = brandPrimary;
   static const Color reservationTimeBadgeText = white;

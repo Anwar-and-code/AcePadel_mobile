@@ -4,7 +4,6 @@ import '../features/home/screens/home_screen.dart';
 import '../features/reservation/screens/reservation_screen.dart';
 import '../features/events/screens/events_screen.dart';
 import '../features/social/screens/social_screen.dart';
-import '../features/profile/screens/profile_screen.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -21,7 +20,6 @@ class _MainShellState extends State<MainShell> {
     ReservationScreen(),
     EventsScreen(),
     SocialScreen(),
-    ProfileScreen(),
   ];
 
   static const List<AppNavItem> _navItems = [
@@ -44,11 +42,6 @@ class _MainShellState extends State<MainShell> {
       label: 'Social',
       icon: AppIcons.group,
       activeIcon: AppIcons.groupFilled,
-    ),
-    AppNavItem(
-      label: 'Profil',
-      icon: AppIcons.profile,
-      activeIcon: AppIcons.profileFilled,
     ),
   ];
 
