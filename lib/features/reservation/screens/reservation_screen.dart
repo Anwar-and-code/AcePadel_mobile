@@ -635,34 +635,26 @@ class _CourtCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              AppIcons.sportsTennis,
-              size: 40,
-              color: isDisabled
-                  ? AppColors.neutral400
-                  : isSelected
-                      ? AppColors.white
-                      : AppColors.brandPrimary,
-            ),
-            AppSpacing.vGapSm,
             Text(
               court.name,
-              style: AppTypography.labelLarge.copyWith(
+              style: AppTypography.displaySmall.copyWith(
                 color: isDisabled
                     ? AppColors.neutral400
                     : isSelected
                         ? AppColors.white
                         : AppColors.textPrimary,
+                fontWeight: FontWeight.bold,
+                fontSize: 36,
               ),
               textAlign: TextAlign.center,
             ),
             if (isDisabled) ...[
-              AppSpacing.vGapXxs,
+              AppSpacing.vGapXs,
               Text(
                 'Indisponible',
                 style: AppTypography.caption.copyWith(
                   color: AppColors.error,
-                  fontSize: 10,
+                  fontSize: 11,
                 ),
               ),
             ],

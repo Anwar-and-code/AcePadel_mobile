@@ -12,8 +12,8 @@ abstract final class AppColors {
   // BRAND COLORS (Seed colors for Material 3)
   // ==========================================================================
   
-  /// Primary brand color - Olive Brown
-  static const Color brandPrimary = Color(0xFF5C4D3C);
+  /// Primary brand color - Marron #965A26
+  static const Color brandPrimary = Color(0xFF965A26);
   
   /// Secondary brand color - Golden Amber
   static const Color brandSecondary = Color(0xFFC4945A);
@@ -25,17 +25,17 @@ abstract final class AppColors {
   // PRIMITIVE COLORS (Raw color values)
   // ==========================================================================
   
-  // --- Browns ---
-  static const Color brown50 = Color(0xFFFAF6F1);
-  static const Color brown100 = Color(0xFFF0E8DC);
-  static const Color brown200 = Color(0xFFE0D0B8);
-  static const Color brown300 = Color(0xFFCBB896);
-  static const Color brown400 = Color(0xFFB39B70);
-  static const Color brown500 = Color(0xFF9A7F50);
-  static const Color brown600 = Color(0xFF7D6640);
-  static const Color brown700 = Color(0xFF5C4D3C);
-  static const Color brown800 = Color(0xFF4A3E30);
-  static const Color brown900 = Color(0xFF372E24);
+  // --- Browns (unified marron palette based on #965A26) ---
+  static const Color brown50 = Color(0xFFFDF7F2);
+  static const Color brown100 = Color(0xFFF9EDE0);
+  static const Color brown200 = Color(0xFFEBD1B8);
+  static const Color brown300 = Color(0xFFD4A877);
+  static const Color brown400 = Color(0xFFB87F4D);
+  static const Color brown500 = Color(0xFF965A26);
+  static const Color brown600 = Color(0xFF7D4B1F);
+  static const Color brown700 = Color(0xFF965A26);
+  static const Color brown800 = Color(0xFF6B3F1A);
+  static const Color brown900 = Color(0xFF4A2B12);
   
   // --- Golds ---
   static const Color gold50 = Color(0xFFFFF8E7);
@@ -157,7 +157,7 @@ abstract final class AppColors {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [brandPrimary, brown600],
+    colors: [brandPrimary, brown800],
   );
   
   static const LinearGradient goldGradient = LinearGradient(

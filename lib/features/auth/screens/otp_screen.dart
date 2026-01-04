@@ -9,7 +9,9 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  int _resendTimer = 30;
+  String _otpCode = '';
+  int _resendTimer = 60;
+  bool _isVerifying = false;
 
   @override
   void initState() {
@@ -29,26 +31,46 @@ class _OtpScreenState extends State<OtpScreen> {
     });
   }
 
-  void _onOtpCompleted(String code) {
-    if (code.length == 4) {
-      // Simulate verification
-      Future.delayed(const Duration(milliseconds: 500), () {
-        if (mounted) {
-          Navigator.of(context).pushNamed('/auth/register');
-        }
-      });
+  void _onKeyPressed(String key) {
+    if (_otpCode.length < 4) {
+      setState(() => _otpCode += key);
+      
+      // Auto-verify when complete
+      if (_otpCode.length == 4) {
+        _verifyCode();
+      }
+    }
+  }
+
+  void _onBackspace() {
+    if (_otpCode.isNotEmpty) {
+      setState(() => _otpCode = _otpCode.substring(0, _otpCode.length - 1));
+    }
+  }
+
+  void _verifyCode() async {
+    setState(() => _isVerifying = true);
+    
+    // Simulate verification
+    await Future.delayed(const Duration(seconds: 2));
+    
+    if (mounted) {
+      setState(() => _isVerifying = false);
+      Navigator.of(context).pushNamed('/auth/register');
     }
   }
 
   void _resendCode() {
     if (_resendTimer == 0) {
-      setState(() => _resendTimer = 30);
+      setState(() {
+        _resendTimer = 60;
+        _otpCode = '';
+      });
       _startResendTimer();
       
-      // Show feedback
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Code renvoyé'),
+          content: Text('Code renvoyé par SMS'),
           backgroundColor: AppColors.success,
           duration: Duration(seconds: 2),
         ),
@@ -56,163 +78,233 @@ class _OtpScreenState extends State<OtpScreen> {
     }
   }
 
+  void _receiveCall() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Vous allez recevoir un appel'),
+        backgroundColor: AppColors.brandPrimary,
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(AppIcons.arrowBack),
-          onPressed: () => Navigator.of(context).pop(),
-          color: AppColors.iconPrimary,
-        ),
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: AppSpacing.screenPadding,
-          child: Column(
-            children: [
-              // Logo
-              const AppLogo(
-                size: AppLogoSize.medium,
-                color: AppColors.brandPrimary,
-              ),
-              
-              AppSpacing.vGapXxl,
-              
-              // Title
-              Text(
-                'Authentification',
-                style: AppTypography.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-              
-              AppSpacing.vGapSm,
-              
-              // Subtitle
-              Text(
-                'Un OTP sera envoyé au +225 07 77 46 56 00',
-                style: AppTypography.bodyMedium.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              AppSpacing.vGapSm,
-              
-              // Change number link
-              GestureDetector(
-                onTap: () => Navigator.of(context).pop(),
-                child: Text(
-                  'Modifier ce numéro',
-                  style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.brandPrimary,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-              
-              AppSpacing.vGapXxl,
-              
-              // OTP Input
-              AppOtpField(
-                length: 4,
-                onCompleted: _onOtpCompleted,
-              ),
-              
-              AppSpacing.vGapXl,
-              
-              // Resend code
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Vous n'avez pas reçu le code ? ",
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+        child: Column(
+          children: [
+            // Top section with logo, title, and OTP boxes
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: AppSpacing.screenPadding,
+                child: Column(
+                  children: [
+                    AppSpacing.vGapLg,
+                    
+                    // Logo
+                    const AppLogo(
+                      size: AppLogoSize.large,
+                      color: AppColors.brandPrimary,
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: _resendTimer == 0 ? _resendCode : null,
-                    child: Text(
-                      _resendTimer > 0
-                          ? 'Renvoyer (${_resendTimer}s)'
-                          : 'Renvoyer le code',
-                      style: AppTypography.bodySmall.copyWith(
-                        color: _resendTimer > 0
-                            ? AppColors.textTertiary
-                            : AppColors.brandPrimary,
-                        fontWeight: FontWeight.w500,
+                    
+                    AppSpacing.vGapXxl,
+                    
+                    // Title
+                    Text(
+                      'Authentification',
+                      style: AppTypography.headlineMedium,
+                      textAlign: TextAlign.center,
+                    ),
+                    
+                    AppSpacing.vGapSm,
+                    
+                    // Phone number
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                        children: [
+                          const TextSpan(text: 'Un SMS sera envoyé au '),
+                          TextSpan(
+                            text: '+225 07 77 46 56 00',
+                            style: TextStyle(
+                              color: AppColors.brandSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                ],
+                    
+                    AppSpacing.vGapXxl,
+                    
+                    // OTP Display Boxes
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(4, (index) {
+                        final hasValue = index < _otpCode.length;
+                        final value = hasValue ? _otpCode[index] : '';
+                        
+                        return Container(
+                          width: 65,
+                          height: 65,
+                          margin: EdgeInsets.symmetric(horizontal: 8),
+                          decoration: BoxDecoration(
+                            color: hasValue 
+                                ? AppColors.brandSecondary.withValues(alpha: 0.1)
+                                : AppColors.surfaceSubtle,
+                            borderRadius: AppRadius.borderRadiusMd,
+                            border: Border.all(
+                              color: hasValue 
+                                  ? AppColors.brandSecondary
+                                  : AppColors.borderDefault,
+                              width: hasValue ? 2 : 1,
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              value,
+                              style: AppTypography.headlineLarge.copyWith(
+                                color: AppColors.brandSecondary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                    
+                    AppSpacing.vGapXl,
+                    
+                    // Resend options
+                    Text(
+                      "Vous n'avez pas reçu de code ?",
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                    AppSpacing.vGapXs,
+                    GestureDetector(
+                      onTap: _resendTimer == 0 ? _resendCode : null,
+                      child: Text(
+                        _resendTimer > 0
+                            ? 'Renvoyer (${_resendTimer}s)'
+                            : 'Renvoyer',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: _resendTimer > 0
+                              ? AppColors.textTertiary
+                              : AppColors.brandSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    AppSpacing.vGapXs,
+                    GestureDetector(
+                      onTap: _receiveCall,
+                      child: Text(
+                        'Recevoir un appel',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.brandSecondary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    
+                    AppSpacing.vGapLg,
+                    
+                    // Loading indicator
+                    if (_isVerifying)
+                      SizedBox(
+                        width: 40,
+                        height: 40,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.brandSecondary,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
-              
-              const Spacer(),
-              
-              // Numeric keypad
-              _buildNumericKeypad(),
-              
-              AppSpacing.vGapLg,
-            ],
-          ),
+            ),
+            
+            // Numeric keypad
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.sm,
+                vertical: AppSpacing.md,
+              ),
+              decoration: BoxDecoration(
+                color: AppColors.neutral200,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+              ),
+              child: SafeArea(
+                top: false,
+                child: Column(
+                  children: [
+                    _buildKeypadRow(['1', '2', '3']),
+                    _buildKeypadRow(['4', '5', '6']),
+                    _buildKeypadRow(['7', '8', '9']),
+                    _buildKeypadRow(['', '0', 'back']),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildNumericKeypad() {
-    return Column(
-      children: [
-        _buildKeypadRow(['1', '2', '3']),
-        AppSpacing.vGapMd,
-        _buildKeypadRow(['4', '5', '6']),
-        AppSpacing.vGapMd,
-        _buildKeypadRow(['7', '8', '9']),
-        AppSpacing.vGapMd,
-        _buildKeypadRow(['', '0', 'back']),
-      ],
     );
   }
 
   Widget _buildKeypadRow(List<String> keys) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: keys.map((key) => _buildKey(key)).toList(),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: keys.map((key) => _buildKey(key)).toList(),
+      ),
     );
   }
 
   Widget _buildKey(String key) {
     if (key.isEmpty) {
-      return const SizedBox(width: 72, height: 56);
+      return const SizedBox(width: 90, height: 60);
     }
 
     final isBackspace = key == 'back';
 
     return Material(
-      color: Colors.transparent,
+      color: isBackspace ? Colors.transparent : AppColors.white,
+      borderRadius: BorderRadius.circular(12),
+      elevation: isBackspace ? 0 : 1,
+      shadowColor: Colors.black12,
       child: InkWell(
-        onTap: () {
-          // Key handling would go here
-        },
-        borderRadius: AppRadius.borderRadiusFull,
+        onTap: isBackspace ? _onBackspace : () => _onKeyPressed(key),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
-          width: 72,
-          height: 56,
+          width: 90,
+          height: 60,
           alignment: Alignment.center,
           child: isBackspace
               ? Icon(
                   Icons.backspace_outlined,
                   color: AppColors.textPrimary,
-                  size: 24,
+                  size: 26,
                 )
               : Text(
                   key,
                   style: AppTypography.headlineMedium.copyWith(
                     color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
         ),

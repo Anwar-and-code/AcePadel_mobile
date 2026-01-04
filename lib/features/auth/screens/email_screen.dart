@@ -323,46 +323,6 @@ class _EmailScreenState extends State<EmailScreen> {
                 isDisabled: !_isFormValid,
               ),
 
-              AppSpacing.vGapLg,
-
-              // Divider
-              Row(
-                children: [
-                  Expanded(child: Divider(color: AppColors.borderDefault)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                    child: Text(
-                      'ou',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textTertiary,
-                      ),
-                    ),
-                  ),
-                  Expanded(child: Divider(color: AppColors.borderDefault)),
-                ],
-              ),
-
-              AppSpacing.vGapLg,
-
-              // Social login buttons
-              _SocialLoginButton(
-                label: 'Continuer avec Google',
-                icon: Icons.g_mobiledata,
-                onTap: () {
-                  // TODO: Google sign in
-                },
-              ),
-
-              AppSpacing.vGapSm,
-
-              _SocialLoginButton(
-                label: 'Continuer avec Apple',
-                icon: Icons.apple,
-                onTap: () {
-                  // TODO: Apple sign in
-                },
-              ),
-
               AppSpacing.vGapXl,
 
               // Toggle login/register
@@ -399,55 +359,3 @@ class _EmailScreenState extends State<EmailScreen> {
   }
 }
 
-class _SocialLoginButton extends StatelessWidget {
-  const _SocialLoginButton({
-    required this.label,
-    required this.icon,
-    this.onTap,
-  });
-
-  final String label;
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: AppColors.borderDefault),
-        borderRadius: AppRadius.buttonBorderRadius,
-      ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: AppRadius.buttonBorderRadius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: AppRadius.buttonBorderRadius,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: AppSpacing.md,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  icon,
-                  size: 24,
-                  color: AppColors.textPrimary,
-                ),
-                AppSpacing.hGapMd,
-                Text(
-                  label,
-                  style: AppTypography.labelMedium.copyWith(
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
