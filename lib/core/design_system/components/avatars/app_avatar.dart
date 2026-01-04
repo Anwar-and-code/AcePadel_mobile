@@ -47,7 +47,7 @@ class AppAvatar extends StatelessWidget {
       height: avatarSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: backgroundColor ?? AppColors.brandSecondary.withOpacity(0.2),
+        color: backgroundColor ?? AppColors.brandSecondary.withValues(alpha: 0.2),
         border: showBorder
             ? Border.all(
                 color: borderColor ?? AppColors.white,

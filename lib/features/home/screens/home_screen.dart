@@ -34,7 +34,14 @@ class HomeScreen extends StatelessWidget {
                       count: 3,
                       child: AppIconButton(
                         icon: AppIcons.notification,
-                        onPressed: () {},
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('3 nouvelles notifications'),
+                              backgroundColor: AppColors.brandPrimary,
+                            ),
+                          );
+                        },
                         variant: AppButtonVariant.ghost,
                       ),
                     ),
@@ -50,7 +57,8 @@ class HomeScreen extends StatelessWidget {
                   greeting: 'Hello,',
                   avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
                   onAvatarTap: () {
-                    // Navigate to profile
+                    // Navigate to profile tab (index 4)
+                    DefaultTabController.of(context).animateTo(4);
                   },
                 ),
               ),

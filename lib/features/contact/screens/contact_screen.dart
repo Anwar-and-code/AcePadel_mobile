@@ -11,7 +11,7 @@ class ContactScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.backgroundPrimary,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Contact',
           style: AppTypography.titleLarge,
         ),

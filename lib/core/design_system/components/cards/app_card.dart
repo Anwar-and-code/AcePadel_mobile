@@ -56,8 +56,8 @@ class AppCard extends StatelessWidget {
         child: InkWell(
           onTap: onTap,
           borderRadius: effectiveBorderRadius,
-          splashColor: AppColors.brandPrimary.withOpacity(0.1),
-          highlightColor: AppColors.brandPrimary.withOpacity(0.05),
+          splashColor: AppColors.brandPrimary.withValues(alpha: 0.1),
+          highlightColor: AppColors.brandPrimary.withValues(alpha: 0.05),
           child: Padding(
             padding: effectivePadding,
             child: child,
@@ -149,7 +149,7 @@ class AppActionCard extends StatelessWidget {
                       end: Alignment.bottomCenter,
                       colors: [
                         Colors.transparent,
-                        AppColors.black.withOpacity(overlayOpacity),
+                        AppColors.black.withValues(alpha: overlayOpacity),
                       ],
                     ),
                   ),
@@ -165,7 +165,7 @@ class AppActionCard extends StatelessWidget {
                         Container(
                           padding: AppSpacing.paddingXs,
                           decoration: BoxDecoration(
-                            color: AppColors.white.withOpacity(0.2),
+                            color: AppColors.white.withValues(alpha: 0.2),
                             borderRadius: AppRadius.borderRadiusSm,
                           ),
                           child: Icon(
@@ -248,7 +248,7 @@ class AppReservationCard extends StatelessWidget {
                 Text(
                   endTime,
                   style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.white.withOpacity(0.8),
+                    color: AppColors.white.withValues(alpha: 0.8),
                   ),
                 ),
               ],
@@ -388,7 +388,7 @@ class _NavigationArrow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white.withOpacity(0.9),
+      color: AppColors.white.withValues(alpha: 0.9),
       borderRadius: AppRadius.borderRadiusFull,
       child: InkWell(
         onTap: onTap,

@@ -11,7 +11,7 @@ class EventsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.backgroundPrimary,
         elevation: 0,
-        title: const Text(
+        title: Text(
           'Événements',
           style: AppTypography.titleLarge,
         ),

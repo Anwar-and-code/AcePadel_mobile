@@ -1,24 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
 /// Design tokens for typography - PadelHouse Design System
 /// Based on Material 3 type scale with brand customizations
 /// 
-/// Font family: Uses system fonts by default, can be replaced with custom fonts
+/// Font families:
+/// - Space Grotesk: Modern geometric font for headlines (sporty, dynamic)
+/// - Inter: Highly readable sans-serif for body text (designed for screens)
+/// 
 /// Scale: Follows Material 3 type scale ratios
 abstract final class AppTypography {
   // ==========================================================================
-  // FONT FAMILIES
+  // FONT FAMILIES (using Google Fonts)
   // ==========================================================================
   
-  /// Primary font family for body text
-  static const String fontFamilyPrimary = 'SF Pro Display';
+  /// Primary font family for body text - Inter (highly readable)
+  static String get fontFamilyPrimary => GoogleFonts.inter().fontFamily!;
   
-  /// Secondary font family for headings (can be customized)
-  static const String fontFamilySecondary = 'SF Pro Display';
+  /// Secondary font family for headings - Space Grotesk (modern, sporty)
+  static String get fontFamilySecondary => GoogleFonts.spaceGrotesk().fontFamily!;
   
-  /// Monospace font family for code/numbers
-  static const String fontFamilyMono = 'SF Mono';
+  /// Monospace font family for code/numbers - JetBrains Mono
+  static String get fontFamilyMono => GoogleFonts.jetBrainsMono().fontFamily!;
 
   // ==========================================================================
   // FONT WEIGHTS
@@ -76,10 +80,10 @@ abstract final class AppTypography {
   static const double letterSpacingWider = 1.0;
 
   // ==========================================================================
-  // TEXT STYLES - DISPLAY (Hero text, splash screens)
+  // TEXT STYLES - DISPLAY (Hero text, splash screens) - Space Grotesk
   // ==========================================================================
   
-  static const TextStyle displayLarge = TextStyle(
+  static TextStyle get displayLarge => GoogleFonts.spaceGrotesk(
     fontSize: fontSize56,
     fontWeight: weightBold,
     height: lineHeightTight,
@@ -87,7 +91,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle displayMedium = TextStyle(
+  static TextStyle get displayMedium => GoogleFonts.spaceGrotesk(
     fontSize: fontSize48,
     fontWeight: weightBold,
     height: lineHeightTight,
@@ -95,7 +99,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle displaySmall = TextStyle(
+  static TextStyle get displaySmall => GoogleFonts.spaceGrotesk(
     fontSize: fontSize36,
     fontWeight: weightBold,
     height: lineHeightSnug,
@@ -104,10 +108,10 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - HEADLINE (Page titles, section headers)
+  // TEXT STYLES - HEADLINE (Page titles, section headers) - Space Grotesk
   // ==========================================================================
   
-  static const TextStyle headlineLarge = TextStyle(
+  static TextStyle get headlineLarge => GoogleFonts.spaceGrotesk(
     fontSize: fontSize32,
     fontWeight: weightBold,
     height: lineHeightSnug,
@@ -115,7 +119,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle headlineMedium = TextStyle(
+  static TextStyle get headlineMedium => GoogleFonts.spaceGrotesk(
     fontSize: fontSize28,
     fontWeight: weightSemiBold,
     height: lineHeightSnug,
@@ -123,7 +127,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle headlineSmall = TextStyle(
+  static TextStyle get headlineSmall => GoogleFonts.spaceGrotesk(
     fontSize: fontSize24,
     fontWeight: weightSemiBold,
     height: lineHeightSnug,
@@ -132,10 +136,10 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - TITLE (Card titles, list headers)
+  // TEXT STYLES - TITLE (Card titles, list headers) - Space Grotesk
   // ==========================================================================
   
-  static const TextStyle titleLarge = TextStyle(
+  static TextStyle get titleLarge => GoogleFonts.spaceGrotesk(
     fontSize: fontSize22,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
@@ -143,7 +147,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle titleMedium = TextStyle(
+  static TextStyle get titleMedium => GoogleFonts.spaceGrotesk(
     fontSize: fontSize18,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
@@ -151,7 +155,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle titleSmall = TextStyle(
+  static TextStyle get titleSmall => GoogleFonts.spaceGrotesk(
     fontSize: fontSize16,
     fontWeight: weightMedium,
     height: lineHeightNormal,
@@ -160,10 +164,10 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - BODY (Main content text)
+  // TEXT STYLES - BODY (Main content text) - Inter
   // ==========================================================================
   
-  static const TextStyle bodyLarge = TextStyle(
+  static TextStyle get bodyLarge => GoogleFonts.inter(
     fontSize: fontSize16,
     fontWeight: weightRegular,
     height: lineHeightRelaxed,
@@ -171,7 +175,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle bodyMedium = TextStyle(
+  static TextStyle get bodyMedium => GoogleFonts.inter(
     fontSize: fontSize14,
     fontWeight: weightRegular,
     height: lineHeightRelaxed,
@@ -179,7 +183,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle bodySmall = TextStyle(
+  static TextStyle get bodySmall => GoogleFonts.inter(
     fontSize: fontSize12,
     fontWeight: weightRegular,
     height: lineHeightRelaxed,
@@ -188,10 +192,10 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - LABEL (Buttons, form labels, navigation)
+  // TEXT STYLES - LABEL (Buttons, form labels, navigation) - Inter
   // ==========================================================================
   
-  static const TextStyle labelLarge = TextStyle(
+  static TextStyle get labelLarge => GoogleFonts.inter(
     fontSize: fontSize16,
     fontWeight: weightMedium,
     height: lineHeightNormal,
@@ -199,7 +203,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle labelMedium = TextStyle(
+  static TextStyle get labelMedium => GoogleFonts.inter(
     fontSize: fontSize14,
     fontWeight: weightMedium,
     height: lineHeightNormal,
@@ -207,7 +211,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle labelSmall = TextStyle(
+  static TextStyle get labelSmall => GoogleFonts.inter(
     fontSize: fontSize12,
     fontWeight: weightMedium,
     height: lineHeightNormal,
@@ -216,10 +220,10 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - CAPTION & OVERLINE
+  // TEXT STYLES - CAPTION & OVERLINE - Inter
   // ==========================================================================
   
-  static const TextStyle caption = TextStyle(
+  static TextStyle get caption => GoogleFonts.inter(
     fontSize: fontSize11,
     fontWeight: weightRegular,
     height: lineHeightNormal,
@@ -227,7 +231,7 @@ abstract final class AppTypography {
     color: AppColors.textTertiary,
   );
   
-  static const TextStyle overline = TextStyle(
+  static TextStyle get overline => GoogleFonts.inter(
     fontSize: fontSize10,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
@@ -239,30 +243,30 @@ abstract final class AppTypography {
   // COMPONENT-SPECIFIC TEXT STYLES
   // ==========================================================================
   
-  // --- Button Text ---
-  static const TextStyle buttonLarge = TextStyle(
+  // --- Button Text --- Inter (readable for actions)
+  static TextStyle get buttonLarge => GoogleFonts.inter(
     fontSize: fontSize16,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
   
-  static const TextStyle buttonMedium = TextStyle(
+  static TextStyle get buttonMedium => GoogleFonts.inter(
     fontSize: fontSize14,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
   
-  static const TextStyle buttonSmall = TextStyle(
+  static TextStyle get buttonSmall => GoogleFonts.inter(
     fontSize: fontSize12,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
   
-  // --- Input Text ---
-  static const TextStyle inputText = TextStyle(
+  // --- Input Text --- Inter (readable for forms)
+  static TextStyle get inputText => GoogleFonts.inter(
     fontSize: fontSize16,
     fontWeight: weightRegular,
     height: lineHeightNormal,
@@ -270,7 +274,7 @@ abstract final class AppTypography {
     color: AppColors.textPrimary,
   );
   
-  static const TextStyle inputLabel = TextStyle(
+  static TextStyle get inputLabel => GoogleFonts.inter(
     fontSize: fontSize14,
     fontWeight: weightMedium,
     height: lineHeightNormal,
@@ -278,7 +282,7 @@ abstract final class AppTypography {
     color: AppColors.textSecondary,
   );
   
-  static const TextStyle inputHint = TextStyle(
+  static TextStyle get inputHint => GoogleFonts.inter(
     fontSize: fontSize16,
     fontWeight: weightRegular,
     height: lineHeightNormal,
@@ -286,7 +290,7 @@ abstract final class AppTypography {
     color: AppColors.inputPlaceholder,
   );
   
-  static const TextStyle inputError = TextStyle(
+  static TextStyle get inputError => GoogleFonts.inter(
     fontSize: fontSize12,
     fontWeight: weightRegular,
     height: lineHeightNormal,
@@ -294,26 +298,26 @@ abstract final class AppTypography {
     color: AppColors.error,
   );
   
-  // --- Navigation Text ---
-  static const TextStyle navLabel = TextStyle(
+  // --- Navigation Text --- Inter
+  static TextStyle get navLabel => GoogleFonts.inter(
     fontSize: fontSize12,
     fontWeight: weightMedium,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
   );
   
-  // --- Badge Text ---
-  static const TextStyle badge = TextStyle(
+  // --- Badge Text --- Inter
+  static TextStyle get badge => GoogleFonts.inter(
     fontSize: fontSize11,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
   
-  // --- App Bar Title (Brand logo style) ---
-  static const TextStyle appBarTitle = TextStyle(
+  // --- App Bar Title (Brand logo style) --- Space Grotesk
+  static TextStyle get appBarTitle => GoogleFonts.spaceGrotesk(
     fontSize: fontSize24,
-    fontWeight: weightLight,
+    fontWeight: weightMedium,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
     color: AppColors.brandPrimary,
@@ -323,7 +327,7 @@ abstract final class AppTypography {
   // HELPER METHOD - Get TextTheme for Material Theme
   // ==========================================================================
   
-  static TextTheme get textTheme => const TextTheme(
+  static TextTheme get textTheme => TextTheme(
     displayLarge: displayLarge,
     displayMedium: displayMedium,
     displaySmall: displaySmall,

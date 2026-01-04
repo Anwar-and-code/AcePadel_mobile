@@ -19,7 +19,8 @@ class HomeActionCards extends StatelessWidget {
                 icon: AppIcons.sportsTennis,
                 imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',
                 onTap: () {
-                  // Navigate to reservation
+                  // Navigate to reservation tab (index 1 in bottom nav)
+                  DefaultTabController.of(context).animateTo(1);
                 },
               ),
             ),
@@ -30,7 +31,13 @@ class HomeActionCards extends StatelessWidget {
                 icon: AppIcons.playCircle,
                 imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=400&q=80',
                 onTap: () {
-                  // Navigate to replays
+                  // Show coming soon message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Fonctionnalité bientôt disponible'),
+                      backgroundColor: AppColors.brandPrimary,
+                    ),
+                  );
                 },
               ),
             ),
@@ -57,13 +64,26 @@ class _ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 120,
+      height: 140,
       decoration: BoxDecoration(
-        borderRadius: AppRadius.cardBorderRadius,
-        boxShadow: AppShadows.cardShadow,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: 0.15),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: AppColors.brandPrimary.withValues(alpha: 0.1),
+            blurRadius: 30,
+            offset: const Offset(0, 12),
+            spreadRadius: -5,
+          ),
+        ],
       ),
       child: ClipRRect(
-        borderRadius: AppRadius.cardBorderRadius,
+        borderRadius: BorderRadius.circular(20),
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -77,12 +97,21 @@ class _ActionCard extends StatelessWidget {
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
-                      color: AppColors.neutral300,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppColors.neutral300,
+                            AppColors.neutral400,
+                          ],
+                        ),
+                      ),
                       child: Center(
                         child: Icon(
                           icon,
-                          size: 40,
-                          color: AppColors.neutral500,
+                          size: 48,
+                          color: AppColors.neutral600,
                         ),
                       ),
                     );
@@ -100,21 +129,23 @@ class _ActionCard extends StatelessWidget {
                   },
                 ),
 
-                // Dark gradient overlay
+                // Modern multi-layer gradient overlay
                 Container(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                       colors: [
                         Colors.transparent,
-                        AppColors.black.withValues(alpha: 0.6),
+                        AppColors.black.withValues(alpha: 0.3),
+                        AppColors.black.withValues(alpha: 0.7),
                       ],
+                      stops: const [0.0, 0.5, 1.0],
                     ),
                   ),
                 ),
 
-                // Content
+                // Content with glassmorphism effect
                 Positioned(
                   left: AppSpacing.md,
                   bottom: AppSpacing.md,
@@ -122,24 +153,43 @@ class _ActionCard extends StatelessWidget {
                   child: Row(
                     children: [
                       Container(
-                        padding: AppSpacing.paddingXs,
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: AppColors.white.withValues(alpha: 0.2),
-                          borderRadius: AppRadius.borderRadiusSm,
+                          color: AppColors.white.withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.white.withValues(alpha: 0.3),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.black.withValues(alpha: 0.1),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
                         child: Icon(
                           icon,
                           color: AppColors.white,
-                          size: AppIcons.sizeMd,
+                          size: 22,
                         ),
                       ),
                       AppSpacing.hGapSm,
                       Expanded(
                         child: Text(
                           title,
-                          style: AppTypography.labelMedium.copyWith(
+                          style: AppTypography.labelLarge.copyWith(
                             color: AppColors.white,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.2,
+                            shadows: [
+                              Shadow(
+                                color: AppColors.black.withValues(alpha: 0.3),
+                                offset: const Offset(0, 2),
+                                blurRadius: 4,
+                              ),
+                            ],
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,

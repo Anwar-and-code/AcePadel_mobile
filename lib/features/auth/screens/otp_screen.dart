@@ -9,8 +9,6 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  String _otpCode = '';
-  bool _isResending = false;
   int _resendTimer = 30;
 
   @override
@@ -32,7 +30,6 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void _onOtpCompleted(String code) {
-    setState(() => _otpCode = code);
     if (code.length == 4) {
       // Simulate verification
       Future.delayed(const Duration(milliseconds: 500), () {
@@ -45,18 +42,17 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void _resendCode() {
     if (_resendTimer == 0) {
-      setState(() {
-        _isResending = true;
-        _resendTimer = 30;
-      });
+      setState(() => _resendTimer = 30);
+      _startResendTimer();
       
-      // Simulate resend
-      Future.delayed(const Duration(seconds: 1), () {
-        if (mounted) {
-          setState(() => _isResending = false);
-          _startResendTimer();
-        }
-      });
+      // Show feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Code renvoyé'),
+          backgroundColor: AppColors.success,
+          duration: Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -124,7 +120,6 @@ class _OtpScreenState extends State<OtpScreen> {
               AppOtpField(
                 length: 4,
                 onCompleted: _onOtpCompleted,
-                onChanged: (code) => setState(() => _otpCode = code),
               ),
               
               AppSpacing.vGapXl,

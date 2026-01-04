@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Design tokens for icons - PadelHouse Design System
-/// Defines icon sizes and common icon mappings
+/// Uses Phosphor Icons for a modern, consistent, flexible icon set
+/// Phosphor offers multiple weights: thin, light, regular, bold, fill, duotone
 abstract final class AppIcons {
   // ==========================================================================
   // ICON SIZES
@@ -60,112 +62,112 @@ abstract final class AppIcons {
   static const double emptyStateIcon = sizeHero;
 
   // ==========================================================================
-  // APP-SPECIFIC ICONS (Material Icons mappings)
+  // APP-SPECIFIC ICONS (Phosphor Icons - modern, flexible)
   // ==========================================================================
   
   // --- Navigation ---
-  static const IconData home = Icons.home_outlined;
-  static const IconData homeFilled = Icons.home;
-  static const IconData reservation = Icons.calendar_today_outlined;
-  static const IconData reservationFilled = Icons.calendar_today;
-  static const IconData events = Icons.event_outlined;
-  static const IconData eventsFilled = Icons.event;
-  static const IconData contact = Icons.contact_support_outlined;
-  static const IconData contactFilled = Icons.contact_support;
-  static const IconData profile = Icons.person_outlined;
-  static const IconData profileFilled = Icons.person;
+  static const IconData home = PhosphorIconsRegular.house;
+  static const IconData homeFilled = PhosphorIconsFill.house;
+  static const IconData reservation = PhosphorIconsRegular.calendarBlank;
+  static const IconData reservationFilled = PhosphorIconsFill.calendarBlank;
+  static const IconData events = PhosphorIconsRegular.calendarStar;
+  static const IconData eventsFilled = PhosphorIconsFill.calendarStar;
+  static const IconData contact = PhosphorIconsRegular.chatCircle;
+  static const IconData contactFilled = PhosphorIconsFill.chatCircle;
+  static const IconData profile = PhosphorIconsRegular.user;
+  static const IconData profileFilled = PhosphorIconsFill.user;
   
   // --- Actions ---
-  static const IconData add = Icons.add;
-  static const IconData remove = Icons.remove;
-  static const IconData close = Icons.close;
-  static const IconData check = Icons.check;
-  static const IconData edit = Icons.edit_outlined;
-  static const IconData delete = Icons.delete_outlined;
-  static const IconData share = Icons.share_outlined;
-  static const IconData search = Icons.search;
-  static const IconData filter = Icons.filter_list;
-  static const IconData sort = Icons.sort;
-  static const IconData more = Icons.more_vert;
-  static const IconData moreHorizontal = Icons.more_horiz;
-  static const IconData settings = Icons.settings_outlined;
-  static const IconData refresh = Icons.refresh;
+  static const IconData add = PhosphorIconsRegular.plus;
+  static const IconData remove = PhosphorIconsRegular.minus;
+  static const IconData close = PhosphorIconsRegular.x;
+  static const IconData check = PhosphorIconsRegular.check;
+  static const IconData edit = PhosphorIconsRegular.pencilSimple;
+  static const IconData delete = PhosphorIconsRegular.trash;
+  static const IconData share = PhosphorIconsRegular.shareNetwork;
+  static const IconData search = PhosphorIconsRegular.magnifyingGlass;
+  static const IconData filter = PhosphorIconsRegular.funnel;
+  static const IconData sort = PhosphorIconsRegular.sortAscending;
+  static const IconData more = PhosphorIconsRegular.dotsThreeVertical;
+  static const IconData moreHorizontal = PhosphorIconsRegular.dotsThree;
+  static const IconData settings = PhosphorIconsRegular.gear;
+  static const IconData refresh = PhosphorIconsRegular.arrowClockwise;
   
   // --- Navigation Arrows ---
-  static const IconData arrowBack = Icons.arrow_back_ios;
-  static const IconData arrowForward = Icons.arrow_forward_ios;
-  static const IconData arrowUp = Icons.keyboard_arrow_up;
-  static const IconData arrowDown = Icons.keyboard_arrow_down;
-  static const IconData chevronRight = Icons.chevron_right;
-  static const IconData chevronLeft = Icons.chevron_left;
+  static const IconData arrowBack = PhosphorIconsRegular.caretLeft;
+  static const IconData arrowForward = PhosphorIconsRegular.caretRight;
+  static const IconData arrowUp = PhosphorIconsRegular.caretUp;
+  static const IconData arrowDown = PhosphorIconsRegular.caretDown;
+  static const IconData chevronRight = PhosphorIconsRegular.caretRight;
+  static const IconData chevronLeft = PhosphorIconsRegular.caretLeft;
   
   // --- Status & Feedback ---
-  static const IconData success = Icons.check_circle_outlined;
-  static const IconData successFilled = Icons.check_circle;
-  static const IconData warning = Icons.warning_amber_outlined;
-  static const IconData warningFilled = Icons.warning_amber;
-  static const IconData error = Icons.error_outlined;
-  static const IconData errorFilled = Icons.error;
-  static const IconData info = Icons.info_outlined;
-  static const IconData infoFilled = Icons.info;
+  static const IconData success = PhosphorIconsRegular.checkCircle;
+  static const IconData successFilled = PhosphorIconsFill.checkCircle;
+  static const IconData warning = PhosphorIconsRegular.warning;
+  static const IconData warningFilled = PhosphorIconsFill.warning;
+  static const IconData error = PhosphorIconsRegular.xCircle;
+  static const IconData errorFilled = PhosphorIconsFill.xCircle;
+  static const IconData info = PhosphorIconsRegular.info;
+  static const IconData infoFilled = PhosphorIconsFill.info;
   
   // --- Communication ---
-  static const IconData notification = Icons.notifications_outlined;
-  static const IconData notificationFilled = Icons.notifications;
-  static const IconData notificationActive = Icons.notifications_active_outlined;
-  static const IconData message = Icons.message_outlined;
-  static const IconData messageFilled = Icons.message;
-  static const IconData phone = Icons.phone_outlined;
-  static const IconData phoneFilled = Icons.phone;
-  static const IconData email = Icons.email_outlined;
-  static const IconData emailFilled = Icons.email;
+  static const IconData notification = PhosphorIconsRegular.bell;
+  static const IconData notificationFilled = PhosphorIconsFill.bell;
+  static const IconData notificationActive = PhosphorIconsRegular.bellRinging;
+  static const IconData message = PhosphorIconsRegular.chatTeardrop;
+  static const IconData messageFilled = PhosphorIconsFill.chatTeardrop;
+  static const IconData phone = PhosphorIconsRegular.phone;
+  static const IconData phoneFilled = PhosphorIconsFill.phone;
+  static const IconData email = PhosphorIconsRegular.envelope;
+  static const IconData emailFilled = PhosphorIconsFill.envelope;
   
   // --- Padel/Sports Specific ---
-  static const IconData court = Icons.sports_tennis;
-  static const IconData sportsTennis = Icons.sports_tennis;
-  static const IconData timer = Icons.timer_outlined;
-  static const IconData schedule = Icons.schedule;
-  static const IconData trophy = Icons.emoji_events_outlined;
-  static const IconData trophyFilled = Icons.emoji_events;
-  static const IconData group = Icons.group_outlined;
-  static const IconData groupFilled = Icons.group;
+  static const IconData court = PhosphorIconsRegular.courtBasketball;
+  static const IconData sportsTennis = PhosphorIconsRegular.racquet;
+  static const IconData timer = PhosphorIconsRegular.timer;
+  static const IconData schedule = PhosphorIconsRegular.clockCountdown;
+  static const IconData trophy = PhosphorIconsRegular.trophy;
+  static const IconData trophyFilled = PhosphorIconsFill.trophy;
+  static const IconData group = PhosphorIconsRegular.usersThree;
+  static const IconData groupFilled = PhosphorIconsFill.usersThree;
   
   // --- Media ---
-  static const IconData camera = Icons.camera_alt_outlined;
-  static const IconData cameraFilled = Icons.camera_alt;
-  static const IconData image = Icons.image_outlined;
-  static const IconData imageFilled = Icons.image;
-  static const IconData playCircle = Icons.play_circle_outlined;
-  static const IconData playCircleFilled = Icons.play_circle;
-  static const IconData replay = Icons.replay;
+  static const IconData camera = PhosphorIconsRegular.camera;
+  static const IconData cameraFilled = PhosphorIconsFill.camera;
+  static const IconData image = PhosphorIconsRegular.image;
+  static const IconData imageFilled = PhosphorIconsFill.image;
+  static const IconData playCircle = PhosphorIconsRegular.playCircle;
+  static const IconData playCircleFilled = PhosphorIconsFill.playCircle;
+  static const IconData replay = PhosphorIconsRegular.arrowCounterClockwise;
   
   // --- Location & Map ---
-  static const IconData location = Icons.location_on_outlined;
-  static const IconData locationFilled = Icons.location_on;
-  static const IconData map = Icons.map_outlined;
-  static const IconData mapFilled = Icons.map;
+  static const IconData location = PhosphorIconsRegular.mapPin;
+  static const IconData locationFilled = PhosphorIconsFill.mapPin;
+  static const IconData map = PhosphorIconsRegular.mapTrifold;
+  static const IconData mapFilled = PhosphorIconsFill.mapTrifold;
   
   // --- Time & Date ---
-  static const IconData calendar = Icons.calendar_month_outlined;
-  static const IconData calendarFilled = Icons.calendar_month;
-  static const IconData clock = Icons.access_time;
-  static const IconData history = Icons.history;
+  static const IconData calendar = PhosphorIconsRegular.calendar;
+  static const IconData calendarFilled = PhosphorIconsFill.calendar;
+  static const IconData clock = PhosphorIconsRegular.clock;
+  static const IconData history = PhosphorIconsRegular.clockCounterClockwise;
   
   // --- User & Auth ---
-  static const IconData login = Icons.login;
-  static const IconData logout = Icons.logout;
-  static const IconData visibility = Icons.visibility_outlined;
-  static const IconData visibilityOff = Icons.visibility_off_outlined;
-  static const IconData lock = Icons.lock_outlined;
-  static const IconData lockFilled = Icons.lock;
+  static const IconData login = PhosphorIconsRegular.signIn;
+  static const IconData logout = PhosphorIconsRegular.signOut;
+  static const IconData visibility = PhosphorIconsRegular.eye;
+  static const IconData visibilityOff = PhosphorIconsRegular.eyeSlash;
+  static const IconData lock = PhosphorIconsRegular.lock;
+  static const IconData lockFilled = PhosphorIconsFill.lock;
   
   // --- Misc ---
-  static const IconData star = Icons.star_outline;
-  static const IconData starFilled = Icons.star;
-  static const IconData favorite = Icons.favorite_outline;
-  static const IconData favoriteFilled = Icons.favorite;
-  static const IconData bookmark = Icons.bookmark_outline;
-  static const IconData bookmarkFilled = Icons.bookmark;
-  static const IconData help = Icons.help_outline;
-  static const IconData helpFilled = Icons.help;
+  static const IconData star = PhosphorIconsRegular.star;
+  static const IconData starFilled = PhosphorIconsFill.star;
+  static const IconData favorite = PhosphorIconsRegular.heart;
+  static const IconData favoriteFilled = PhosphorIconsFill.heart;
+  static const IconData bookmark = PhosphorIconsRegular.bookmarkSimple;
+  static const IconData bookmarkFilled = PhosphorIconsFill.bookmarkSimple;
+  static const IconData help = PhosphorIconsRegular.question;
+  static const IconData helpFilled = PhosphorIconsFill.question;
 }

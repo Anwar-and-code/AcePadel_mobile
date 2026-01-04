@@ -194,7 +194,7 @@ class AppTheme {
         disabledBackgroundColor: AppColors.buttonDisabledBackground,
         disabledForegroundColor: AppColors.buttonDisabledForeground,
         elevation: AppShadows.elevationSm,
-        shadowColor: AppColors.brandPrimary.withOpacity(0.3),
+        shadowColor: AppColors.brandPrimary.withValues(alpha: 0.3),
         padding: AppSpacing.buttonPadding,
         minimumSize: const Size(88, 48),
         shape: RoundedRectangleBorder(
@@ -451,8 +451,8 @@ class AppTheme {
     visualDensity: VisualDensity.adaptivePlatformDensity,
     
     // Splash
-    splashColor: AppColors.brandPrimary.withOpacity(0.1),
-    highlightColor: AppColors.brandPrimary.withOpacity(0.05),
+    splashColor: AppColors.brandPrimary.withValues(alpha: 0.1),
+    highlightColor: AppColors.brandPrimary.withValues(alpha: 0.05),
   );
 
   /// Dark theme configuration

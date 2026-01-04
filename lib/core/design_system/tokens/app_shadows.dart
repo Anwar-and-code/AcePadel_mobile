@@ -160,7 +160,7 @@ abstract final class AppShadows {
   /// Input focus shadow
   static List<BoxShadow> inputFocusShadow = [
     BoxShadow(
-      color: AppColors.brandPrimary.withOpacity(0.15),
+      color: AppColors.brandPrimary.withValues(alpha: 0.15),
       blurRadius: 4,
       offset: Offset.zero,
       spreadRadius: 2,

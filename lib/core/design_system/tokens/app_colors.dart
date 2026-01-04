@@ -146,7 +146,7 @@ abstract final class AppColors {
   static const Color navBarItemActiveBackground = gold50;
   
   // --- Reservation Card Colors (from screenshots) ---
-  static const Color reservationTimeBadge = brandSecondary;
+  static const Color reservationTimeBadge = brandPrimary;
   static const Color reservationTimeBadgeText = white;
   static const Color reservationCardBorder = Color(0xFFE8E0D4);
 
