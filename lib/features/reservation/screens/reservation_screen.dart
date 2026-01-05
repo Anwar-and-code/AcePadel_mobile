@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 import '../../../core/design_system/design_system.dart';
+import '../../gamification/gamification.dart';
 
 class ReservationScreen extends StatefulWidget {
   const ReservationScreen({super.key});
@@ -13,6 +15,8 @@ class _ReservationScreenState extends State<ReservationScreen> {
   int _currentTab = 0;
   DateTime? _selectedDate;
   bool _isDateExpanded = true;
+  bool _isSlotExpanded = true;
+  bool _isCourtExpanded = true;
   String? _selectedCourt;
   String? _selectedSlot;
 
@@ -75,23 +79,20 @@ class _ReservationScreenState extends State<ReservationScreen> {
     Court(id: 'D', name: 'D', isAvailable: true),
   ];
 
-  final List<TimeSlot> _morningSlots = [
-    TimeSlot(id: '1', time: '08:00 - 09:00', price: 15000, isAvailable: true),
-    TimeSlot(id: '2', time: '09:00 - 10:00', price: 15000, isAvailable: false),
-    TimeSlot(id: '3', time: '10:00 - 11:00', price: 15000, isAvailable: true),
-    TimeSlot(id: '4', time: '11:00 - 12:00', price: 15000, isAvailable: true),
-    TimeSlot(id: '5', time: '12:00 - 13:00', price: 15000, isAvailable: false),
-    TimeSlot(id: '6', time: '13:00 - 14:00', price: 15000, isAvailable: true),
-    TimeSlot(id: '7', time: '14:00 - 15:00', price: 15000, isAvailable: true),
-    TimeSlot(id: '8', time: '15:00 - 16:00', price: 15000, isAvailable: true),
-  ];
-
-  final List<TimeSlot> _eveningSlots = [
-    TimeSlot(id: '9', time: '16:00 - 17:30', price: 20000, isAvailable: true),
-    TimeSlot(id: '10', time: '17:30 - 19:00', price: 20000, isAvailable: false),
-    TimeSlot(id: '11', time: '19:00 - 20:30', price: 25000, isAvailable: true),
-    TimeSlot(id: '12', time: '20:30 - 22:00', price: 25000, isAvailable: true),
-    TimeSlot(id: '13', time: '22:00 - 23:30', price: 20000, isAvailable: true),
+  final List<TimeSlot> _allSlots = [
+    TimeSlot(id: '1', time: '08:00 - 09:00', price: 10000, isAvailable: true),
+    TimeSlot(id: '2', time: '09:00 - 10:00', price: 10000, isAvailable: false),
+    TimeSlot(id: '3', time: '10:00 - 11:00', price: 10000, isAvailable: true),
+    TimeSlot(id: '4', time: '11:00 - 12:00', price: 10000, isAvailable: true),
+    TimeSlot(id: '5', time: '12:00 - 13:00', price: 10000, isAvailable: false),
+    TimeSlot(id: '6', time: '13:00 - 14:00', price: 10000, isAvailable: true),
+    TimeSlot(id: '7', time: '14:00 - 15:00', price: 10000, isAvailable: true),
+    TimeSlot(id: '8', time: '15:00 - 16:00', price: 10000, isAvailable: true),
+    TimeSlot(id: '9', time: '16:00 - 17:00', price: 15000, isAvailable: true),
+    TimeSlot(id: '10', time: '17:00 - 18:00', price: 15000, isAvailable: false),
+    TimeSlot(id: '11', time: '18:00 - 19:00', price: 15000, isAvailable: true),
+    TimeSlot(id: '12', time: '19:00 - 20:00', price: 20000, isAvailable: true),
+    TimeSlot(id: '13', time: '20:00 - 21:00', price: 20000, isAvailable: true),
   ];
 
   @override
@@ -124,27 +125,117 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Widget _buildTabSelector() {
     return Container(
       margin: AppSpacing.screenPaddingHorizontalOnly,
-      padding: const EdgeInsets.all(4),
+      height: 56, // Fixed height for consistency
       decoration: BoxDecoration(
         color: AppColors.surfaceSubtle,
-        borderRadius: AppRadius.borderRadiusMd,
+        borderRadius: BorderRadius.circular(16), // Softer, more modern radius
       ),
-      child: Row(
+      child: Stack(
         children: [
-          Expanded(
-            child: _TabButton(
-              label: 'Nouvelle réservation',
-              isSelected: _currentTab == 0,
-              onTap: () => setState(() => _currentTab = 0),
+          // Animated Background Indicator
+          AnimatedAlign(
+            alignment: _currentTab == 0 ? Alignment.centerLeft : Alignment.centerRight,
+            duration: AppAnimations.durationNormal,
+            curve: Curves.easeInOutCubic, // Smoother curve for sliding effect
+            child: FractionallySizedBox(
+              widthFactor: 0.5,
+              child: Container(
+                margin: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: AppColors.brandPrimary,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandPrimary.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
-          Expanded(
-            child: _TabButton(
-              label: 'Historique',
-              isSelected: _currentTab == 1,
-              onTap: () => setState(() => _currentTab = 1),
-              badgeCount: _upcomingCount,
-            ),
+          
+          // Tab Labels
+          Row(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_currentTab != 0) {
+                      setState(() => _currentTab = 0);
+                      HapticFeedback.selectionClick();
+                    }
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Center(
+                    child: AnimatedDefaultTextStyle(
+                      duration: AppAnimations.durationNormal,
+                      style: AppTypography.labelLarge.copyWith(
+                        color: _currentTab == 0 
+                            ? AppColors.white 
+                            : AppColors.textSecondary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      child: const Text('Nouvelle réservation'),
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_currentTab != 1) {
+                      setState(() => _currentTab = 1);
+                      HapticFeedback.selectionClick();
+                    }
+                  },
+                  behavior: HitTestBehavior.opaque,
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AnimatedDefaultTextStyle(
+                          duration: AppAnimations.durationNormal,
+                          style: AppTypography.labelLarge.copyWith(
+                            color: _currentTab == 1 
+                                ? AppColors.white 
+                                : AppColors.textSecondary,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          child: const Text('Historique'),
+                        ),
+                        if (_upcomingCount > 0) ...[
+                          const SizedBox(width: 8),
+                          AnimatedContainer(
+                            duration: AppAnimations.durationNormal,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8, 
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: _currentTab == 1 
+                                  ? AppColors.white 
+                                  : AppColors.brandSecondary,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              _upcomingCount.toString(),
+                              style: AppTypography.caption.copyWith(
+                                color: _currentTab == 1 
+                                    ? AppColors.brandPrimary 
+                                    : AppColors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -193,53 +284,30 @@ class _ReservationScreenState extends State<ReservationScreen> {
             AppSpacing.vGapXl,
             Padding(
               padding: AppSpacing.screenPaddingHorizontalOnly,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStepHeader(
-                    step: 2,
-                    title: 'Choisir un créneau',
-                    isCompleted: _selectedSlot != null,
-                  ),
-                  AppSpacing.vGapMd,
-
-                  // Morning slots section
-                  _buildPeriodHeader(
-                    icon: Icons.wb_sunny_outlined,
-                    title: 'Matinée',
-                    subtitle: '1h · 15 000 F',
-                    iconColor: AppColors.warning,
-                  ),
-                  AppSpacing.vGapSm,
-                ],
+              child: GestureDetector(
+                onTap: () {
+                  if (!_isSlotExpanded) {
+                    setState(() => _isSlotExpanded = true);
+                  }
+                },
+                child: _buildStepHeader(
+                  step: 2,
+                  title: 'Choisir un créneau',
+                  isCompleted: _selectedSlot != null,
+                  showEditAction: !_isSlotExpanded,
+                ),
               ),
             ),
-            Padding(
-              padding: AppSpacing.screenPaddingHorizontalOnly.copyWith(right: 0),
-              child: _buildTimeSlotTimeline(_morningSlots, periodIcon: '☀️'),
-            ),
-            
-            AppSpacing.vGapLg,
-            
-            Padding(
-              padding: AppSpacing.screenPaddingHorizontalOnly,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Evening slots section
-                  _buildPeriodHeader(
-                    icon: Icons.nights_stay_outlined,
-                    title: 'Soirée',
-                    subtitle: '1h30 · 20 000 - 25 000 F',
-                    iconColor: AppColors.brandSecondary,
-                  ),
-                  AppSpacing.vGapSm,
-                ],
-              ),
-            ),
-            Padding(
-              padding: AppSpacing.screenPaddingHorizontalOnly.copyWith(right: 0),
-              child: _buildTimeSlotTimeline(_eveningSlots, periodIcon: '🌙'),
+            AppSpacing.vGapMd,
+            AnimatedCrossFade(
+              firstChild: _buildTimeSlotList(),
+              secondChild: _selectedSlot != null
+                  ? _buildSelectedSlotSummary()
+                  : const SizedBox.shrink(),
+              crossFadeState: _isSlotExpanded
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              duration: AppAnimations.durationNormal,
             ),
           ],
 
@@ -248,18 +316,33 @@ class _ReservationScreenState extends State<ReservationScreen> {
             AppSpacing.vGapXl,
             Padding(
               padding: AppSpacing.screenPaddingHorizontalOnly,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildStepHeader(
-                    step: 3,
-                    title: 'Choisir un terrain',
-                    isCompleted: _selectedCourt != null,
-                  ),
-                  AppSpacing.vGapMd,
-                  _buildCourtSelector(),
-                ],
+              child: GestureDetector(
+                onTap: () {
+                  if (!_isCourtExpanded) {
+                    setState(() => _isCourtExpanded = true);
+                  }
+                },
+                child: _buildStepHeader(
+                  step: 3,
+                  title: 'Choisir un terrain',
+                  isCompleted: _selectedCourt != null,
+                  showEditAction: !_isCourtExpanded,
+                ),
               ),
+            ),
+            AppSpacing.vGapMd,
+            AnimatedCrossFade(
+              firstChild: Padding(
+                padding: AppSpacing.screenPaddingHorizontalOnly,
+                child: _buildCourtSelector(),
+              ),
+              secondChild: _selectedCourt != null
+                  ? _buildSelectedCourtSummary()
+                  : const SizedBox.shrink(),
+              crossFadeState: _isCourtExpanded
+                  ? CrossFadeState.showFirst
+                  : CrossFadeState.showSecond,
+              duration: AppAnimations.durationNormal,
             ),
           ],
 
@@ -368,6 +451,102 @@ class _ReservationScreenState extends State<ReservationScreen> {
             AppSpacing.hGapMd,
             Text(
               dateStr,
+              style: AppTypography.titleSmall.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              Icons.edit_outlined,
+              color: AppColors.brandPrimary,
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectedSlotSummary() {
+    if (_selectedSlot == null) return const SizedBox.shrink();
+    
+    final slot = _allSlots.firstWhere((s) => s.id == _selectedSlot);
+    final timeParts = slot.time.split(' - ');
+    final startTime = timeParts[0].replaceAll(':', 'h');
+    final endTime = timeParts.length > 1 ? timeParts[1].replaceAll(':', 'h') : '';
+    final timeStr = '$startTime - $endTime';
+
+    return GestureDetector(
+      onTap: () => setState(() => _isSlotExpanded = true),
+      child: Container(
+        margin: AppSpacing.screenPaddingHorizontalOnly,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.brandPrimary.withValues(alpha: 0.05),
+          borderRadius: AppRadius.borderRadiusMd,
+          border: Border.all(color: AppColors.brandPrimary.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.access_time,
+              color: AppColors.brandPrimary,
+              size: 20,
+            ),
+            AppSpacing.hGapMd,
+            Text(
+              timeStr,
+              style: AppTypography.titleSmall.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            const Spacer(),
+            Icon(
+              Icons.edit_outlined,
+              color: AppColors.brandPrimary,
+              size: 18,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSelectedCourtSummary() {
+    if (_selectedCourt == null) return const SizedBox.shrink();
+    
+    final court = _courts.firstWhere((c) => c.id == _selectedCourt);
+
+    return GestureDetector(
+      onTap: () => setState(() => _isCourtExpanded = true),
+      child: Container(
+        margin: AppSpacing.screenPaddingHorizontalOnly,
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.md,
+        ),
+        decoration: BoxDecoration(
+          color: AppColors.brandPrimary.withValues(alpha: 0.05),
+          borderRadius: AppRadius.borderRadiusMd,
+          border: Border.all(color: AppColors.brandPrimary.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.sports_tennis,
+              color: AppColors.brandPrimary,
+              size: 20,
+            ),
+            AppSpacing.hGapMd,
+            Text(
+              'Terrain ${court.name}',
               style: AppTypography.titleSmall.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -564,10 +743,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
               isSelected: isSelected,
               onTap: () => setState(() {
                 _selectedDate = date;
-                _isDateExpanded = false; // Collapse after selection
-                // Reset downstream selections when date changes
+                _isDateExpanded = false;
+                // Reset downstream selections and expand states when date changes
                 _selectedSlot = null;
                 _selectedCourt = null;
+                _isSlotExpanded = true;
+                _isCourtExpanded = true;
               }),
             ),
           );
@@ -594,74 +775,57 @@ class _ReservationScreenState extends State<ReservationScreen> {
           court: court,
           isSelected: isSelected,
           onTap: court.isAvailable
-              ? () => setState(() => _selectedCourt = court.id)
+              ? () {
+                  setState(() {
+                    _selectedCourt = court.id;
+                    _isCourtExpanded = false;
+                  });
+                }
               : null,
         );
       },
     );
   }
 
-  Widget _buildPeriodHeader({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color iconColor,
-  }) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: iconColor.withValues(alpha: 0.1),
-            borderRadius: AppRadius.borderRadiusSm,
+  Widget _buildTimeSlotList() {
+    return Container(
+      margin: AppSpacing.screenPaddingHorizontalOnly,
+      constraints: const BoxConstraints(maxHeight: 280),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceDefault,
+        borderRadius: AppRadius.borderRadiusMd,
+        border: Border.all(color: AppColors.borderDefault),
+      ),
+      child: ClipRRect(
+        borderRadius: AppRadius.borderRadiusMd,
+        child: ListView.separated(
+          shrinkWrap: true,
+          padding: EdgeInsets.zero,
+          itemCount: _allSlots.length,
+          separatorBuilder: (context, index) => Divider(
+            height: 1,
+            color: AppColors.borderDefault,
           ),
-          child: Icon(icon, color: iconColor, size: 18),
-        ),
-        AppSpacing.hGapSm,
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AppTypography.labelLarge.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTimeSlotTimeline(List<TimeSlot> slots, {required String periodIcon}) {
-    return SizedBox(
-      height: 100,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: slots.length,
-        itemBuilder: (context, index) {
-          final slot = slots[index];
-          final isSelected = _selectedSlot == slot.id;
-          return Padding(
-            padding: EdgeInsets.only(
-              right: index < slots.length - 1 ? AppSpacing.sm : 0,
-            ),
-            child: _TimeSlotCard(
+          itemBuilder: (context, index) {
+            final slot = _allSlots[index];
+            final isSelected = _selectedSlot == slot.id;
+            return _TimeSlotRow(
               slot: slot,
               isSelected: isSelected,
-              periodIcon: periodIcon,
               onTap: slot.isAvailable
-                  ? () => setState(() => _selectedSlot = slot.id)
+                  ? () {
+                      setState(() {
+                        _selectedSlot = slot.id;
+                        _isSlotExpanded = false;
+                        // Reset downstream selections when slot changes
+                        _selectedCourt = null;
+                        _isCourtExpanded = true;
+                      });
+                    }
                   : null,
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -674,8 +838,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
       backgroundColor: Colors.transparent,
       builder: (context) => _BookingConfirmationSheet(
         court: _courts.firstWhere((c) => c.id == _selectedCourt),
-        slot: [..._morningSlots, ..._eveningSlots]
-            .firstWhere((s) => s.id == _selectedSlot),
+        slot: _allSlots.firstWhere((s) => s.id == _selectedSlot),
         date: _selectedDate!,
       ),
     );
@@ -812,148 +975,88 @@ class _CourtCard extends StatelessWidget {
   }
 }
 
-class _TimeSlotCard extends StatelessWidget {
-  const _TimeSlotCard({
+class _TimeSlotRow extends StatelessWidget {
+  const _TimeSlotRow({
     required this.slot,
     required this.isSelected,
-    required this.periodIcon,
     this.onTap,
   });
 
   final TimeSlot slot;
   final bool isSelected;
-  final String periodIcon;
   final VoidCallback? onTap;
+
+  String _formatPrice(int price) {
+    if (price >= 1000) {
+      final thousands = price ~/ 1000;
+      final remainder = price % 1000;
+      if (remainder == 0) {
+        return '$thousands 000 F.CFA';
+      }
+      return '$thousands ${remainder.toString().padLeft(3, '0')} F.CFA';
+    }
+    return '$price F.CFA';
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDisabled = !slot.isAvailable;
     final timeParts = slot.time.split(' - ');
-    final startTime = timeParts[0];
-    final endTime = timeParts.length > 1 ? timeParts[1] : '';
+    final startTime = timeParts[0].replaceAll(':', 'h');
+    final endTime = timeParts.length > 1 ? timeParts[1].replaceAll(':', 'h') : '';
 
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
-        duration: AppAnimations.durationNormal,
-        width: 110,
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: isDisabled
-              ? AppColors.surfaceSubtle
-              : isSelected
-                  ? AppColors.brandPrimary
-                  : AppColors.surfaceDefault,
-          borderRadius: AppRadius.borderRadiusMd,
-          border: isSelected || isDisabled
-              ? null
-              : Border.all(color: AppColors.borderDefault),
-          boxShadow: isSelected && !isDisabled
-              ? [
-                  BoxShadow(
-                    color: AppColors.brandPrimary.withValues(alpha: 0.3),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Time display
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  startTime,
-                  style: AppTypography.titleSmall.copyWith(
+        duration: AppAnimations.durationFast,
+        color: isSelected
+            ? AppColors.brandPrimary.withValues(alpha: 0.08)
+            : isDisabled
+                ? AppColors.neutral50
+                : Colors.transparent,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.md,
+            vertical: AppSpacing.sm,
+          ),
+          child: Row(
+            children: [
+              // Time range
+              Expanded(
+                child: Text(
+                  '$startTime - $endTime',
+                  style: AppTypography.bodyMedium.copyWith(
                     color: isDisabled
                         ? AppColors.textDisabled
-                        : isSelected
-                            ? AppColors.white
-                            : AppColors.textPrimary,
-                    fontWeight: FontWeight.bold,
+                        : AppColors.textPrimary,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),
                 ),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.arrow_forward,
-                      size: 10,
-                      color: isDisabled
-                          ? AppColors.textDisabled
-                          : isSelected
-                              ? AppColors.white.withValues(alpha: 0.7)
-                              : AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      endTime,
-                      style: AppTypography.caption.copyWith(
-                        color: isDisabled
-                            ? AppColors.textDisabled
-                            : isSelected
-                                ? AppColors.white.withValues(alpha: 0.8)
-                                : AppColors.textSecondary,
-                      ),
-                    ),
-                  ],
+              ),
+              // Price badge
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.xs,
                 ),
-              ],
-            ),
-            // Price badge and status
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: isDisabled
-                        ? AppColors.neutral200
-                        : isSelected
-                            ? AppColors.white.withValues(alpha: 0.2)
-                            : AppColors.brandPrimary.withValues(alpha: 0.1),
-                    borderRadius: AppRadius.borderRadiusFull,
-                  ),
-                  child: Text(
-                    '${(slot.price / 1000).toStringAsFixed(0)}k F',
-                    style: AppTypography.caption.copyWith(
-                      color: isDisabled
-                          ? AppColors.textDisabled
-                          : isSelected
-                              ? AppColors.white
-                              : AppColors.brandPrimary,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 10,
-                    ),
-                  ),
+                decoration: BoxDecoration(
+                  color: isDisabled
+                      ? AppColors.neutral300
+                      : isSelected
+                          ? AppColors.brandPrimary
+                          : AppColors.neutral900,
+                  borderRadius: AppRadius.borderRadiusSm,
                 ),
-                if (isDisabled)
-                  Icon(
-                    Icons.block,
-                    size: 14,
-                    color: AppColors.error.withValues(alpha: 0.6),
-                  )
-                else if (isSelected)
-                  Icon(
-                    Icons.check_circle,
-                    size: 14,
+                child: Text(
+                  _formatPrice(slot.price.toInt()),
+                  style: AppTypography.labelMedium.copyWith(
                     color: AppColors.white,
-                  )
-                else
-                  Icon(
-                    Icons.radio_button_unchecked,
-                    size: 14,
-                    color: AppColors.neutral300,
+                    fontWeight: FontWeight.w600,
                   ),
-              ],
-            ),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1139,14 +1242,13 @@ class _BookingConfirmationSheet extends StatelessWidget {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Réservation confirmée avec succès !'),
-                                backgroundColor: AppColors.success,
-                                behavior: SnackBarBehavior.floating,
-                              ),
-                            );
+                            // Close the bottom sheet first
+                            Navigator.of(context).pop();
+                            
+                            // Trigger gamification - the CelebrationOverlay handles all animations
+                            // Extract hour from slot for time-based achievements
+                            final slotHour = int.tryParse(slot.time.split(':').first) ?? 12;
+                            GamificationServiceV2.instance.onReservationMade(hour: slotHour);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,
@@ -1249,68 +1351,7 @@ class TimeSlot {
   });
 }
 
-class _TabButton extends StatelessWidget {
-  const _TabButton({
-    required this.label,
-    required this.isSelected,
-    this.onTap,
-    this.badgeCount = 0,
-  });
 
-  final String label;
-  final bool isSelected;
-  final VoidCallback? onTap;
-  final int badgeCount;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: AppAnimations.durationNormal,
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.brandPrimary : Colors.transparent,
-          borderRadius: AppRadius.borderRadiusSm,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              label,
-              style: AppTypography.labelMedium.copyWith(
-                color: isSelected ? AppColors.white : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
-            ),
-            if (badgeCount > 0) ...[
-              const SizedBox(width: 6),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isSelected 
-                      ? AppColors.white 
-                      : AppColors.brandSecondary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  badgeCount.toString(),
-                  style: AppTypography.caption.copyWith(
-                    color: isSelected 
-                        ? AppColors.brandPrimary 
-                        : AppColors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 10,
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class _BookingHistoryCard extends StatelessWidget {
   const _BookingHistoryCard({

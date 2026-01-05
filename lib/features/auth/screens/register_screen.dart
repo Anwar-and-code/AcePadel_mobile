@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import '../../gamification/gamification.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -24,6 +25,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _onSubmit() {
     if (_formKey.currentState?.validate() ?? false) {
+      // Trigger gamification for account creation
+      // The CelebrationOverlay handles all animations automatically
+      GamificationServiceV2.instance.onAccountCreated();
+      
+      // Navigate to main screen
       Navigator.of(context).pushNamedAndRemoveUntil('/main', (route) => false);
     }
   }

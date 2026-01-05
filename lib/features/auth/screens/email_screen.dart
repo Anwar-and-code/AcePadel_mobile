@@ -11,8 +11,6 @@ class EmailScreen extends StatefulWidget {
 
 class _EmailScreenState extends State<EmailScreen> {
   final _emailController = TextEditingController();
-  bool _isLogin = true;
-  bool _acceptedTerms = false;
   bool _isLoading = false;
 
   @override
@@ -22,11 +20,7 @@ class _EmailScreenState extends State<EmailScreen> {
   }
 
   bool get _isFormValid {
-    final hasEmail = _emailController.text.contains('@');
-    if (_isLogin) {
-      return hasEmail;
-    }
-    return hasEmail && _acceptedTerms;
+    return _emailController.text.contains('@');
   }
 
   void _onSubmit() async {
@@ -34,7 +28,7 @@ class _EmailScreenState extends State<EmailScreen> {
 
     setState(() => _isLoading = true);
 
-    // Send OTP to email
+    // Send OTP to email - backend will handle account creation if needed
     await Future.delayed(const Duration(seconds: 1));
     
     if (mounted) {
@@ -45,18 +39,31 @@ class _EmailScreenState extends State<EmailScreen> {
         MaterialPageRoute(
           builder: (context) => OtpScreen(
             email: _emailController.text,
-            isLogin: _isLogin,
+            isLogin: true,
           ),
         ),
       );
     }
   }
 
-  void _toggleMode() {
-    setState(() {
-      _isLogin = !_isLogin;
-      _acceptedTerms = false;
-    });
+  void _signInWithGoogle() async {
+    // TODO: Implement Google sign-in
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Connexion avec Google en cours...'),
+        backgroundColor: AppColors.brandPrimary,
+      ),
+    );
+  }
+
+  void _signInWithMicrosoft() async {
+    // TODO: Implement Microsoft sign-in
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Connexion avec Microsoft en cours...'),
+        backgroundColor: AppColors.brandPrimary,
+      ),
+    );
   }
 
   @override
@@ -87,13 +94,13 @@ class _EmailScreenState extends State<EmailScreen> {
                 width: 80,
                 height: 80,
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceSubtle,
+                  color: AppColors.brandOlive,
                   borderRadius: AppRadius.borderRadiusLg,
                 ),
-                child: Icon(
-                  _isLogin ? Icons.login_outlined : Icons.person_add_outlined,
+                child: const Icon(
+                  Icons.person_outlined,
                   size: 40,
-                  color: AppColors.brandPrimary,
+                  color: AppColors.white,
                 ),
               ),
 
@@ -101,7 +108,7 @@ class _EmailScreenState extends State<EmailScreen> {
 
               // Title
               Text(
-                _isLogin ? 'Connexion' : 'Créer un compte',
+                'Connexion',
                 style: AppTypography.titleLarge,
                 textAlign: TextAlign.center,
               ),
@@ -110,91 +117,75 @@ class _EmailScreenState extends State<EmailScreen> {
 
               // Subtitle
               Text(
-                _isLogin
-                    ? 'Connectez-vous pour accéder à votre espace'
-                    : 'Inscrivez-vous pour réserver vos terrains',
+                'Connectez-vous pour accéder à votre espace',
                 style: AppTypography.bodyMedium.copyWith(
                   color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
 
-              AppSpacing.vGapXxl,
+              AppSpacing.vGapXl,
 
               // Email field
-              AppTextField(
-                controller: _emailController,
-                label: 'Email',
-                hint: 'votre@email.com',
-                prefixIcon: Icons.email_outlined,
-                keyboardType: TextInputType.emailAddress,
-                onChanged: (_) => setState(() {}),
-              ),
-
-              AppSpacing.vGapMd,
-
-              if (!_isLogin) ...[
-                AppSpacing.vGapMd,
-
-                // Terms checkbox
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Checkbox(
-                        value: _acceptedTerms,
-                        onChanged: (value) {
-                          setState(() => _acceptedTerms = value ?? false);
-                        },
-                        activeColor: AppColors.brandPrimary,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Email',
+                    style: AppTypography.inputLabel,
+                  ),
+                  AppSpacing.vGapXs,
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (_) => setState(() {}),
+                    style: AppTypography.inputText,
+                    decoration: InputDecoration(
+                      hintText: 'votre@email.com',
+                      hintStyle: AppTypography.inputHint,
+                      prefixIcon: Padding(
+                        padding: const EdgeInsets.only(left: 16, right: 12),
+                        child: Icon(
+                          Icons.email_outlined,
+                          size: 22,
+                          color: AppColors.iconSecondary,
+                        ),
                       ),
-                    ),
-                    AppSpacing.hGapSm,
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() => _acceptedTerms = !_acceptedTerms);
-                        },
-                        child: RichText(
-                          text: TextSpan(
-                            style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            children: [
-                              const TextSpan(
-                                text: "J'accepte les ",
-                              ),
-                              TextSpan(
-                                text: "conditions générales d'utilisation",
-                                style: TextStyle(
-                                  color: AppColors.brandPrimary,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const TextSpan(text: " et la "),
-                              TextSpan(
-                                text: "politique de confidentialité",
-                                style: TextStyle(
-                                  color: AppColors.brandPrimary,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 0,
+                        minHeight: 0,
+                      ),
+                      filled: true,
+                      fillColor: AppColors.inputBackground,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 20,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.inputBorderRadius,
+                        borderSide: BorderSide(color: AppColors.inputBorder),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.inputBorderRadius,
+                        borderSide: BorderSide(color: AppColors.inputBorder),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.inputBorderRadius,
+                        borderSide: BorderSide(
+                          color: AppColors.inputBorderFocus,
+                          width: 2,
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
 
               AppSpacing.vGapXl,
 
               // Submit button
               AppButton(
-                label: _isLogin ? 'Envoyer le code' : "S'inscrire",
+                label: 'Envoyer le code',
                 onPressed: _isFormValid ? _onSubmit : null,
                 variant: AppButtonVariant.primary,
                 size: AppButtonSize.large,
@@ -203,34 +194,147 @@ class _EmailScreenState extends State<EmailScreen> {
                 isDisabled: !_isFormValid,
               ),
 
-              AppSpacing.vGapXl,
+              AppSpacing.vGapLg,
 
-              // Toggle login/register
+              // Divider with "OU"
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    _isLogin
-                        ? "Pas encore de compte ? "
-                        : "Déjà un compte ? ",
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                  Expanded(
+                    child: Divider(
+                      color: AppColors.inputBorder,
+                      thickness: 1,
                     ),
                   ),
-                  GestureDetector(
-                    onTap: _toggleMode,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      _isLogin ? "S'inscrire" : "Se connecter",
+                      'OU',
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.brandPrimary,
-                        fontWeight: FontWeight.w600,
+                        color: AppColors.textSecondary,
                       ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Divider(
+                      color: AppColors.inputBorder,
+                      thickness: 1,
                     ),
                   ),
                 ],
               ),
 
               AppSpacing.vGapLg,
+
+              // Google sign-in button
+              SizedBox(
+                height: 56,
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: _signInWithGoogle,
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.white,
+                    side: BorderSide(color: AppColors.inputBorder),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: AppRadius.inputBorderRadius,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.network(
+                        'https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg',
+                        width: 20,
+                        height: 20,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.g_mobiledata,
+                          size: 24,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Continuer avec Google',
+                        style: AppTypography.buttonMedium.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              AppSpacing.vGapMd,
+
+              // Microsoft sign-in button
+              SizedBox(
+                height: 56,
+                width: double.infinity,
+                child: OutlinedButton(
+                  onPressed: _signInWithMicrosoft,
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: AppColors.white,
+                    side: BorderSide(color: AppColors.inputBorder),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: AppRadius.inputBorderRadius,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.network(
+                        'https://learn.microsoft.com/en-us/entra/identity-platform/media/howto-add-branding-in-apps/ms-symbollockup_mssymbol_19.png',
+                        width: 20,
+                        height: 20,
+                        errorBuilder: (_, __, ___) => const Icon(
+                          Icons.window,
+                          size: 24,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Continuer avec Microsoft',
+                        style: AppTypography.buttonMedium.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              AppSpacing.vGapXxl,
+              AppSpacing.vGapXxl,
+
+              // Terms and conditions at the bottom
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    children: [
+                      const TextSpan(
+                        text: 'En continuant, vous acceptez nos ',
+                      ),
+                      TextSpan(
+                        text: 'conditions générales d\'utilisations',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.brandPrimary,
+                          decoration: TextDecoration.underline,
+                        ),
+                      ),
+                      const TextSpan(
+                        text: '.',
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              AppSpacing.vGapXl,
             ],
           ),
         ),

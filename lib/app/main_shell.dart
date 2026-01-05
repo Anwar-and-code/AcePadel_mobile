@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../core/design_system/design_system.dart';
+import '../features/gamification/gamification.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/reservation/screens/reservation_screen.dart';
 import '../features/events/screens/events_screen.dart';
@@ -47,15 +48,17 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        items: _navItems,
+    return CelebrationOverlay(
+      child: Scaffold(
+        body: IndexedStack(
+          index: _currentIndex,
+          children: _screens,
+        ),
+        bottomNavigationBar: AppBottomNavBar(
+          currentIndex: _currentIndex,
+          onTap: (index) => setState(() => _currentIndex = index),
+          items: _navItems,
+        ),
       ),
     );
   }

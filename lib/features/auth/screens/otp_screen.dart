@@ -170,13 +170,13 @@ class _OtpScreenState extends State<OtpScreen> {
                           decoration: BoxDecoration(
                             color: hasValue 
                                 ? AppColors.brandSecondary.withValues(alpha: 0.1)
-                                : AppColors.surfaceSubtle,
+                                : AppColors.brandOlive.withValues(alpha: 0.08),
                             borderRadius: AppRadius.borderRadiusMd,
                             border: Border.all(
                               color: hasValue 
                                   ? AppColors.brandSecondary
-                                  : AppColors.borderDefault,
-                              width: hasValue ? 2 : 1,
+                                  : AppColors.brandOlive.withValues(alpha: 0.3),
+                              width: hasValue ? 2 : 1.5,
                             ),
                           ),
                           child: Center(
