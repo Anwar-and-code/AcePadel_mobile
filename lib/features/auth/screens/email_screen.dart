@@ -47,23 +47,99 @@ class _EmailScreenState extends State<EmailScreen> {
   }
 
   void _signInWithGoogle() async {
-    // TODO: Implement Google sign-in
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Connexion avec Google en cours...'),
-        backgroundColor: AppColors.brandPrimary,
-      ),
-    );
+    try {
+      setState(() => _isLoading = true);
+      
+      // Note: To enable Google Sign-In, you need to:
+      // 1. Add 'google_sign_in: ^6.2.1' to pubspec.yaml
+      // 2. Configure OAuth credentials in Google Cloud Console
+      // 3. Add GoogleService-Info.plist (iOS) and google-services.json (Android)
+      // 4. Update platform-specific configurations
+      
+      // Example implementation (uncomment when configured):
+      // final GoogleSignIn googleSignIn = GoogleSignIn(
+      //   scopes: ['email', 'profile'],
+      // );
+      // final GoogleSignInAccount? account = await googleSignIn.signIn();
+      // if (account != null) {
+      //   final GoogleSignInAuthentication auth = await account.authentication;
+      //   // Use auth.idToken and auth.accessToken to authenticate with your backend
+      //   // Navigate to home screen on success
+      // }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Google Sign-In n\'est pas encore configuré. Veuillez configurer les identifiants OAuth.'),
+            backgroundColor: AppColors.error,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur de connexion Google: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   void _signInWithMicrosoft() async {
-    // TODO: Implement Microsoft sign-in
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Connexion avec Microsoft en cours...'),
-        backgroundColor: AppColors.brandPrimary,
-      ),
-    );
+    try {
+      setState(() => _isLoading = true);
+      
+      // Note: To enable Microsoft Sign-In, you need to:
+      // 1. Add 'flutter_appauth: ^11.0.0' to pubspec.yaml
+      // 2. Register your app in Azure Active Directory
+      // 3. Configure redirect URIs for your platforms
+      // 4. Get your Client ID and Tenant ID from Azure
+      
+      // Example implementation (uncomment when configured):
+      // final FlutterAppAuth appAuth = FlutterAppAuth();
+      // final AuthorizationTokenResponse? result = await appAuth.authorizeAndExchangeCode(
+      //   AuthorizationTokenRequest(
+      //     'YOUR_CLIENT_ID',
+      //     'YOUR_REDIRECT_URI',
+      //     issuer: 'https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0',
+      //     scopes: ['openid', 'profile', 'email', 'offline_access'],
+      //   ),
+      // );
+      // if (result != null) {
+      //   // Use result.accessToken to authenticate with your backend
+      //   // Navigate to home screen on success
+      // }
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Microsoft Sign-In n\'est pas encore configuré. Veuillez enregistrer l\'app dans Azure AD.'),
+            backgroundColor: AppColors.error,
+            duration: Duration(seconds: 4),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur de connexion Microsoft: ${e.toString()}'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
   }
 
   @override

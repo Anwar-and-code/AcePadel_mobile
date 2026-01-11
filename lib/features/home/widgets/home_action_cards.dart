@@ -4,6 +4,12 @@ import 'package:gap/gap.dart';
 import '../../../../app/app_router.dart';
 import '../../../core/design_system/design_system.dart';
 
+/// Notification to trigger tab switch in MainShell
+class MainShellTabNotification extends Notification {
+  final int tabIndex;
+  const MainShellTabNotification({required this.tabIndex});
+}
+
 class HomeActionCards extends StatelessWidget {
   const HomeActionCards({super.key});
 
@@ -30,20 +36,8 @@ class HomeActionCards extends StatelessWidget {
                   color: AppColors.brandPrimary,
                   isLarge: true,
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Row(
-                          children: [
-                            Icon(AppIcons.calendar, color: AppColors.white),
-                            const Gap(8),
-                            const Expanded(child: Text('Rendez-vous dans l\'onglet "Réservations"')),
-                          ],
-                        ),
-                        backgroundColor: AppColors.brandSecondary,
-                        duration: const Duration(seconds: 3),
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
+                    // Dispatch notification to MainShell to switch to Reservation tab
+                    MainShellTabNotification(tabIndex: 1).dispatch(context);
                   },
                 ),
               ),

@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
+import 'package:showcaseview/showcaseview.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../gamification/gamification.dart';
+import '../../product_tour/product_tour.dart';
+import '../models/booking.dart';
+import '../widgets/booking_details_modal.dart';
 
+/// Reservation screen with product tour integration
+/// 
+/// Accepts GlobalKeys from MainShell for product tour showcase targets.
 class ReservationScreen extends StatefulWidget {
-  const ReservationScreen({super.key});
+  const ReservationScreen({
+    super.key,
+    this.tourDateSelectorKey,
+    this.tourCourtSelectorKey,
+  });
+
+  /// GlobalKey for date selector showcase
+  final GlobalKey? tourDateSelectorKey;
+  
+  /// GlobalKey for court selector showcase
+  final GlobalKey? tourCourtSelectorKey;
 
   @override
   State<ReservationScreen> createState() => _ReservationScreenState();
@@ -153,7 +170,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         color: AppColors.surfaceSubtle,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: AppColors.borderDefault,
+          color: AppColors.brandPrimary,
           width: 1,
         ),
       ),
@@ -295,15 +312,19 @@ class _ReservationScreenState extends State<ReservationScreen> {
           ),
           AppSpacing.vGapMd,
           
-          AnimatedCrossFade(
-            firstChild: _buildDateSelector(),
-            secondChild: _selectedDate != null 
-                ? _buildSelectedDateSummary() 
-                : const SizedBox.shrink(),
-            crossFadeState: _isDateExpanded 
-                ? CrossFadeState.showFirst 
-                : CrossFadeState.showSecond,
-            duration: AppAnimations.durationNormal,
+          _wrapWithShowcase(
+            key: widget.tourDateSelectorKey,
+            step: TourSteps.dateSelector,
+            child: AnimatedCrossFade(
+              firstChild: _buildDateSelector(),
+              secondChild: _selectedDate != null 
+                  ? _buildSelectedDateSummary() 
+                  : const SizedBox.shrink(),
+              crossFadeState: _isDateExpanded 
+                  ? CrossFadeState.showFirst 
+                  : CrossFadeState.showSecond,
+              duration: AppAnimations.durationNormal,
+            ),
           ),
 
           // Step 2: Time slots (visible after date selection)
@@ -358,18 +379,22 @@ class _ReservationScreenState extends State<ReservationScreen> {
               ),
             ),
             AppSpacing.vGapMd,
-            AnimatedCrossFade(
-              firstChild: Padding(
-                padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: _buildCourtSelector(),
+            _wrapWithShowcase(
+              key: widget.tourCourtSelectorKey,
+              step: TourSteps.courtSelector,
+              child: AnimatedCrossFade(
+                firstChild: Padding(
+                  padding: AppSpacing.screenPaddingHorizontalOnly,
+                  child: _buildCourtSelector(),
+                ),
+                secondChild: _selectedCourt != null
+                    ? _buildSelectedCourtSummary()
+                    : const SizedBox.shrink(),
+                crossFadeState: _isCourtExpanded
+                    ? CrossFadeState.showFirst
+                    : CrossFadeState.showSecond,
+                duration: AppAnimations.durationNormal,
               ),
-              secondChild: _selectedCourt != null
-                  ? _buildSelectedCourtSummary()
-                  : const SizedBox.shrink(),
-              crossFadeState: _isCourtExpanded
-                  ? CrossFadeState.showFirst
-                  : CrossFadeState.showSecond,
-              duration: AppAnimations.durationNormal,
             ),
           ],
 
@@ -916,6 +941,34 @@ class _ReservationScreenState extends State<ReservationScreen> {
       ),
     );
   }
+
+  /// Wraps a widget with Showcase if a key is provided
+  Widget _wrapWithShowcase({
+    required GlobalKey? key,
+    required TourStep step,
+    required Widget child,
+  }) {
+    if (key == null) return child;
+
+    return Showcase(
+      key: key,
+      title: step.title,
+      description: step.description,
+      tooltipBackgroundColor: AppColors.cardBackground,
+      textColor: AppColors.textPrimary,
+      descTextStyle: AppTypography.bodySmall.copyWith(
+        color: AppColors.textSecondary,
+      ),
+      titleTextStyle: AppTypography.titleSmall.copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
+      tooltipPadding: const EdgeInsets.all(AppSpacing.lg),
+      targetBorderRadius: AppRadius.borderRadiusMd,
+      targetPadding: const EdgeInsets.all(AppSpacing.sm),
+      child: child,
+    );
+  }
 }
 
 class _DateCard extends StatelessWidget {
@@ -948,7 +1001,7 @@ class _DateCard extends StatelessWidget {
           borderRadius: AppRadius.borderRadiusMd,
           border: isSelected
               ? null
-              : Border.all(color: AppColors.borderDefault),
+              : Border.all(color: AppColors.brandPrimary),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -957,6 +1010,7 @@ class _DateCard extends StatelessWidget {
               dayNames[date.weekday - 1],
               style: AppTypography.labelMedium.copyWith(
                 color: isSelected ? AppColors.white : AppColors.textSecondary,
+                fontWeight: FontWeight.bold,
               ),
             ),
             AppSpacing.vGapXxs,
@@ -972,6 +1026,7 @@ class _DateCard extends StatelessWidget {
               monthNames[date.month - 1],
               style: AppTypography.labelMedium.copyWith(
                 color: isSelected ? AppColors.white : AppColors.textSecondary,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],
@@ -1441,14 +1496,6 @@ class _BookingHistoryCard extends StatelessWidget {
     return '${date.day} ${monthNames[date.month - 1]} ${date.year}';
   }
 
-  String _formatPrice(double price) {
-    final priceInt = price.toInt();
-    if (priceInt >= 1000) {
-      return '${(priceInt / 1000).toStringAsFixed(priceInt % 1000 == 0 ? 0 : 0)} 000 F';
-    }
-    return '$priceInt F';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -1464,7 +1511,7 @@ class _BookingHistoryCard extends StatelessWidget {
         borderRadius: AppRadius.cardBorderRadius,
         child: InkWell(
           onTap: () {
-            // Show booking details
+            showBookingDetailsModal(context, booking);
           },
           borderRadius: AppRadius.cardBorderRadius,
           child: Row(
@@ -1513,27 +1560,17 @@ class _BookingHistoryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Terrain ${booking.courtName}',
-                            style: AppTypography.labelMedium.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          Text(
-                            '  •  ${_formatDate(booking.date)}',
-                            style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ],
+                      Text(
+                        _formatDate(booking.date),
+                        style: AppTypography.labelMedium.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       AppSpacing.vGapXxs,
                       Text(
-                        '${_formatPrice(booking.price)}  •  Réf: ${booking.reference}',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textTertiary,
+                        'Terrain ${booking.courtName}',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -1558,50 +1595,4 @@ class _BookingHistoryCard extends StatelessWidget {
   }
 }
 
-enum BookingStatus {
-  upcoming,
-  completed,
-  cancelled;
 
-  String get label {
-    switch (this) {
-      case BookingStatus.upcoming:
-        return 'À venir';
-      case BookingStatus.completed:
-        return 'Terminée';
-      case BookingStatus.cancelled:
-        return 'Annulée';
-    }
-  }
-
-  AppBadgeVariant get badgeVariant {
-    switch (this) {
-      case BookingStatus.upcoming:
-        return AppBadgeVariant.warning;
-      case BookingStatus.completed:
-        return AppBadgeVariant.success;
-      case BookingStatus.cancelled:
-        return AppBadgeVariant.error;
-    }
-  }
-}
-
-class Booking {
-  final String reference;
-  final String courtName;
-  final DateTime date;
-  final String startTime;
-  final String endTime;
-  final double price;
-  final BookingStatus status;
-
-  Booking({
-    required this.reference,
-    required this.courtName,
-    required this.date,
-    required this.startTime,
-    required this.endTime,
-    required this.price,
-    required this.status,
-  });
-}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../core/router/page_transitions.dart';
 import '../features/splash/screens/splash_screen.dart';
 import '../features/onboarding/screens/onboarding_screen.dart';
+import '../features/auth/screens/phone_screen.dart';
 import '../features/auth/screens/email_screen.dart';
 import '../features/auth/screens/register_screen.dart';
 import '../features/home/screens/replays_screen.dart';
@@ -19,6 +20,7 @@ class AppRouter {
   // Route names
   static const String splash = '/';
   static const String onboarding = '/onboarding';
+  static const String authPhone = '/auth/phone';
   static const String authEmail = '/auth/email';
   static const String authRegister = '/auth/register';
   static const String main = '/main';
@@ -29,6 +31,7 @@ class AppRouter {
   static const Set<String> _phaseRoutes = {
     splash,
     onboarding,
+    authPhone,
     authEmail,
     main,
   };
@@ -68,6 +71,9 @@ class AppRouter {
         break;
       case onboarding:
         page = const OnboardingScreen();
+        break;
+      case authPhone:
+        page = const PhoneScreen();
         break;
       case authEmail:
         page = const EmailScreen();

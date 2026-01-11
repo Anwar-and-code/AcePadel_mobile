@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:showcaseview/showcaseview.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../widgets/home_banner_carousel.dart';
@@ -7,9 +8,27 @@ import '../widgets/home_reservations_list.dart';
 import '../../profile/screens/profile_screen.dart';
 import '../../profile/screens/notifications_screen.dart';
 import '../../gamification/widgets/user_progress_ring.dart';
+import '../../product_tour/product_tour.dart';
 
+/// Home screen with product tour integration
+/// 
+/// Accepts GlobalKeys from MainShell for product tour showcase targets.
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({
+    super.key,
+    this.tourBannerKey,
+    this.tourActionCardsKey,
+    this.tourProfileKey,
+  });
+
+  /// GlobalKey for banner carousel showcase
+  final GlobalKey? tourBannerKey;
+  
+  /// GlobalKey for action cards showcase
+  final GlobalKey? tourActionCardsKey;
+  
+  /// GlobalKey for profile/progress ring showcase
+  final GlobalKey? tourProfileKey;
 
   @override
   Widget build(BuildContext context) {
@@ -50,27 +69,37 @@ class HomeScreen extends StatelessWidget {
                 ),
               ),
 
-              // User greeting
+              // User greeting with profile tour target
               Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: AppUserHeader(
-                  name: 'Alexandre KOFFI',
-                  greeting: 'Hello,',
-                  avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
-                  onAvatarTap: () {
-                    context.navigateSlide(
-                      const ProfileScreen(),
-                      routeName: '/profile',
-                    );
-                  },
-                  trailing: const UserProgressRing(size: 46),
+                child: _wrapWithShowcase(
+                  key: tourProfileKey,
+                  step: TourSteps.profile,
+                  stepIndex: 4,
+                  child: AppUserHeader(
+                    name: 'Alexandre',
+                    greeting: 'Hello,',
+                    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+                    onAvatarTap: () {
+                      context.navigateSlide(
+                        const ProfileScreen(),
+                        routeName: '/profile',
+                      );
+                    },
+                    trailing: const UserProgressRing(size: 46),
+                  ),
                 ),
               ),
 
               AppSpacing.vGapLg,
 
-              // Banner Carousel
-              const HomeBannerCarousel(),
+              // Banner Carousel with tour target
+              _wrapWithShowcase(
+                key: tourBannerKey,
+                step: TourSteps.banner,
+                stepIndex: 2,
+                child: const HomeBannerCarousel(),
+              ),
 
               AppSpacing.vGapXl,
 
@@ -82,10 +111,15 @@ class HomeScreen extends StatelessWidget {
 
               AppSpacing.vGapXl,
 
-              // Let's Padel Section
-              const Padding(
+              // Let's Padel Section with tour target
+              Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: HomeActionCards(),
+                child: _wrapWithShowcase(
+                  key: tourActionCardsKey,
+                  step: TourSteps.actionCards,
+                  stepIndex: 3,
+                  child: const HomeActionCards(),
+                ),
               ),
 
               AppSpacing.vGapXl,
@@ -101,6 +135,35 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// Wraps a widget with Showcase if a key is provided
+  Widget _wrapWithShowcase({
+    required GlobalKey? key,
+    required TourStep step,
+    required int stepIndex,
+    required Widget child,
+  }) {
+    if (key == null) return child;
+
+    return Showcase(
+      key: key,
+      title: step.title,
+      description: step.description,
+      tooltipBackgroundColor: AppColors.cardBackground,
+      textColor: AppColors.textPrimary,
+      descTextStyle: AppTypography.bodySmall.copyWith(
+        color: AppColors.textSecondary,
+      ),
+      titleTextStyle: AppTypography.titleSmall.copyWith(
+        color: AppColors.textPrimary,
+        fontWeight: FontWeight.w600,
+      ),
+      tooltipPadding: const EdgeInsets.all(AppSpacing.lg),
+      targetBorderRadius: AppRadius.borderRadiusMd,
+      targetPadding: const EdgeInsets.all(AppSpacing.sm),
+      child: child,
     );
   }
 }

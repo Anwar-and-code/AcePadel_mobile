@@ -134,8 +134,9 @@ class AppPageRoute<T> extends PageRouteBuilder<T> {
   }
 }
 
-/// Phase transition: Fade + Scale for milestone transitions
+/// Phase transition: Smooth fade-through for milestone transitions
 /// Used for: splash→onboarding→auth→main
+/// Following Material Design "fade through" pattern for optimal UX
 class _PhaseTransition extends StatelessWidget {
   final Animation<double> animation;
   final Animation<double> secondaryAnimation;
@@ -149,42 +150,57 @@ class _PhaseTransition extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    // Entering page: fade in + scale up
+    // Primary animation: incoming page fades in and scales up slightly
+    // Using staggered timing: fade starts slightly after scale for smoother feel
     final fadeIn = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
+      curve: const Interval(0.2, 1.0, curve: Curves.easeOut),
     );
     
     final scaleIn = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.0, 1.0, curve: Curves.easeOutCubic),
+      curve: Curves.easeOutCubic,
     );
     
-    // Exiting page (secondary): fade out + scale down slightly
+    // Secondary animation: when THIS page becomes the outgoing page
+    // (i.e., when navigating away FROM this page)
     final fadeOut = CurvedAnimation(
       parent: secondaryAnimation,
-      curve: const Interval(0.0, 0.3, curve: Curves.easeIn),
+      curve: const Interval(0.0, 0.35, curve: Curves.easeIn),
     );
     
-    final scaleOut = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(
-        parent: secondaryAnimation,
-        curve: const Interval(0.0, 1.0, curve: Curves.easeInCubic),
-      ),
+    final scaleOut = CurvedAnimation(
+      parent: secondaryAnimation,
+      curve: Curves.easeInCubic,
     );
     
-    return FadeTransition(
+    // Build the incoming animation (applied to child)
+    Widget result = FadeTransition(
       opacity: Tween<double>(begin: 0.0, end: 1.0).animate(fadeIn),
       child: ScaleTransition(
-        scale: Tween<double>(begin: 0.94, end: 1.0).animate(scaleIn),
-        child: FadeTransition(
-          opacity: Tween<double>(begin: 1.0, end: 0.0).animate(fadeOut),
-          child: ScaleTransition(
-            scale: scaleOut,
-            child: child,
-          ),
-        ),
+        scale: Tween<double>(begin: 0.96, end: 1.0).animate(scaleIn),
+        child: child,
       ),
+    );
+    
+    // Apply outgoing animation only when this page is being covered
+    // (secondaryAnimation > 0 means another page is coming on top)
+    return AnimatedBuilder(
+      animation: secondaryAnimation,
+      builder: (context, _) {
+        // Only apply exit animation when actually exiting
+        if (secondaryAnimation.value > 0) {
+          return FadeTransition(
+            opacity: Tween<double>(begin: 1.0, end: 0.0).animate(fadeOut),
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 1.0, end: 0.96).animate(scaleOut),
+              child: result,
+            ),
+          );
+        }
+        return result;
+      },
+      child: result,
     );
   }
 }
@@ -205,7 +221,7 @@ class _SlideTransition extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    // Primary animation: slide + fade in
+    // Primary animation: slide + fade in for incoming page
     final slideAnimation = CurvedAnimation(
       parent: animation,
       curve: Curves.easeOutCubic,
@@ -214,46 +230,49 @@ class _SlideTransition extends StatelessWidget {
     
     final fadeAnimation = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-    );
-    
-    // Secondary animation: the exiting page slides slightly and fades
-    final secondarySlide = CurvedAnimation(
-      parent: secondaryAnimation,
-      curve: Curves.easeInOutCubic,
-    );
-    
-    final secondaryFade = CurvedAnimation(
-      parent: secondaryAnimation,
-      curve: const Interval(0.0, 0.3, curve: Curves.easeIn),
+      curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
     );
     
     final beginOffset = slideFromRight 
-        ? const Offset(1.0, 0.0) 
-        : const Offset(-1.0, 0.0);
+        ? const Offset(0.3, 0.0)  // Reduced from 1.0 for smoother feel
+        : const Offset(-0.3, 0.0);
     
-    final secondaryOffset = slideFromRight 
-        ? const Offset(-0.25, 0.0) 
-        : const Offset(0.25, 0.0);
-    
-    return SlideTransition(
+    // Build incoming animation only
+    Widget result = SlideTransition(
       position: Tween<Offset>(
         begin: beginOffset,
         end: Offset.zero,
       ).animate(slideAnimation),
       child: FadeTransition(
-        opacity: Tween<double>(begin: 0.3, end: 1.0).animate(fadeAnimation),
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset.zero,
-            end: secondaryOffset,
-          ).animate(secondarySlide),
-          child: FadeTransition(
-            opacity: Tween<double>(begin: 1.0, end: 0.7).animate(secondaryFade),
-            child: child,
-          ),
-        ),
+        opacity: Tween<double>(begin: 0.0, end: 1.0).animate(fadeAnimation),
+        child: child,
       ),
+    );
+    
+    // Secondary animation: when THIS page is being covered by another
+    return AnimatedBuilder(
+      animation: secondaryAnimation,
+      builder: (context, _) {
+        if (secondaryAnimation.value > 0) {
+          final secondarySlide = CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: Curves.easeInOutCubic,
+          );
+          final secondaryOffset = slideFromRight 
+              ? const Offset(-0.15, 0.0) 
+              : const Offset(0.15, 0.0);
+          
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: Offset.zero,
+              end: secondaryOffset,
+            ).animate(secondarySlide),
+            child: result,
+          );
+        }
+        return result;
+      },
+      child: result,
     );
   }
 }
@@ -272,6 +291,7 @@ class _SlideUpTransition extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    // Primary: incoming modal slides up and fades in
     final slideAnimation = CurvedAnimation(
       parent: animation,
       curve: Curves.easeOutCubic,
@@ -280,53 +300,44 @@ class _SlideUpTransition extends StatelessWidget {
     
     final fadeAnimation = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.0, 0.4, curve: Curves.easeOut),
+      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
     );
     
-    final scaleAnimation = CurvedAnimation(
-      parent: animation,
-      curve: Curves.easeOutCubic,
-    );
-    
-    // Secondary: scale down and fade the background
-    final secondaryScale = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(
-        parent: secondaryAnimation,
-        curve: Curves.easeInOutCubic,
-      ),
-    );
-    
-    final secondaryFade = Tween<double>(begin: 1.0, end: 0.5).animate(
-      CurvedAnimation(
-        parent: secondaryAnimation,
-        curve: const Interval(0.0, 0.5, curve: Curves.easeIn),
-      ),
-    );
-    
-    return SlideTransition(
+    // Build incoming animation
+    Widget result = SlideTransition(
       position: Tween<Offset>(
-        begin: const Offset(0.0, 0.15),
+        begin: const Offset(0.0, 0.12),  // Subtle slide from bottom
         end: Offset.zero,
       ).animate(slideAnimation),
       child: FadeTransition(
         opacity: Tween<double>(begin: 0.0, end: 1.0).animate(fadeAnimation),
-        child: ScaleTransition(
-          scale: Tween<double>(begin: 0.96, end: 1.0).animate(scaleAnimation),
-          child: ScaleTransition(
-            scale: secondaryScale,
-            child: FadeTransition(
-              opacity: secondaryFade,
-              child: child,
-            ),
-          ),
-        ),
+        child: child,
       ),
+    );
+    
+    // Secondary: when this modal is being covered (rare but possible)
+    return AnimatedBuilder(
+      animation: secondaryAnimation,
+      builder: (context, _) {
+        if (secondaryAnimation.value > 0) {
+          final secondaryScale = CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: Curves.easeInOutCubic,
+          );
+          return ScaleTransition(
+            scale: Tween<double>(begin: 1.0, end: 0.95).animate(secondaryScale),
+            child: result,
+          );
+        }
+        return result;
+      },
+      child: result,
     );
   }
 }
 
 /// Fade through transition for lateral/sibling navigation
-/// Material 3 style: outgoing fades out while incoming fades in
+/// Material 3 style: clean crossfade with subtle scale
 class _FadeThroughTransition extends StatelessWidget {
   final Animation<double> animation;
   final Animation<double> secondaryAnimation;
@@ -340,42 +351,50 @@ class _FadeThroughTransition extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
-    // Incoming: fade in with slight scale
+    // Incoming: fade in with slight scale up
     final fadeIn = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
+      curve: const Interval(0.25, 1.0, curve: Curves.easeOut),
     );
     
     final scaleIn = CurvedAnimation(
       parent: animation,
-      curve: const Interval(0.0, 1.0, curve: Curves.easeOutCubic),
+      curve: Curves.easeOutCubic,
     );
     
-    // Outgoing: fade out quickly
-    final fadeOut = CurvedAnimation(
-      parent: secondaryAnimation,
-      curve: const Interval(0.0, 0.3, curve: Curves.easeIn),
-    );
-    
-    final scaleOut = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(
-        parent: secondaryAnimation,
-        curve: Curves.easeInCubic,
-      ),
-    );
-    
-    return FadeTransition(
+    // Build incoming animation
+    Widget result = FadeTransition(
       opacity: Tween<double>(begin: 0.0, end: 1.0).animate(fadeIn),
       child: ScaleTransition(
-        scale: Tween<double>(begin: 0.92, end: 1.0).animate(scaleIn),
-        child: FadeTransition(
-          opacity: Tween<double>(begin: 1.0, end: 0.0).animate(fadeOut),
-          child: ScaleTransition(
-            scale: scaleOut,
-            child: child,
-          ),
-        ),
+        scale: Tween<double>(begin: 0.95, end: 1.0).animate(scaleIn),
+        child: child,
       ),
+    );
+    
+    // Secondary: when this page is being covered
+    return AnimatedBuilder(
+      animation: secondaryAnimation,
+      builder: (context, _) {
+        if (secondaryAnimation.value > 0) {
+          final fadeOut = CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: const Interval(0.0, 0.4, curve: Curves.easeIn),
+          );
+          final scaleOut = CurvedAnimation(
+            parent: secondaryAnimation,
+            curve: Curves.easeInCubic,
+          );
+          return FadeTransition(
+            opacity: Tween<double>(begin: 1.0, end: 0.0).animate(fadeOut),
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 1.0, end: 0.95).animate(scaleOut),
+              child: result,
+            ),
+          );
+        }
+        return result;
+      },
+      child: result,
     );
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import '../models/event.dart';
+import 'event_detail_screen.dart';
 
 class EventsScreen extends StatelessWidget {
   const EventsScreen({super.key});
@@ -172,7 +174,9 @@ class _FeaturedEventCard extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: AppRadius.cardBorderRadius,
-        child: Stack(
+        child: GestureDetector(
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EventDetailScreen(event: event))),
+          child: Stack(
           fit: StackFit.expand,
           children: [
             // Background image
@@ -271,7 +275,7 @@ class _FeaturedEventCard extends StatelessWidget {
                       AppSpacing.hGapMd,
                       AppButton(
                         label: "S'inscrire",
-                        onPressed: () {},
+                        onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EventDetailScreen(event: event))),
                         variant: AppButtonVariant.primary,
                         size: AppButtonSize.small,
                       ),
@@ -282,6 +286,7 @@ class _FeaturedEventCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -308,7 +313,7 @@ class _EventCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: AppRadius.cardBorderRadius,
         child: InkWell(
-          onTap: () {},
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => EventDetailScreen(event: event))),
           borderRadius: AppRadius.cardBorderRadius,
           child: Padding(
             padding: AppSpacing.cardPaddingAll,
@@ -417,26 +422,4 @@ class _EventCard extends StatelessWidget {
   }
 }
 
-class Event {
-  final String id;
-  final String title;
-  final String description;
-  final String date;
-  final String time;
-  final String imageUrl;
-  final int participants;
-  final int maxParticipants;
-  final String category;
 
-  Event({
-    required this.id,
-    required this.title,
-    required this.description,
-    required this.date,
-    required this.time,
-    required this.imageUrl,
-    required this.participants,
-    required this.maxParticipants,
-    required this.category,
-  });
-}

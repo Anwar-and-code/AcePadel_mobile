@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import '../../../core/services/product_tour_service.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -13,7 +14,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _emailNotifications = true;
   bool _smsNotifications = false;
   bool _darkMode = false;
+  bool _showProductTour = true;
   String _selectedLanguage = 'Français';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProductTourSetting();
+  }
+
+  Future<void> _loadProductTourSetting() async {
+    final enabled = await ProductTourService.isTourEnabled();
+    if (mounted) {
+      setState(() => _showProductTour = enabled);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +128,58 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   color: AppColors.iconTertiary,
                 ),
                 onTap: () => _showLanguageSelector(),
+              ),
+            ]),
+
+            AppSpacing.vGapXl,
+
+            // Tutorial Section
+            _buildSectionHeader('Aide & Tutoriel'),
+            AppSpacing.vGapSm,
+            _buildSettingsCard([
+              _SettingsTile(
+                icon: Icons.help_outline,
+                title: 'Afficher le tutoriel',
+                subtitle: 'Activer le guide de découverte',
+                trailing: Switch(
+                  value: _showProductTour,
+                  onChanged: (value) async {
+                    setState(() => _showProductTour = value);
+                    await ProductTourService.setTourEnabled(value);
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(value 
+                              ? 'Le tutoriel sera visible au prochain lancement'
+                              : 'Le tutoriel est désactivé'),
+                          backgroundColor: AppColors.brandPrimary,
+                        ),
+                      );
+                    }
+                  },
+                  activeThumbColor: AppColors.brandPrimary,
+                ),
+              ),
+              _SettingsTile(
+                icon: Icons.replay,
+                title: 'Relancer le tutoriel',
+                subtitle: 'Revoir le guide de l\'application',
+                trailing: Icon(
+                  AppIcons.chevronRight,
+                  color: AppColors.iconTertiary,
+                ),
+                onTap: () async {
+                  await ProductTourService.resetTour();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Le tutoriel sera relancé au prochain lancement'),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                    Navigator.pop(context);
+                  }
+                },
               ),
             ]),
 

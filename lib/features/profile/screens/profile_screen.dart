@@ -68,29 +68,32 @@ class ProfileScreen extends StatelessWidget {
               // Quick stats
               Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: Row(
-                  children: [
-                    _StatCard(
-                      label: 'Réservations',
-                      value: '24',
-                      icon: AppIcons.reservationFilled,
-                      color: AppColors.brandPrimary,
-                    ),
-                    AppSpacing.hGapMd,
-                    _StatCard(
-                      label: 'Événements',
-                      value: '8',
-                      icon: AppIcons.eventsFilled,
-                      color: AppColors.brandSecondary,
-                    ),
-                    AppSpacing.hGapMd,
-                    _StatCard(
-                      label: 'Heures jouées',
-                      value: '36',
-                      icon: AppIcons.timer,
-                      color: AppColors.success,
-                    ),
-                  ],
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _StatCard(
+                        label: 'Réservations',
+                        value: '24',
+                        icon: AppIcons.reservationFilled,
+                        color: AppColors.brandPrimary,
+                      ),
+                      AppSpacing.hGapMd,
+                      _StatCard(
+                        label: 'Événements',
+                        value: '8',
+                        icon: AppIcons.eventsFilled,
+                        color: AppColors.brandSecondary,
+                      ),
+                      AppSpacing.hGapMd,
+                      _StatCard(
+                        label: 'Heures jouées',
+                        value: '36',
+                        icon: AppIcons.timer,
+                        color: AppColors.success,
+                      ),
+                    ],
+                  ),
                 ),
               ),
 
@@ -227,13 +230,6 @@ class _ProfileHeader extends StatelessWidget {
           ),
         ),
 
-        AppSpacing.vGapMd,
-
-        // Membership badge
-        AppBadge(
-          label: 'Membre Premium',
-          variant: AppBadgeVariant.success,
-        ),
       ],
     );
   }
@@ -313,6 +309,7 @@ class _ProfileMenuSection extends StatelessWidget {
             );
           },
         ),
+        AppSpacing.vGapSm,
         _MenuItem(
           icon: AppIcons.history,
           title: 'Historique des réservations',
@@ -334,6 +331,7 @@ class _ProfileMenuSection extends StatelessWidget {
             );
           },
         ),
+        AppSpacing.vGapSm,
         _MenuItem(
           icon: AppIcons.favorite,
           title: 'Favoris',
@@ -344,6 +342,7 @@ class _ProfileMenuSection extends StatelessWidget {
             );
           },
         ),
+        AppSpacing.vGapSm,
         _MenuItem(
           icon: AppIcons.notification,
           title: 'Notifications',
@@ -372,6 +371,7 @@ class _ProfileMenuSection extends StatelessWidget {
             );
           },
         ),
+        AppSpacing.vGapSm,
         _MenuItem(
           icon: AppIcons.info,
           title: 'À propos',
@@ -382,6 +382,7 @@ class _ProfileMenuSection extends StatelessWidget {
             );
           },
         ),
+        AppSpacing.vGapSm,
         _MenuItem(
           icon: AppIcons.share,
           title: 'Partager l\'application',
@@ -462,6 +463,7 @@ class _ProfileMenuSection extends StatelessWidget {
             );
           },
         ),
+        AppSpacing.vGapSm,
         _MenuItem(
           icon: Icons.privacy_tip_outlined,
           title: 'Politique de confidentialité',
@@ -482,15 +484,11 @@ class _MenuItem extends StatelessWidget {
     required this.icon,
     required this.title,
     this.onTap,
-    this.trailing,
-    this.showChevron = true,
   });
 
   final IconData icon;
   final String title;
   final VoidCallback? onTap;
-  final Widget? trailing;
-  final bool showChevron;
 
   @override
   Widget build(BuildContext context) {
@@ -531,13 +529,10 @@ class _MenuItem extends StatelessWidget {
                     style: AppTypography.bodyMedium,
                   ),
                 ),
-                if (trailing != null)
-                  trailing!
-                else if (showChevron)
-                  Icon(
-                    AppIcons.chevronRight,
-                    color: AppColors.iconTertiary,
-                  ),
+                Icon(
+                  AppIcons.chevronRight,
+                  color: AppColors.iconTertiary,
+                ),
               ],
             ),
           ),

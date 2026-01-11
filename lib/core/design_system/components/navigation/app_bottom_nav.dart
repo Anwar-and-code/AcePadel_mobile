@@ -74,9 +74,11 @@ class AppBottomNavBar extends StatelessWidget {
       child: SafeArea(
         top: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.xs,
-            vertical: AppSpacing.xs,
+          padding: const EdgeInsets.only(
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: AppSpacing.xs,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -115,22 +117,25 @@ class _NavBarItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: AppAnimations.navBarDuration,
         curve: AppAnimations.navBarCurve,
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md,
-          vertical: AppSpacing.xs,
+        padding: const EdgeInsets.only(
+          left: AppSpacing.md,
+          right: AppSpacing.md,
+          top: 0,
+          bottom: AppSpacing.xs,
         ),
         decoration: BoxDecoration(
           color: Colors.transparent,
           border: Border(
             top: BorderSide(
               color: isActive ? AppColors.navBarItemActive : Colors.transparent,
-              width: 3.0,
+              width: 4.0,
             ),
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            const SizedBox(height: AppSpacing.xs),
             AnimatedSwitcher(
               duration: AppAnimations.durationFast,
               child: Icon(

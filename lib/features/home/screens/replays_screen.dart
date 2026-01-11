@@ -260,7 +260,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
+                        color: Colors.black.withValues(alpha: 0.04),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -285,7 +285,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
               child: Icon(
                 Icons.videocam_off_outlined,
                 size: 44,
-                color: AppColors.brandPrimary.withOpacity(0.6),
+                color: AppColors.brandPrimary.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 24),
@@ -331,7 +331,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 12,
             offset: const Offset(0, 2),
           ),
@@ -387,7 +387,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
               child: Icon(
                 isSearching ? Icons.search_off_rounded : Icons.filter_list_off_rounded,
                 size: 28,
-                color: AppColors.brandPrimary.withOpacity(0.6),
+                color: AppColors.brandPrimary.withValues(alpha: 0.6),
               ),
             ),
             const SizedBox(height: 20),
@@ -748,7 +748,7 @@ class _PremiumReplayCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
+            color: Colors.black.withValues(alpha: 0.06),
             blurRadius: 20,
             offset: const Offset(0, 4),
           ),
@@ -799,7 +799,7 @@ class _PremiumReplayCard extends StatelessWidget {
                             end: Alignment.bottomCenter,
                             colors: [
                               Colors.transparent,
-                              Colors.black.withOpacity(0.4),
+                              Colors.black.withValues(alpha: 0.4),
                             ],
                             stops: const [0.5, 1.0],
                           ),
@@ -816,10 +816,10 @@ class _PremiumReplayCard extends StatelessWidget {
                             width: 56,
                             height: 56,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.25),
+                              color: Colors.white.withValues(alpha: 0.25),
                               shape: BoxShape.circle,
                               border: Border.all(
-                                color: Colors.white.withOpacity(0.4),
+                                color: Colors.white.withValues(alpha: 0.4),
                                 width: 1.5,
                               ),
                             ),
@@ -842,7 +842,7 @@ class _PremiumReplayCard extends StatelessWidget {
                           vertical: 5,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.6),
+                          color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
@@ -868,7 +868,7 @@ class _PremiumReplayCard extends StatelessWidget {
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
+                                color: Colors.black.withValues(alpha: 0.1),
                                 blurRadius: 8,
                               ),
                             ],
@@ -1112,7 +1112,7 @@ class _ActionButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.08),
+          color: color.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
