@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/design_system/design_system.dart';
+import '../../../core/services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -78,10 +80,34 @@ class _SplashScreenState extends State<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 300));
     _logoController.forward();
     
-    // Phase 4: Navigate to onboarding
+    // Phase 4: Check if user is already logged in
     await Future.delayed(const Duration(milliseconds: 2000));
     if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/onboarding');
+      await _checkAuthAndNavigate();
+    }
+  }
+
+  Future<void> _checkAuthAndNavigate() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    
+    if (user != null) {
+      // User is logged in, check if profile exists
+      final profile = await AuthService.getCurrentProfile();
+      
+      if (mounted) {
+        if (profile != null) {
+          // Profile exists -> go to main
+          Navigator.of(context).pushReplacementNamed('/main');
+        } else {
+          // No profile -> go to onboarding
+          Navigator.of(context).pushReplacementNamed('/onboarding');
+        }
+      }
+    } else {
+      // Not logged in -> go to onboarding
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed('/onboarding');
+      }
     }
   }
 

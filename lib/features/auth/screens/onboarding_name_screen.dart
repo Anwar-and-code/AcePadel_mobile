@@ -142,19 +142,6 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                         },
                       ),
                       
-                      AppSpacing.vGapXxl,
-                      
-                      // Progress indicator
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          _buildProgressDot(true),
-                          AppSpacing.hGapXs,
-                          _buildProgressDot(false),
-                          AppSpacing.hGapXs,
-                          _buildProgressDot(false),
-                        ],
-                      ),
                     ],
                   ),
                 ),
@@ -195,14 +182,4 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
     );
   }
 
-  Widget _buildProgressDot(bool isActive) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.brandPrimary : AppColors.neutral300,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
 }

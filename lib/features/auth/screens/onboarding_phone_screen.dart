@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../app/main_shell.dart';
 
 class OnboardingPhoneScreen extends StatefulWidget {
@@ -25,6 +26,7 @@ class OnboardingPhoneScreen extends StatefulWidget {
 class _OnboardingPhoneScreenState extends State<OnboardingPhoneScreen> {
   String _phoneNumber = '';
   String? _errorMessage;
+  bool _isLoading = false;
 
   bool get _isValidPrefix {
     if (_phoneNumber.length < 2) return true; // Pas encore assez pour valider
@@ -78,17 +80,44 @@ class _OnboardingPhoneScreenState extends State<OnboardingPhoneScreen> {
     return formatted;
   }
 
-  void _onContinue() {
-    if (!_isFormValid) return;
+  void _onContinue() async {
+    if (!_isFormValid || _isLoading) return;
     
-    Navigator.of(context).pushAndRemoveUntil(
-      AppPageRoute(
-        page: const MainShell(),
-        transitionType: PageTransitionType.phase,
-        settings: const RouteSettings(name: '/main'),
-      ),
-      (route) => false,
+    setState(() => _isLoading = true);
+    
+    // Sauvegarder le profil dans Supabase
+    final result = await AuthService.createProfile(
+      email: widget.email,
+      firstName: widget.prenom,
+      lastName: widget.nom,
+      birthDate: widget.birthDate,
+      phone: _phoneNumber,
     );
+    
+    if (mounted) {
+      setState(() => _isLoading = false);
+      
+      if (result['success'] == true) {
+        Navigator.of(context).pushAndRemoveUntil(
+          AppPageRoute(
+            page: const MainShell(),
+            transitionType: PageTransitionType.phase,
+            settings: const RouteSettings(name: '/main'),
+          ),
+          (route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Erreur lors de la création du profil'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -196,20 +225,6 @@ class _OnboardingPhoneScreenState extends State<OnboardingPhoneScreen> {
                       ],
                     ),
                     
-                    AppSpacing.vGapXl,
-                    
-                    // Progress indicator
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _buildProgressDot(true),
-                        AppSpacing.hGapXs,
-                        _buildProgressDot(true),
-                        AppSpacing.hGapXs,
-                        _buildProgressDot(true),
-                      ],
-                    ),
-                    
                     const Spacer(),
                     
                     // Continue button
@@ -220,6 +235,7 @@ class _OnboardingPhoneScreenState extends State<OnboardingPhoneScreen> {
                       size: AppButtonSize.large,
                       isFullWidth: true,
                       isDisabled: !_isFormValid,
+                      isLoading: _isLoading,
                     ),
                     
                     AppSpacing.vGapMd,
@@ -313,14 +329,4 @@ class _OnboardingPhoneScreenState extends State<OnboardingPhoneScreen> {
     );
   }
 
-  Widget _buildProgressDot(bool isActive) {
-    return Container(
-      width: 8,
-      height: 8,
-      decoration: BoxDecoration(
-        color: isActive ? AppColors.brandPrimary : AppColors.neutral300,
-        shape: BoxShape.circle,
-      ),
-    );
-  }
 }

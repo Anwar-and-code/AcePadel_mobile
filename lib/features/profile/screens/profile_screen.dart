@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../features/auth/screens/email_screen.dart';
 import 'settings_screen.dart';
 import 'personal_info_screen.dart';
@@ -113,30 +114,52 @@ class ProfileScreen extends StatelessWidget {
                   onPressed: () {
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Se déconnecter'),
-                        content: const Text('Êtes-vous sûr de vouloir vous déconnecter ?'),
+                      builder: (dialogContext) => AlertDialog(
+                        backgroundColor: AppColors.cardBackground,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        title: Text(
+                          'Se déconnecter',
+                          style: AppTypography.titleMedium,
+                        ),
+                        content: Text(
+                          'Êtes-vous sûr de vouloir vous déconnecter ?',
+                          style: AppTypography.bodyMedium,
+                        ),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Annuler'),
+                            onPressed: () => Navigator.pop(dialogContext),
+                            child: Text(
+                              'Annuler',
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
                           ),
                           TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              // Logout uses phase transition (milestone)
-                              Navigator.of(context).pushAndRemoveUntil(
-                                AppPageRoute(
-                                  page: const EmailScreen(),
-                                  transitionType: PageTransitionType.phase,
-                                  settings: const RouteSettings(name: '/auth/email'),
-                                ),
-                                (route) => false,
-                              );
+                            onPressed: () async {
+                              Navigator.pop(dialogContext);
+                              // Sign out from Supabase
+                              await AuthService.signOut();
+                              // Navigate to login screen
+                              if (context.mounted) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  AppPageRoute(
+                                    page: const EmailScreen(),
+                                    transitionType: PageTransitionType.phase,
+                                    settings: const RouteSettings(name: '/auth/email'),
+                                  ),
+                                  (route) => false,
+                                );
+                              }
                             },
-                            child: const Text(
+                            child: Text(
                               'Déconnexion',
-                              style: TextStyle(color: AppColors.error),
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.error,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                           ),
                         ],
@@ -145,6 +168,90 @@ class ProfileScreen extends StatelessWidget {
                   },
                   variant: AppButtonVariant.outline,
                   isFullWidth: true,
+                ),
+              ),
+
+              AppSpacing.vGapMd,
+
+              // Delete account button
+              Padding(
+                padding: AppSpacing.screenPaddingHorizontalOnly,
+                child: TextButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (dialogContext) => AlertDialog(
+                        backgroundColor: AppColors.cardBackground,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        title: Row(
+                          children: [
+                            Icon(
+                              Icons.warning_amber_rounded,
+                              color: AppColors.error,
+                              size: 24,
+                            ),
+                            AppSpacing.hGapSm,
+                            Text(
+                              'Supprimer le compte',
+                              style: AppTypography.titleMedium.copyWith(
+                                color: AppColors.error,
+                              ),
+                            ),
+                          ],
+                        ),
+                        content: Text(
+                          'La suppression de votre compte est définitive. Toutes vos données seront supprimées immédiatement et vous ne pourrez pas les récupérer.',
+                          style: AppTypography.bodyMedium.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(dialogContext),
+                            child: Text(
+                              'Non',
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(dialogContext);
+                              // TODO: Implement account deletion
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: const Text('Fonctionnalité à venir'),
+                                  backgroundColor: AppColors.brandPrimary,
+                                  behavior: SnackBarBehavior.floating,
+                                  margin: const EdgeInsets.all(16),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Oui',
+                              style: AppTypography.bodyMedium.copyWith(
+                                color: AppColors.error,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                  child: Text(
+                    'Supprimer le compte',
+                    style: AppTypography.bodyMedium.copyWith(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ),
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../app/main_shell.dart';
 import 'register_screen.dart';
 import 'onboarding_name_screen.dart';
 
@@ -43,11 +44,11 @@ class _OtpScreenState extends State<OtpScreen> {
   }
 
   void _onKeyPressed(String key) {
-    if (_otpCode.length < 4) {
+    if (_otpCode.length < 6) {
       setState(() => _otpCode += key);
       
       // Auto-verify when complete
-      if (_otpCode.length == 4) {
+      if (_otpCode.length == 6) {
         _verifyCode();
       }
     }
@@ -73,25 +74,35 @@ class _OtpScreenState extends State<OtpScreen> {
         
         if (isNewUser) {
           // Nouvel utilisateur -> Onboarding
-          context.navigateSlide(
-            OnboardingNameScreen(email: widget.email),
-            routeName: '/auth/onboarding/name',
+          Navigator.of(context).pushAndRemoveUntil(
+            AppPageRoute(
+              page: OnboardingNameScreen(email: widget.email),
+              transitionType: PageTransitionType.phase,
+              settings: const RouteSettings(name: '/auth/onboarding/name'),
+            ),
+            (route) => false,
           );
         } else {
-          // Utilisateur existant -> Home (à implémenter)
-          // Pour l'instant, on va aussi vers l'onboarding
-          context.navigateSlide(
-            OnboardingNameScreen(email: widget.email),
-            routeName: '/auth/onboarding/name',
+          // Utilisateur existant avec profil -> Home
+          Navigator.of(context).pushAndRemoveUntil(
+            AppPageRoute(
+              page: const MainShell(),
+              transitionType: PageTransitionType.phase,
+              settings: const RouteSettings(name: '/main'),
+            ),
+            (route) => false,
           );
         }
       } else {
         // Erreur - afficher le message
-        _otpCode = ''; // Reset le code
+        setState(() => _otpCode = ''); // Reset le code
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(result['message'] ?? 'Code incorrect'),
+            content: Text(result['message'] ?? 'Code incorrect !'),
             backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
         );
       }
@@ -123,16 +134,6 @@ class _OtpScreenState extends State<OtpScreen> {
         );
       }
     }
-  }
-
-  void _receiveCall() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Vous allez recevoir un appel'),
-        backgroundColor: AppColors.brandPrimary,
-        duration: Duration(seconds: 2),
-      ),
-    );
   }
 
   @override
@@ -202,17 +203,17 @@ class _OtpScreenState extends State<OtpScreen> {
                     
                     AppSpacing.vGapXxl,
                     
-                    // OTP Display Boxes
+                    // OTP Display Boxes (6 digits for Supabase)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: List.generate(4, (index) {
+                      children: List.generate(6, (index) {
                         final hasValue = index < _otpCode.length;
                         final value = hasValue ? _otpCode[index] : '';
                         
                         return Container(
-                          width: 65,
-                          height: 65,
-                          margin: EdgeInsets.symmetric(horizontal: 8),
+                          width: 48,
+                          height: 56,
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
                           decoration: BoxDecoration(
                             color: hasValue 
                                 ? AppColors.brandSecondary.withValues(alpha: 0.1)
@@ -262,18 +263,6 @@ class _OtpScreenState extends State<OtpScreen> {
                         ),
                       ),
                     ),
-                    AppSpacing.vGapXs,
-                    GestureDetector(
-                      onTap: _receiveCall,
-                      child: Text(
-                        'Recevoir un appel',
-                        style: AppTypography.bodyMedium.copyWith(
-                          color: AppColors.brandSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    
                     AppSpacing.vGapLg,
                     
                     // Loading indicator

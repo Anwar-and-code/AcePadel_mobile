@@ -3,25 +3,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthService {
   static final _supabase = Supabase.instance.client;
 
-  /// Envoie un code OTP à l'email spécifié
-  /// Retourne un Map avec success, message, et éventuellement debug_code (dev only)
+  /// Envoie un code OTP à l'email spécifié via Supabase Auth natif
+  /// Utilise le SMTP configuré dans le dashboard Supabase
   static Future<Map<String, dynamic>> sendOtp(String email) async {
     try {
-      final response = await _supabase.functions.invoke(
-        'send-otp-email',
-        body: {'email': email.toLowerCase().trim()},
+      await _supabase.auth.signInWithOtp(
+        email: email.toLowerCase().trim(),
+        shouldCreateUser: true, // Crée l'utilisateur s'il n'existe pas
       );
 
-      if (response.status != 200) {
-        return {
-          'success': false,
-          'error': 'SERVER_ERROR',
-          'message': 'Erreur serveur. Veuillez réessayer.',
-        };
-      }
-
-      final data = response.data as Map<String, dynamic>;
-      return data;
+      return {
+        'success': true,
+        'message': 'Code envoyé à $email',
+      };
+    } on AuthException catch (e) {
+      return {
+        'success': false,
+        'error': 'AUTH_ERROR',
+        'message': e.message,
+      };
     } catch (e) {
       return {
         'success': false,
@@ -31,20 +31,40 @@ class AuthService {
     }
   }
 
-  /// Vérifie le code OTP
-  /// Retourne un Map avec success, is_new_user, user_id, ou error/message
+  /// Vérifie le code OTP via Supabase Auth natif
+  /// Retourne un Map avec success, is_new_user, session
   static Future<Map<String, dynamic>> verifyOtp(String email, String code) async {
     try {
-      final response = await _supabase.rpc(
-        'verify_otp',
-        params: {
-          'p_email': email.toLowerCase().trim(),
-          'p_code': code,
-        },
+      final response = await _supabase.auth.verifyOTP(
+        email: email.toLowerCase().trim(),
+        token: code,
+        type: OtpType.email,
       );
 
-      final data = response as Map<String, dynamic>;
-      return data;
+      if (response.session != null) {
+        // Vérifier si le profil existe
+        final profile = await getCurrentProfile();
+        final isNewUser = profile == null;
+
+        return {
+          'success': true,
+          'is_new_user': isNewUser,
+          'user_id': response.user?.id,
+          'session': response.session,
+        };
+      } else {
+        return {
+          'success': false,
+          'error': 'INVALID_CODE',
+          'message': 'Code invalide ou expiré.',
+        };
+      }
+    } on AuthException catch (e) {
+      return {
+        'success': false,
+        'error': 'AUTH_ERROR',
+        'message': e.message,
+      };
     } catch (e) {
       return {
         'success': false,
@@ -161,6 +181,74 @@ class AuthService {
       return response != null;
     } catch (e) {
       return false;
+    }
+  }
+
+  /// Crée le profil pour l'utilisateur connecté
+  static Future<Map<String, dynamic>> createProfile({
+    required String email,
+    required String firstName,
+    required String lastName,
+    required DateTime birthDate,
+    String? phone,
+    String? gender,
+  }) async {
+    try {
+      final user = _supabase.auth.currentUser;
+      if (user == null) {
+        return {
+          'success': false,
+          'error': 'NOT_AUTHENTICATED',
+          'message': 'Utilisateur non connecté.',
+        };
+      }
+
+      // Vérifier si le profil existe déjà
+      final existingProfile = await _supabase
+          .from('profiles')
+          .select('id')
+          .eq('id', user.id)
+          .maybeSingle();
+
+      if (existingProfile != null) {
+        // Mettre à jour le profil existant
+        await _supabase.from('profiles').update({
+          'first_name': firstName,
+          'last_name': lastName,
+          'birth_date': birthDate.toIso8601String().split('T')[0],
+          'phone': phone,
+          if (gender != null) 'gender': gender,
+        }).eq('id', user.id);
+      } else {
+        // Créer un nouveau profil
+        await _supabase.from('profiles').insert({
+          'id': user.id,
+          'email': email.toLowerCase().trim(),
+          'first_name': firstName,
+          'last_name': lastName,
+          'birth_date': birthDate.toIso8601String().split('T')[0],
+          'phone': phone,
+          'gender': gender,
+          'role': 'JOUEUR',
+        });
+      }
+
+      return {
+        'success': true,
+        'message': 'Profil créé avec succès',
+      };
+    } on PostgrestException catch (e) {
+      return {
+        'success': false,
+        'error': 'DB_ERROR',
+        'message': 'Erreur base de données: ${e.message}',
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'CREATE_ERROR',
+        'message': 'Erreur lors de la création du profil: ${e.toString()}',
+      };
     }
   }
 
