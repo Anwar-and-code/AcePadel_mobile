@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
+import '../../../core/services/auth_service.dart';
 import 'otp_screen.dart';
 
 class EmailScreen extends StatefulWidget {
@@ -34,20 +35,32 @@ class _EmailScreenState extends State<EmailScreen> {
 
     setState(() => _isLoading = true);
 
-    // Send OTP to email - backend will handle account creation if needed
-    await Future.delayed(const Duration(seconds: 1));
+    final email = _emailController.text.trim();
+    
+    // Envoyer le code OTP via Supabase
+    final result = await AuthService.sendOtp(email);
     
     if (mounted) {
       setState(() => _isLoading = false);
       
-      // Navigate to OTP screen with slide transition (hierarchical navigation)
-      context.navigateSlide(
-        OtpScreen(
-          email: _emailController.text,
-          isLogin: true,
-        ),
-        routeName: '/auth/otp',
-      );
+      if (result['success'] == true) {
+        // Navigate to OTP screen with slide transition
+        context.navigateSlide(
+          OtpScreen(
+            email: email,
+            isLogin: true,
+          ),
+          routeName: '/auth/otp',
+        );
+      } else {
+        // Afficher l'erreur
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Erreur lors de l\'envoi du code'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
     }
   }
 

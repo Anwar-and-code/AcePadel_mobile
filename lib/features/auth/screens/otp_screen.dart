@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
+import '../../../core/services/auth_service.dart';
 import 'register_screen.dart';
 import 'onboarding_name_screen.dart';
 
@@ -61,29 +62,43 @@ class _OtpScreenState extends State<OtpScreen> {
   void _verifyCode() async {
     setState(() => _isVerifying = true);
     
-    // Simulate verification
-    await Future.delayed(const Duration(seconds: 2));
+    // Vérifier le code OTP via Supabase
+    final result = await AuthService.verifyOtp(widget.email, _otpCode);
     
     if (mounted) {
       setState(() => _isVerifying = false);
       
-      if (widget.isLogin) {
-        // Login -> Go to onboarding flow (slide transition)
-        context.navigateSlide(
-          OnboardingNameScreen(email: widget.email),
-          routeName: '/auth/onboarding/name',
-        );
+      if (result['success'] == true) {
+        final isNewUser = result['is_new_user'] == true;
+        
+        if (isNewUser) {
+          // Nouvel utilisateur -> Onboarding
+          context.navigateSlide(
+            OnboardingNameScreen(email: widget.email),
+            routeName: '/auth/onboarding/name',
+          );
+        } else {
+          // Utilisateur existant -> Home (à implémenter)
+          // Pour l'instant, on va aussi vers l'onboarding
+          context.navigateSlide(
+            OnboardingNameScreen(email: widget.email),
+            routeName: '/auth/onboarding/name',
+          );
+        }
       } else {
-        // Register -> Go to complete profile (slide transition)
-        context.navigateSlide(
-          const RegisterScreen(),
-          routeName: '/auth/register',
+        // Erreur - afficher le message
+        _otpCode = ''; // Reset le code
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Code incorrect'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     }
   }
 
-  void _resendCode() {
+  void _resendCode() async {
     if (_resendTimer == 0) {
       setState(() {
         _resendTimer = 60;
@@ -91,13 +106,22 @@ class _OtpScreenState extends State<OtpScreen> {
       });
       _startResendTimer();
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Code renvoyé par SMS'),
-          backgroundColor: AppColors.success,
-          duration: Duration(seconds: 2),
-        ),
-      );
+      // Renvoyer le code OTP
+      final result = await AuthService.sendOtp(widget.email);
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['success'] == true 
+                ? 'Code renvoyé à ${widget.email}' 
+                : result['message'] ?? 'Erreur lors de l\'envoi'),
+            backgroundColor: result['success'] == true 
+                ? AppColors.success 
+                : AppColors.error,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
