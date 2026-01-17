@@ -1,3 +1,7 @@
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthService {
@@ -256,6 +260,141 @@ class AuthService {
   static Future<void> signOut() async {
     await _supabase.auth.signOut();
   }
+
+  /// URL de callback pour OAuth (deep link)
+  static const String _oauthCallbackUrl = 'io.padelhouse.app://auth-callback';
+
+  /// Instance Google Sign-In
+  static GoogleSignIn? _googleSignIn;
+
+  /// Initialise Google Sign-In (à appeler au démarrage de l'app)
+  static Future<void> initializeGoogleSignIn() async {
+    if (_googleSignIn != null) return;
+    
+    final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'];
+    final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID'];
+    
+    _googleSignIn = GoogleSignIn(
+      clientId: !kIsWeb && Platform.isIOS ? iosClientId : null,
+      serverClientId: webClientId,
+      scopes: ['email', 'profile'],
+    );
+  }
+
+  /// Connexion avec Google OAuth natif (Google Play Services)
+  static Future<Map<String, dynamic>> signInWithGoogle() async {
+    try {
+      // Initialiser si nécessaire
+      await initializeGoogleSignIn();
+      
+      if (_googleSignIn == null) {
+        return {
+          'success': false,
+          'error': 'CONFIG_ERROR',
+          'message': 'Google Sign-In non configuré.',
+        };
+      }
+
+      // Déconnecter d'abord pour permettre le choix du compte
+      await _googleSignIn!.signOut();
+      
+      // Lancer l'authentification Google native
+      final googleUser = await _googleSignIn!.signIn();
+      
+      if (googleUser == null) {
+        return {
+          'success': false,
+          'error': 'CANCELLED',
+          'message': 'Connexion annulée.',
+        };
+      }
+
+      // Obtenir les tokens
+      final googleAuth = await googleUser.authentication;
+      final idToken = googleAuth.idToken;
+      final accessToken = googleAuth.accessToken;
+
+      if (idToken == null) {
+        return {
+          'success': false,
+          'error': 'TOKEN_ERROR',
+          'message': 'Impossible d\'obtenir le token Google.',
+        };
+      }
+
+      // Authentifier avec Supabase via le token Google
+      final response = await _supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+
+      if (response.session != null) {
+        return {
+          'success': true,
+          'message': 'Connexion Google réussie',
+          'user_id': response.user?.id,
+        };
+      } else {
+        return {
+          'success': false,
+          'error': 'AUTH_ERROR',
+          'message': 'Échec de l\'authentification Supabase.',
+        };
+      }
+    } on AuthException catch (e) {
+      return {
+        'success': false,
+        'error': 'AUTH_ERROR',
+        'message': e.message,
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'NETWORK_ERROR',
+        'message': 'Erreur de connexion: ${e.toString()}',
+      };
+    }
+  }
+
+  /// Connexion avec Microsoft OAuth (Azure AD)
+  static Future<Map<String, dynamic>> signInWithMicrosoft() async {
+    try {
+      final response = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.azure,
+        redirectTo: kIsWeb ? null : _oauthCallbackUrl,
+        scopes: 'email profile openid',
+      );
+
+      if (response) {
+        return {
+          'success': true,
+          'message': 'Redirection vers Microsoft...',
+        };
+      } else {
+        return {
+          'success': false,
+          'error': 'OAUTH_ERROR',
+          'message': 'Impossible de démarrer l\'authentification Microsoft.',
+        };
+      }
+    } on AuthException catch (e) {
+      return {
+        'success': false,
+        'error': 'AUTH_ERROR',
+        'message': e.message,
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'error': 'NETWORK_ERROR',
+        'message': 'Erreur de connexion: ${e.toString()}',
+      };
+    }
+  }
+
+  /// Écoute les changements d'état d'authentification
+  static Stream<AuthState> get onAuthStateChange => _supabase.auth.onAuthStateChange;
 
   /// Génère un mot de passe sécurisé aléatoire
   static String _generateSecurePassword() {

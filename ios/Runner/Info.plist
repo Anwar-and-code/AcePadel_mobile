@@ -45,5 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	
+	<!-- Deep Link URL Scheme for OAuth callback -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>io.padelhouse.app</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>io.padelhouse.app</string>
+		</dict>
+	</array>
 </dict>
 </plist>

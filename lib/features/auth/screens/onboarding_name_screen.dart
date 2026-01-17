@@ -5,10 +5,14 @@ import 'onboarding_birthdate_screen.dart';
 
 class OnboardingNameScreen extends StatefulWidget {
   final String email;
+  final String? initialFirstName;
+  final String? initialLastName;
   
   const OnboardingNameScreen({
     super.key,
     required this.email,
+    this.initialFirstName,
+    this.initialLastName,
   });
 
   @override
@@ -19,6 +23,18 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
   final _formKey = GlobalKey<FormState>();
   final _prenomController = TextEditingController();
   final _nomController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Pré-remplir avec les données OAuth si disponibles
+    if (widget.initialFirstName != null && widget.initialFirstName!.isNotEmpty) {
+      _prenomController.text = widget.initialFirstName!;
+    }
+    if (widget.initialLastName != null && widget.initialLastName!.isNotEmpty) {
+      _nomController.text = widget.initialLastName!;
+    }
+  }
 
   @override
   void dispose() {

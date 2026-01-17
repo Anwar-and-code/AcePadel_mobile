@@ -1,8 +1,12 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../app/main_shell.dart';
 import 'otp_screen.dart';
+import 'onboarding_name_screen.dart';
 
 class EmailScreen extends StatefulWidget {
   const EmailScreen({super.key});
@@ -14,9 +18,100 @@ class EmailScreen extends StatefulWidget {
 class _EmailScreenState extends State<EmailScreen> {
   final _emailController = TextEditingController();
   bool _isLoading = false;
+  StreamSubscription<AuthState>? _authSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    _setupAuthListener();
+  }
+
+  void _setupAuthListener() {
+    _authSubscription = AuthService.onAuthStateChange.listen((data) async {
+      final event = data.event;
+      if (event == AuthChangeEvent.signedIn && mounted) {
+        // Utilisateur connecté via OAuth
+        await _handleOAuthSuccess();
+      }
+    });
+  }
+
+  Future<void> _handleOAuthSuccess() async {
+    final profile = await AuthService.getCurrentProfile();
+    final isNewUser = profile == null;
+    
+    if (!mounted) return;
+    
+    if (isNewUser) {
+      // Nouvel utilisateur -> Onboarding
+      final user = AuthService.currentUser;
+      
+      // Extraire nom et prénom des métadonnées OAuth
+      final userMetadata = user?.userMetadata;
+      String? firstName;
+      String? lastName;
+      
+      if (userMetadata != null) {
+        // Google fournit: given_name, family_name, full_name
+        // Microsoft fournit: name, given_name, family_name
+        firstName = userMetadata['given_name'] as String? 
+            ?? userMetadata['first_name'] as String?;
+        lastName = userMetadata['family_name'] as String? 
+            ?? userMetadata['last_name'] as String?;
+        
+        // Si seulement full_name est disponible, essayer de le diviser
+        if ((firstName == null || lastName == null) && userMetadata['full_name'] != null) {
+          final fullName = userMetadata['full_name'] as String;
+          final parts = fullName.split(' ');
+          if (parts.isNotEmpty) {
+            firstName ??= parts.first;
+            if (parts.length > 1) {
+              lastName ??= parts.sublist(1).join(' ');
+            }
+          }
+        }
+        
+        // Microsoft peut aussi fournir 'name'
+        if ((firstName == null || lastName == null) && userMetadata['name'] != null) {
+          final name = userMetadata['name'] as String;
+          final parts = name.split(' ');
+          if (parts.isNotEmpty) {
+            firstName ??= parts.first;
+            if (parts.length > 1) {
+              lastName ??= parts.sublist(1).join(' ');
+            }
+          }
+        }
+      }
+      
+      Navigator.of(context).pushAndRemoveUntil(
+        AppPageRoute(
+          page: OnboardingNameScreen(
+            email: user?.email ?? '',
+            initialFirstName: firstName,
+            initialLastName: lastName,
+          ),
+          transitionType: PageTransitionType.phase,
+          settings: const RouteSettings(name: '/auth/onboarding/name'),
+        ),
+        (route) => false,
+      );
+    } else {
+      // Utilisateur existant -> Home
+      Navigator.of(context).pushAndRemoveUntil(
+        AppPageRoute(
+          page: const MainShell(),
+          transitionType: PageTransitionType.phase,
+          settings: const RouteSettings(name: '/main'),
+        ),
+        (route) => false,
+      );
+    }
+  }
 
   @override
   void dispose() {
+    _authSubscription?.cancel();
     _emailController.dispose();
     super.dispose();
   }
@@ -65,97 +160,43 @@ class _EmailScreenState extends State<EmailScreen> {
   }
 
   void _signInWithGoogle() async {
-    try {
-      setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
+    
+    final result = await AuthService.signInWithGoogle();
+    
+    if (mounted) {
+      setState(() => _isLoading = false);
       
-      // Note: To enable Google Sign-In, you need to:
-      // 1. Add 'google_sign_in: ^6.2.1' to pubspec.yaml
-      // 2. Configure OAuth credentials in Google Cloud Console
-      // 3. Add GoogleService-Info.plist (iOS) and google-services.json (Android)
-      // 4. Update platform-specific configurations
-      
-      // Example implementation (uncomment when configured):
-      // final GoogleSignIn googleSignIn = GoogleSignIn(
-      //   scopes: ['email', 'profile'],
-      // );
-      // final GoogleSignInAccount? account = await googleSignIn.signIn();
-      // if (account != null) {
-      //   final GoogleSignInAuthentication auth = await account.authentication;
-      //   // Use auth.idToken and auth.accessToken to authenticate with your backend
-      //   // Navigate to home screen on success
-      // }
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Google Sign-In n\'est pas encore configuré. Veuillez configurer les identifiants OAuth.'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 4),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
+      if (result['success'] == true) {
+        // Google Sign-In natif retourne directement le résultat
+        await _handleOAuthSuccess();
+      } else if (result['error'] != 'CANCELLED') {
+        // Afficher l'erreur seulement si ce n'est pas une annulation
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur de connexion Google: ${e.toString()}'),
+            content: Text(result['message'] ?? 'Erreur de connexion Google'),
             backgroundColor: AppColors.error,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
 
   void _signInWithMicrosoft() async {
-    try {
-      setState(() => _isLoading = true);
+    setState(() => _isLoading = true);
+    
+    final result = await AuthService.signInWithMicrosoft();
+    
+    if (mounted) {
+      setState(() => _isLoading = false);
       
-      // Note: To enable Microsoft Sign-In, you need to:
-      // 1. Add 'flutter_appauth: ^11.0.0' to pubspec.yaml
-      // 2. Register your app in Azure Active Directory
-      // 3. Configure redirect URIs for your platforms
-      // 4. Get your Client ID and Tenant ID from Azure
-      
-      // Example implementation (uncomment when configured):
-      // final FlutterAppAuth appAuth = FlutterAppAuth();
-      // final AuthorizationTokenResponse? result = await appAuth.authorizeAndExchangeCode(
-      //   AuthorizationTokenRequest(
-      //     'YOUR_CLIENT_ID',
-      //     'YOUR_REDIRECT_URI',
-      //     issuer: 'https://login.microsoftonline.com/YOUR_TENANT_ID/v2.0',
-      //     scopes: ['openid', 'profile', 'email', 'offline_access'],
-      //   ),
-      // );
-      // if (result != null) {
-      //   // Use result.accessToken to authenticate with your backend
-      //   // Navigate to home screen on success
-      // }
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Microsoft Sign-In n\'est pas encore configuré. Veuillez enregistrer l\'app dans Azure AD.'),
-            backgroundColor: AppColors.error,
-            duration: Duration(seconds: 4),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
+      if (result['success'] != true) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Erreur de connexion Microsoft: ${e.toString()}'),
+            content: Text(result['message'] ?? 'Erreur de connexion Microsoft'),
             backgroundColor: AppColors.error,
           ),
         );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
