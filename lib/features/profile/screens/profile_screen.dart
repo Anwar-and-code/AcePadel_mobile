@@ -588,71 +588,16 @@ class _ProfileMenuSection extends StatelessWidget {
         AppSpacing.vGapXl,
 
         // Développé par ArmaSOFT
-        Padding(
-          padding: AppSpacing.screenPaddingHorizontalOnly,
-          child: GestureDetector(
+        _buildSectionHeader('Développé par'),
+        AppSpacing.vGapSm,
+        _buildMenuCard(context, [
+          _MenuTile(
+            icon: Icons.code,
+            title: 'ArmaSOFT',
+            subtitle: 'www.armasoft.ci',
             onTap: _launchArmasoft,
-            child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              decoration: BoxDecoration(
-                color: AppColors.cardBackground,
-                borderRadius: AppRadius.cardBorderRadius,
-                border: Border.all(color: AppColors.borderDefault),
-              ),
-              child: Column(
-                children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.brandPrimary.withValues(alpha: 0.1),
-                      borderRadius: AppRadius.borderRadiusMd,
-                    ),
-                    child: Icon(
-                      Icons.code,
-                      color: AppColors.brandPrimary,
-                      size: 24,
-                    ),
-                  ),
-                  AppSpacing.vGapMd,
-                  Text(
-                    'Développé par',
-                    style: AppTypography.caption.copyWith(
-                      color: AppColors.textTertiary,
-                    ),
-                  ),
-                  AppSpacing.vGapXxs,
-                  Text(
-                    'ArmaSOFT',
-                    style: AppTypography.titleMedium.copyWith(
-                      color: AppColors.brandPrimary,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  AppSpacing.vGapXxs,
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.language,
-                        size: 14,
-                        color: AppColors.textTertiary,
-                      ),
-                      AppSpacing.hGapXxs,
-                      Text(
-                        'www.armasoft.ci',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textTertiary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
           ),
-        ),
+        ]),
 
         AppSpacing.vGapXl,
 

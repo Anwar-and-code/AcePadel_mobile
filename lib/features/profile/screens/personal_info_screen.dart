@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/services/user_profile_service.dart';
 
@@ -21,6 +22,11 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   String _selectedGender = 'Aucun';
 
   final List<String> _genderOptions = ['Aucun', 'Homme', 'Femme', 'Autre'];
+  
+  final List<String> _monthNames = [
+    'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+    'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+  ];
 
   @override
   void initState() {
@@ -336,26 +342,312 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     }
   }
 
-  Future<void> _selectDate() async {
-    final picked = await showDatePicker(
+  void _selectDate() {
+    int? selectedDay = _birthDate?.day;
+    int? selectedMonth = _birthDate?.month;
+    int? selectedYear = _birthDate?.year;
+    
+    final currentYear = DateTime.now().year;
+    final years = List.generate(81, (i) => currentYear - 10 - i); // 10 à 90 ans
+    
+    showModalBottomSheet(
       context: context,
-      initialDate: _birthDate ?? DateTime(1990, 1, 1),
-      firstDate: DateTime(1950),
-      lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: AppColors.brandPrimary,
+      backgroundColor: AppColors.backgroundPrimary,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) {
+          int getDaysInMonth(int month, int? year) {
+            if (month == 2) {
+              if (year != null && ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))) {
+                return 29;
+              }
+              return 28;
+            }
+            if ([4, 6, 9, 11].contains(month)) return 30;
+            return 31;
+          }
+          
+          List<int> availableDays = selectedMonth != null 
+              ? List.generate(getDaysInMonth(selectedMonth!, selectedYear), (i) => i + 1)
+              : List.generate(31, (i) => i + 1);
+          
+          return Container(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Handle
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.borderDefault,
+                    borderRadius: AppRadius.borderRadiusFull,
+                  ),
+                ),
+                AppSpacing.vGapLg,
+                
+                // Title
+                Text(
+                  'Date de naissance',
+                  style: AppTypography.titleLarge.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                AppSpacing.vGapXl,
+                
+                // Date pickers row
+                Row(
+                  children: [
+                    // Jour
+                    Expanded(
+                      flex: 2,
+                      child: _buildDatePickerField(
+                        label: 'Jour',
+                        displayValue: selectedDay?.toString().padLeft(2, '0'),
+                        hint: 'Jour',
+                        onTap: () => _showPicker(
+                          title: 'Jour',
+                          items: availableDays.map((d) => d.toString().padLeft(2, '0')).toList(),
+                          initialIndex: selectedDay != null ? selectedDay! - 1 : 0,
+                          onSelected: (index) {
+                            setModalState(() => selectedDay = availableDays[index]);
+                          },
+                        ),
+                      ),
+                    ),
+                    AppSpacing.hGapSm,
+                    // Mois
+                    Expanded(
+                      flex: 3,
+                      child: _buildDatePickerField(
+                        label: 'Mois',
+                        displayValue: selectedMonth != null ? _monthNames[selectedMonth! - 1] : null,
+                        hint: 'Mois',
+                        onTap: () => _showPicker(
+                          title: 'Mois',
+                          items: _monthNames,
+                          initialIndex: selectedMonth != null ? selectedMonth! - 1 : 0,
+                          onSelected: (index) {
+                            setModalState(() {
+                              selectedMonth = index + 1;
+                              // Valider le jour pour ce mois
+                              if (selectedDay != null) {
+                                final maxDays = getDaysInMonth(selectedMonth!, selectedYear);
+                                if (selectedDay! > maxDays) selectedDay = maxDays;
+                              }
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                    AppSpacing.hGapSm,
+                    // Année
+                    Expanded(
+                      flex: 2,
+                      child: _buildDatePickerField(
+                        label: 'Année',
+                        displayValue: selectedYear?.toString(),
+                        hint: 'Année',
+                        onTap: () => _showPicker(
+                          title: 'Année',
+                          items: years.map((y) => y.toString()).toList(),
+                          initialIndex: selectedYear != null ? years.indexOf(selectedYear!) : 20,
+                          onSelected: (index) {
+                            setModalState(() => selectedYear = years[index]);
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                AppSpacing.vGapXl,
+                
+                // Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: AppButton(
+                        label: 'Annuler',
+                        variant: AppButtonVariant.outline,
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ),
+                    AppSpacing.hGapMd,
+                    Expanded(
+                      child: AppButton(
+                        label: 'Confirmer',
+                        variant: AppButtonVariant.primary,
+                        onPressed: (selectedDay != null && selectedMonth != null && selectedYear != null)
+                            ? () {
+                                setState(() {
+                                  _birthDate = DateTime(selectedYear!, selectedMonth!, selectedDay!);
+                                });
+                                Navigator.pop(context);
+                              }
+                            : null,
+                        isDisabled: selectedDay == null || selectedMonth == null || selectedYear == null,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildDatePickerField({
+    required String label,
+    required String? displayValue,
+    required String hint,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: AppTypography.caption.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
+        AppSpacing.vGapXs,
+        GestureDetector(
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.md,
+            ),
+            decoration: BoxDecoration(
+              color: AppColors.inputBackground,
+              borderRadius: AppRadius.inputBorderRadius,
+              border: Border.all(
+                color: displayValue != null ? AppColors.brandPrimary : AppColors.inputBorder,
+                width: displayValue != null ? 1.5 : 1,
+              ),
+            ),
+            child: Center(
+              child: Text(
+                displayValue ?? hint,
+                style: displayValue != null
+                    ? AppTypography.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.textPrimary,
+                      )
+                    : AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+              ),
             ),
           ),
-          child: child!,
-        );
-      },
+        ),
+      ],
     );
-    if (picked != null) {
-      setState(() => _birthDate = picked);
-    }
+  }
+
+  void _showPicker({
+    required String title,
+    required List<String> items,
+    required int initialIndex,
+    required ValueChanged<int> onSelected,
+  }) {
+    int tempIndex = initialIndex >= 0 && initialIndex < items.length ? initialIndex : 0;
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        height: 300,
+        decoration: BoxDecoration(
+          color: AppColors.surfaceDefault,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: AppColors.borderDefault),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(
+                      'Annuler',
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    title,
+                    style: AppTypography.titleSmall.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      onSelected(tempIndex);
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      'OK',
+                      style: AppTypography.bodyMedium.copyWith(
+                        color: AppColors.brandPrimary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            // Picker
+            Expanded(
+              child: CupertinoPicker(
+                scrollController: FixedExtentScrollController(
+                  initialItem: tempIndex,
+                ),
+                itemExtent: 44,
+                onSelectedItemChanged: (index) => tempIndex = index,
+                selectionOverlay: Container(
+                  decoration: BoxDecoration(
+                    border: Border.symmetric(
+                      horizontal: BorderSide(
+                        color: AppColors.brandPrimary.withValues(alpha: 0.2),
+                      ),
+                    ),
+                  ),
+                ),
+                children: items.map((item) => Center(
+                  child: Text(
+                    item,
+                    style: AppTypography.titleMedium.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                )).toList(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
