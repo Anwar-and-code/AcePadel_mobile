@@ -99,8 +99,8 @@ class _SplashScreenState extends State<SplashScreen>
           // Profile exists -> go to main
           Navigator.of(context).pushReplacementNamed('/main');
         } else {
-          // No profile -> go to onboarding
-          Navigator.of(context).pushReplacementNamed('/onboarding');
+          // No profile -> go to auth to complete profile
+          Navigator.of(context).pushReplacementNamed('/auth/email');
         }
       }
     } else {

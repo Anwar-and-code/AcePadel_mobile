@@ -5,7 +5,7 @@ import '../core/services/product_tour_service.dart';
 import '../features/gamification/gamification.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/home/widgets/home_action_cards.dart';
-import '../features/reservation/screens/reservation_screen.dart';
+import '../features/reservation/screens/reservation_screen_v2.dart';
 import '../features/events/screens/events_screen.dart';
 import '../features/social/screens/social_screen.dart';
 import '../features/product_tour/product_tour.dart';
@@ -69,7 +69,7 @@ class _MainShellState extends State<MainShell> {
         tourActionCardsKey: _actionCardsKey,
         tourProfileKey: _profileKey,
       ),
-      ReservationScreen(
+      ReservationScreenV2(
         tourDateSelectorKey: _dateSelectorKey,
         tourCourtSelectorKey: _courtSelectorKey,
       ),
@@ -180,25 +180,8 @@ class _MainShellContentState extends State<_MainShellContent> {
   }
 
   Future<void> _initProductTour() async {
-    final shouldShow = await ProductTourService.shouldShowTour();
-    if (shouldShow && mounted) {
-      // Delay to ensure all widgets are rendered
-      await Future.delayed(const Duration(milliseconds: 800));
-      if (mounted) {
-        widget.onTourStarted();
-        
-        // Only show first 4 steps on home tab for now
-        // Steps 5-7 require tab navigation which can cause issues
-        final keys = [
-          widget.navBarKey,         // Step 1: Welcome/Navigation
-          widget.bannerKey,         // Step 2: Banner
-          widget.actionCardsKey,    // Step 3: Action cards
-          widget.profileKey,        // Step 4: Profile
-        ];
-        
-        ShowCaseWidget.of(context).startShowCase(keys);
-      }
-    }
+    // Product tour désactivé
+    return;
   }
 
   @override
