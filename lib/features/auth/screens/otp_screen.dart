@@ -3,6 +3,7 @@ import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../app/main_shell.dart';
+import '../../gamification/services/gamification_service_v2.dart';
 import 'register_screen.dart';
 import 'onboarding_name_screen.dart';
 
@@ -84,6 +85,9 @@ class _OtpScreenState extends State<OtpScreen> {
           );
         } else {
           // Utilisateur existant avec profil -> Home
+          // Reload gamification data after login
+          await GamificationServiceV2.instance.reload();
+          
           Navigator.of(context).pushAndRemoveUntil(
             AppPageRoute(
               page: const MainShell(),

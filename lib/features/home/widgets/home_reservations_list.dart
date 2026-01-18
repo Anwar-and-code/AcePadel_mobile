@@ -1,82 +1,111 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../reservation/models/booking.dart';
+import '../../reservation/models/reservation.dart';
+import '../../reservation/providers/reservation_provider.dart';
 import '../../reservation/widgets/booking_details_modal.dart';
+import 'home_action_cards.dart';
 
 // Widget for active/upcoming reservation only
-class HomeActiveReservation extends StatelessWidget {
+class HomeActiveReservation extends StatefulWidget {
   const HomeActiveReservation({super.key});
 
-  // Sample data - in real app, this would come from a service
-  static const int _upcomingCount = 1;
+  @override
+  State<HomeActiveReservation> createState() => _HomeActiveReservationState();
+}
 
-  void _showReservationDetails(BuildContext context) {
-    // Create a temporary booking object for the active reservation
+class _HomeActiveReservationState extends State<HomeActiveReservation> {
+  @override
+  void initState() {
+    super.initState();
+    // Load user reservations when widget is created
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ReservationProvider>().loadUserReservations();
+    });
+  }
+
+  void _showReservationDetails(BuildContext context, Reservation reservation) {
+    // Convert Reservation to Booking for the modal
     final booking = Booking(
-      reference: 'WP-X0126',
-      courtName: 'A',
-      date: DateTime(2026, 1, 8), // 8 Jan 2026
-      startTime: '19:00',
-      endTime: '20:30',
-      price: 25000,
-      status: BookingStatus.upcoming,
+      reference: reservation.reference,
+      courtName: reservation.terrainCode ?? 'A',
+      date: reservation.reservationDate,
+      startTime: reservation.formattedStartTime,
+      endTime: reservation.formattedEndTime,
+      price: (reservation.price ?? 0).toDouble(),
+      status: reservation.isUpcoming ? BookingStatus.upcoming : BookingStatus.completed,
     );
 
     showBookingDetailsModal(context, booking);
   }
 
+  String _formatDate(DateTime date) {
+    final dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    final monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+    return '${dayNames[date.weekday - 1]} ${date.day} ${monthNames[date.month - 1]}';
+  }
+
+  String _formatPrice(int? price) {
+    if (price == null) return '-- F';
+    final priceStr = price.toString();
+    final buffer = StringBuffer();
+    for (int i = 0; i < priceStr.length; i++) {
+      if (i > 0 && (priceStr.length - i) % 3 == 0) {
+        buffer.write(' ');
+      }
+      buffer.write(priceStr[i]);
+    }
+    return '${buffer.toString()} F';
+  }
+
   @override
   Widget build(BuildContext context) {
-    if (_upcomingCount == 0) {
-      return const SizedBox.shrink();
-    }
+    return Consumer<ReservationProvider>(
+      builder: (context, provider, child) {
+        final upcomingReservations = provider.upcomingReservations;
+        
+        // Get the next upcoming reservation (first one, already sorted)
+        final nextReservation = upcomingReservations.isNotEmpty ? upcomingReservations.first : null;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Section header with badge
-        Row(
+        if (nextReservation == null) {
+          return const SizedBox.shrink();
+        }
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: AppSectionHeader(
-                title: 'Réservations',
-                action: 'Voir tout',
-                onActionTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Row(
-                        children: [
-                          Icon(AppIcons.calendar, color: AppColors.white),
-                          AppSpacing.hGapSm,
-                          Expanded(
-                              child: Text(
-                                  'Rendez-vous dans l\'onglet "Réservations"')),
-                        ],
-                      ),
-                      backgroundColor: AppColors.brandPrimary,
-                      duration: const Duration(seconds: 2),
-                      behavior: SnackBarBehavior.floating,
-                    ),
-                  );
-                },
-              ),
+            // Section header with badge
+            Row(
+              children: [
+                Expanded(
+                  child: AppSectionHeader(
+                    title: 'Réservations',
+                    action: 'Voir tout',
+                    onActionTap: () {
+                      // Navigate to Reservation tab (index 1)
+                      MainShellTabNotification(tabIndex: 1).dispatch(context);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            AppSpacing.vGapMd,
+
+            // Upcoming reservation highlight
+            _UpcomingReservationCard(
+              courtName: nextReservation.terrainCode ?? 'A',
+              date: _formatDate(nextReservation.reservationDate),
+              startTime: nextReservation.formattedStartTime,
+              endTime: nextReservation.formattedEndTime,
+              price: _formatPrice(nextReservation.price),
+              onTap: () {
+                _showReservationDetails(context, nextReservation);
+              },
             ),
           ],
-        ),
-        AppSpacing.vGapMd,
-
-        // Upcoming reservation highlight
-        _UpcomingReservationCard(
-          courtName: 'A',
-          date: 'Mer 8 Jan',
-          startTime: '19:00',
-          endTime: '20:30',
-          price: '25 000 F',
-          onTap: () {
-            _showReservationDetails(context);
-          },
-        ),
-      ],
+        );
+      },
     );
   }
 }

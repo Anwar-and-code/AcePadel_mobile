@@ -1,214 +1,434 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/achievement.dart';
 import '../models/gamification_event.dart';
 
+/// Modèle pour le profil de gamification complet depuis Supabase
+class GamificationProfile {
+  final int xp;
+  final int level;
+  final int currentStreak;
+  final int longestStreak;
+  final int totalReservations;
+  final String? levelTitle;
+  final String? badgeColor;
+  final double levelProgress;
+  final int xpForNext;
+  final List<UnlockedAchievement> achievements;
+  final List<AvailableAchievement> availableAchievements;
+
+  GamificationProfile({
+    required this.xp,
+    required this.level,
+    required this.currentStreak,
+    required this.longestStreak,
+    required this.totalReservations,
+    this.levelTitle,
+    this.badgeColor,
+    required this.levelProgress,
+    required this.xpForNext,
+    required this.achievements,
+    required this.availableAchievements,
+  });
+
+  factory GamificationProfile.fromJson(Map<String, dynamic> json) {
+    final levelInfo = json['level_info'] as Map<String, dynamic>? ?? {};
+    
+    return GamificationProfile(
+      xp: json['xp'] ?? 0,
+      level: json['level'] ?? 1,
+      currentStreak: json['current_streak'] ?? 0,
+      longestStreak: json['longest_streak'] ?? 0,
+      totalReservations: json['total_reservations'] ?? 0,
+      levelTitle: levelInfo['title'],
+      badgeColor: levelInfo['badge_color'],
+      levelProgress: (levelInfo['progress'] ?? 0.0).toDouble(),
+      xpForNext: levelInfo['xp_for_next'] ?? 100,
+      achievements: (json['achievements'] as List? ?? [])
+          .map((a) => UnlockedAchievement.fromJson(a))
+          .toList(),
+      availableAchievements: (json['available_achievements'] as List? ?? [])
+          .map((a) => AvailableAchievement.fromJson(a))
+          .toList(),
+    );
+  }
+
+  factory GamificationProfile.empty() => GamificationProfile(
+    xp: 0,
+    level: 1,
+    currentStreak: 0,
+    longestStreak: 0,
+    totalReservations: 0,
+    levelProgress: 0,
+    xpForNext: 100,
+    achievements: [],
+    availableAchievements: [],
+  );
+}
+
+class UnlockedAchievement {
+  final String id;
+  final String title;
+  final String description;
+  final String icon;
+  final String color;
+  final int xpReward;
+  final DateTime unlockedAt;
+
+  UnlockedAchievement({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.color,
+    required this.xpReward,
+    required this.unlockedAt,
+  });
+
+  factory UnlockedAchievement.fromJson(Map<String, dynamic> json) {
+    return UnlockedAchievement(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      icon: json['icon'] ?? '🏆',
+      color: json['color'] ?? '#FFD700',
+      xpReward: json['xp_reward'] ?? 0,
+      unlockedAt: DateTime.tryParse(json['unlocked_at'] ?? '') ?? DateTime.now(),
+    );
+  }
+}
+
+class AvailableAchievement {
+  final String id;
+  final String title;
+  final String description;
+  final String icon;
+  final String category;
+  final int xpReward;
+
+  AvailableAchievement({
+    required this.id,
+    required this.title,
+    required this.description,
+    required this.icon,
+    required this.category,
+    required this.xpReward,
+  });
+
+  factory AvailableAchievement.fromJson(Map<String, dynamic> json) {
+    return AvailableAchievement(
+      id: json['id'] ?? '',
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      icon: json['icon'] ?? '🏆',
+      category: json['category'] ?? 'general',
+      xpReward: json['xp_reward'] ?? 0,
+    );
+  }
+}
+
+class LeaderboardEntry {
+  final String oderId;
+  final String? fullName;
+  final String? avatarUrl;
+  final int xp;
+  final int level;
+  final int currentStreak;
+  final int rank;
+
+  LeaderboardEntry({
+    required this.oderId,
+    this.fullName,
+    this.avatarUrl,
+    required this.xp,
+    required this.level,
+    required this.currentStreak,
+    required this.rank,
+  });
+
+  factory LeaderboardEntry.fromJson(Map<String, dynamic> json) {
+    return LeaderboardEntry(
+      oderId: json['user_id'] ?? '',
+      fullName: json['full_name'],
+      avatarUrl: json['avatar_url'],
+      xp: json['xp'] ?? 0,
+      level: json['level'] ?? 1,
+      currentStreak: json['current_streak'] ?? 0,
+      rank: json['rank'] ?? 0,
+    );
+  }
+}
+
+/// Service de gamification - Client Supabase
+/// Toute la logique est côté serveur via les fonctions RPC
 class GamificationServiceV2 extends ChangeNotifier {
   static final GamificationServiceV2 instance = GamificationServiceV2._();
   
   GamificationServiceV2._() {
-    _loadProgress();
+    _init();
   }
 
-  // Stream controller for gamification events
+  static SupabaseClient get _supabase => Supabase.instance.client;
+
+  // Stream controller for gamification events (UI animations)
   final _eventController = StreamController<GamificationEvent>.broadcast();
   Stream<GamificationEvent> get events => _eventController.stream;
 
-  // XP and Level
-  int _xp = 0;
-  int get xp => _xp;
-  int get level => (_xp / 200).floor() + 1; // 200 XP per level
+  // State
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
   
-  double get currentLevelProgress {
-    final int xpForCurrentLevel = (level - 1) * 200;
-    final int xpForNextLevel = level * 200;
-    return (_xp - xpForCurrentLevel) / (xpForNextLevel - xpForCurrentLevel);
-  }
+  GamificationProfile _profile = GamificationProfile.empty();
+  GamificationProfile get profile => _profile;
+
+  // Getters pour compatibilité avec l'UI existante
+  int get xp => _profile.xp;
+  int get level => _profile.level;
+  int get currentStreak => _profile.currentStreak;
+  int get longestStreak => _profile.longestStreak;
+  int get reservationsCount => _profile.totalReservations;
+  double get currentLevelProgress => _profile.levelProgress;
+  int get xpToNextLevel => _profile.xpForNext - _profile.xp;
+  String? get levelTitle => _profile.levelTitle;
   
-  int get xpToNextLevel {
-    final int xpForNextLevel = level * 200;
-    return xpForNextLevel - _xp;
-  }
-
-  // Streak
-  int _currentStreak = 0;
-  int get currentStreak => _currentStreak;
-  DateTime? _lastActivityDate;
-
-  // Reservations count
-  int _reservationsCount = 0;
-  int get reservationsCount => _reservationsCount;
-
-  // Unlocked achievements
-  final Set<String> _unlockedAchievements = {};
-  Set<String> get unlockedAchievements => Set.unmodifiable(_unlockedAchievements);
+  Set<String> get unlockedAchievements => 
+      _profile.achievements.map((a) => a.id).toSet();
 
   bool isAchievementUnlocked(String achievementId) {
-    return _unlockedAchievements.contains(achievementId);
+    return _profile.achievements.any((a) => a.id == achievementId);
   }
 
-  Future<void> _loadProgress() async {
-    final prefs = await SharedPreferences.getInstance();
-    _xp = prefs.getInt('gamification_xp') ?? 0;
-    _currentStreak = prefs.getInt('gamification_streak') ?? 0;
-    _reservationsCount = prefs.getInt('gamification_reservations') ?? 0;
+  Future<void> _init() async {
+    // Load from cache first for instant display
+    await _loadFromCache();
     
-    final lastActivityStr = prefs.getString('gamification_last_activity');
-    if (lastActivityStr != null) {
-      _lastActivityDate = DateTime.tryParse(lastActivityStr);
+    // Then sync with Supabase
+    if (_supabase.auth.currentUser != null) {
+      await reload();
     }
-    
-    final unlockedList = prefs.getStringList('gamification_achievements') ?? [];
-    _unlockedAchievements.addAll(unlockedList);
-    
-    notifyListeners();
   }
 
-  Future<void> _saveProgress() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('gamification_xp', _xp);
-    await prefs.setInt('gamification_streak', _currentStreak);
-    await prefs.setInt('gamification_reservations', _reservationsCount);
-    if (_lastActivityDate != null) {
-      await prefs.setString('gamification_last_activity', _lastActivityDate!.toIso8601String());
-    }
-    await prefs.setStringList('gamification_achievements', _unlockedAchievements.toList());
-  }
-
-  /// Award XP and check for level up
-  Future<void> awardXp(int amount, {String? message}) async {
-    final oldLevel = level;
-    _xp += amount;
-    await _saveProgress();
-    notifyListeners();
-
-    // Emit XP earned event
-    _eventController.add(GamificationEvent.xpEarned(amount, message: message));
-
-    // Check for level up
-    if (level > oldLevel) {
-      _eventController.add(GamificationEvent.levelUp(level));
+  Future<void> _loadFromCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedXp = prefs.getInt('gamification_xp') ?? 0;
+      final cachedStreak = prefs.getInt('gamification_streak') ?? 0;
+      final cachedLevel = prefs.getInt('gamification_level') ?? 1;
       
-      // Check for champion achievement at level 10
-      if (level >= 10) {
-        await unlockAchievement(AchievementType.champion);
-      }
+      _profile = GamificationProfile(
+        xp: cachedXp,
+        level: cachedLevel,
+        currentStreak: cachedStreak,
+        longestStreak: prefs.getInt('gamification_longest_streak') ?? 0,
+        totalReservations: prefs.getInt('gamification_reservations') ?? 0,
+        levelProgress: 0,
+        xpForNext: 100,
+        achievements: [],
+        availableAchievements: [],
+      );
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading from cache: $e');
     }
   }
 
-  /// Unlock an achievement
-  Future<void> unlockAchievement(AchievementType type) async {
-    final achievement = Achievements.getByType(type);
-    if (achievement == null) return;
-    
-    if (_unlockedAchievements.contains(achievement.id)) return;
-    
-    _unlockedAchievements.add(achievement.id);
-    _xp += achievement.xpReward;
-    await _saveProgress();
-    notifyListeners();
-
-    // Emit achievement unlocked event
-    _eventController.add(GamificationEvent.achievementUnlocked(achievement));
+  Future<void> _saveToCache() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('gamification_xp', _profile.xp);
+      await prefs.setInt('gamification_level', _profile.level);
+      await prefs.setInt('gamification_streak', _profile.currentStreak);
+      await prefs.setInt('gamification_longest_streak', _profile.longestStreak);
+      await prefs.setInt('gamification_reservations', _profile.totalReservations);
+    } catch (e) {
+      debugPrint('Error saving to cache: $e');
+    }
   }
 
-  /// Update activity streak
-  Future<void> updateStreak() async {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
+  /// Recharge le profil complet depuis Supabase
+  Future<void> reload() async {
+    if (_supabase.auth.currentUser == null) return;
     
-    if (_lastActivityDate != null) {
-      final lastDate = DateTime(
-        _lastActivityDate!.year,
-        _lastActivityDate!.month,
-        _lastActivityDate!.day,
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await _supabase.rpc('get_gamification_profile');
+      
+      if (response != null) {
+        _profile = GamificationProfile.fromJson(response as Map<String, dynamic>);
+        await _saveToCache();
+      }
+    } catch (e) {
+      debugPrint('Error loading gamification profile: $e');
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  /// Appelé après une réservation réussie - toute la logique est côté Supabase
+  Future<void> onReservationMade({int? hour}) async {
+    if (_supabase.auth.currentUser == null) return;
+
+    try {
+      final oldLevel = _profile.level;
+      
+      final response = await _supabase.rpc(
+        'on_reservation_completed',
+        params: {'p_reservation_hour': hour},
+      );
+
+      if (response != null) {
+        final result = response as Map<String, dynamic>;
+        final xpEarned = result['xp_earned'] as int? ?? 50;
+        final achievementsUnlocked = (result['achievements_unlocked'] as List?)?.cast<String>() ?? [];
+        
+        // Emit XP event for UI animation
+        _eventController.add(GamificationEvent.xpEarned(xpEarned, message: 'Réservation confirmée'));
+        
+        // Reload profile to get updated data
+        await reload();
+        
+        // Check for level up
+        if (_profile.level > oldLevel) {
+          _eventController.add(GamificationEvent.levelUp(_profile.level));
+        }
+        
+        // Emit achievement events
+        for (final achievementId in achievementsUnlocked) {
+          final achievement = _profile.achievements.firstWhere(
+            (a) => a.id == achievementId,
+            orElse: () => UnlockedAchievement(
+              id: achievementId,
+              title: 'Achievement',
+              description: '',
+              icon: '🏆',
+              color: '#FFD700',
+              xpReward: 0,
+              unlockedAt: DateTime.now(),
+            ),
+          );
+          
+          _eventController.add(GamificationEvent.achievementUnlocked(
+            Achievement(
+              id: achievement.id,
+              type: AchievementType.values.firstWhere(
+                (t) => t.name == achievement.id.replaceAll('_', ''),
+                orElse: () => AchievementType.welcomeNewbie,
+              ),
+              title: achievement.title,
+              description: achievement.description,
+              icon: _iconFromEmoji(achievement.icon),
+              color: _colorFromHex(achievement.color),
+              xpReward: achievement.xpReward,
+            ),
+          ));
+        }
+      }
+    } catch (e) {
+      debugPrint('Error on reservation gamification: $e');
+      // Fallback: just reload
+      await reload();
+    }
+  }
+
+  /// Obtenir le leaderboard
+  Future<List<LeaderboardEntry>> getLeaderboard({int limit = 10}) async {
+    try {
+      final response = await _supabase.rpc(
+        'get_leaderboard',
+        params: {'p_limit': limit},
       );
       
-      final difference = today.difference(lastDate).inDays;
+      if (response != null) {
+        return (response as List)
+            .map((e) => LeaderboardEntry.fromJson(e as Map<String, dynamic>))
+            .toList();
+      }
+    } catch (e) {
+      debugPrint('Error getting leaderboard: $e');
+    }
+    return [];
+  }
+
+  /// Obtenir l'historique des événements
+  Future<List<Map<String, dynamic>>> getHistory({int limit = 20}) async {
+    try {
+      final response = await _supabase.rpc(
+        'get_gamification_history',
+        params: {'p_limit': limit},
+      );
       
-      if (difference == 1) {
-        // Consecutive day
-        _currentStreak++;
-      } else if (difference > 1) {
-        // Streak broken
-        _currentStreak = 1;
+      if (response != null) {
+        return (response as List).cast<Map<String, dynamic>>();
       }
-      // Same day - no change
-    } else {
-      _currentStreak = 1;
+    } catch (e) {
+      debugPrint('Error getting history: $e');
     }
-    
-    _lastActivityDate = now;
-    await _saveProgress();
-    notifyListeners();
+    return [];
+  }
 
-    _eventController.add(GamificationEvent.streakUpdated(_currentStreak));
-
-    // Check for streak achievements
-    if (_currentStreak >= 7 && !isAchievementUnlocked('weekly_streak')) {
-      await unlockAchievement(AchievementType.weeklyStreak);
+  // Helper methods
+  IconData _iconFromEmoji(String emoji) {
+    switch (emoji) {
+      case '🎉': return Icons.celebration;
+      case '🎾': return Icons.sports_tennis;
+      case '🏆': return Icons.emoji_events;
+      case '🔥': return Icons.local_fire_department;
+      case '💪': return Icons.fitness_center;
+      case '☀️': return Icons.wb_sunny;
+      case '🌙': return Icons.nightlight_round;
+      case '❤️': return Icons.favorite;
+      case '🤩': return Icons.star;
+      case '🏅': return Icons.military_tech;
+      case '👑': return Icons.workspace_premium;
+      case '💯': return Icons.looks_one;
+      default: return Icons.emoji_events;
     }
   }
 
-  /// Called when user creates account
+  Color _colorFromHex(String hex) {
+    try {
+      return Color(int.parse(hex.replaceFirst('#', '0xFF')));
+    } catch (e) {
+      return const Color(0xFFFFD700);
+    }
+  }
+
+  // Legacy methods for compatibility
+  Future<void> awardXp(int amount, {String? message}) async {
+    // Now handled by Supabase RPC
+    _eventController.add(GamificationEvent.xpEarned(amount, message: message));
+    await reload();
+  }
+
+  Future<void> unlockAchievement(AchievementType type) async {
+    // Now handled automatically by Supabase
+    await reload();
+  }
+
   Future<void> onAccountCreated() async {
-    await unlockAchievement(AchievementType.welcomeNewbie);
+    // Handled by Supabase trigger on profile creation
+    await reload();
   }
 
-  /// Called when user makes a reservation
-  Future<void> onReservationMade({int? hour}) async {
-    _reservationsCount++;
-    await _saveProgress();
-    await updateStreak();
-    
-    // First reservation achievement
-    if (_reservationsCount == 1) {
-      await unlockAchievement(AchievementType.firstReservation);
-    }
-    
-    // Loyal player achievement
-    if (_reservationsCount >= 10 && !isAchievementUnlocked('loyal_player')) {
-      await unlockAchievement(AchievementType.loyalPlayer);
-    }
-    
-    // Time-based achievements
-    if (hour != null) {
-      if (hour < 9 && !isAchievementUnlocked('early_bird')) {
-        await unlockAchievement(AchievementType.earlyBird);
-      }
-      if (hour >= 21 && !isAchievementUnlocked('night_owl')) {
-        await unlockAchievement(AchievementType.nightOwl);
-      }
-    }
-    
-    // Award XP for reservation
-    await awardXp(50, message: 'Réservation confirmée');
-  }
-
-  /// Called when user completes a match
   Future<void> onMatchCompleted() async {
-    if (!isAchievementUnlocked('first_match')) {
-      await unlockAchievement(AchievementType.firstMatch);
-    }
-    await awardXp(25, message: 'Match terminé');
+    // TODO: Implement match completion RPC if needed
+    await reload();
   }
 
-  /// Reset all progress (for testing)
   Future<void> resetProgress() async {
-    _xp = 0;
-    _currentStreak = 0;
-    _reservationsCount = 0;
-    _lastActivityDate = null;
-    _unlockedAchievements.clear();
-    
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('gamification_xp');
+    await prefs.remove('gamification_level');
     await prefs.remove('gamification_streak');
+    await prefs.remove('gamification_longest_streak');
     await prefs.remove('gamification_reservations');
-    await prefs.remove('gamification_last_activity');
-    await prefs.remove('gamification_achievements');
     
+    _profile = GamificationProfile.empty();
     notifyListeners();
   }
 

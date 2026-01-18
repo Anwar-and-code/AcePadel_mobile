@@ -17,11 +17,13 @@ class UserProgressRing extends StatelessWidget {
     this.size = 48,
     this.onTap,
     this.showStreak = true,
+    this.showXp = false,
   });
 
   final double size;
   final VoidCallback? onTap;
   final bool showStreak;
+  final bool showXp;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,7 @@ class UserProgressRing extends StatelessWidget {
                 size: size,
                 level: service.level,
                 progress: service.currentLevelProgress,
+                xp: showXp ? service.xp : null,
               ),
             ],
           ),
@@ -119,87 +122,134 @@ class _CircularProgress extends StatelessWidget {
     required this.size,
     required this.level,
     required this.progress,
+    this.xp,
   });
 
   final double size;
   final int level;
   final double progress;
+  final int? xp;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          // Glow effect
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.brandPrimary.withValues(alpha: 0.2),
-                  blurRadius: 12,
-                  spreadRadius: 2,
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Circular level indicator
+        SizedBox(
+          width: size,
+          height: size,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Glow effect
+              Container(
+                width: size,
+                height: size,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandPrimary.withValues(alpha: 0.2),
+                      blurRadius: 12,
+                      spreadRadius: 2,
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              // Progress ring
+              CustomPaint(
+                size: Size(size, size),
+                painter: _ProgressRingPainter(
+                  progress: progress,
+                  strokeWidth: 3.5,
+                  backgroundColor: AppColors.neutral200,
+                  progressColor: AppColors.brandSecondary,
+                ),
+              ),
+              // Level badge center
+              Container(
+                width: size - 10,
+                height: size - 10,
+                decoration: BoxDecoration(
+                  gradient: AppColors.primaryGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.brandPrimary.withValues(alpha: 0.3),
+                      blurRadius: 4,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    '$level',
+                    style: AppTypography.titleSmall.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.bold,
+                      height: 1,
+                    ),
+                  ),
+                ),
+              ),
+              // Shimmer overlay for attention
+              SizedBox(
+                width: size,
+                height: size,
+                child: const DecoratedBox(
+                  decoration: BoxDecoration(shape: BoxShape.circle),
+                ),
+              )
+              .animate(onPlay: (c) => c.repeat())
+              .shimmer(
+                duration: 3000.ms,
+                delay: 2000.ms,
+                color: AppColors.white.withValues(alpha: 0.3),
+              ),
+            ],
           ),
-          // Progress ring
-          CustomPaint(
-            size: Size(size, size),
-            painter: _ProgressRingPainter(
-              progress: progress,
-              strokeWidth: 3.5,
-              backgroundColor: AppColors.neutral200,
-              progressColor: AppColors.brandSecondary,
-            ),
-          ),
-          // Level badge center
+        ),
+        // XP badge (optional)
+        if (xp != null) ...[
+          const SizedBox(width: 6),
           Container(
-            width: size - 10,
-            height: size - 10,
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              gradient: AppColors.primaryGradient,
-              shape: BoxShape.circle,
+              gradient: AppColors.goldGradient,
+              borderRadius: AppRadius.borderRadiusFull,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.brandPrimary.withValues(alpha: 0.3),
+                  color: AppColors.brandSecondary.withValues(alpha: 0.3),
                   blurRadius: 4,
                   offset: const Offset(0, 2),
                 ),
               ],
             ),
-            child: Center(
-              child: Text(
-                '$level',
-                style: AppTypography.titleSmall.copyWith(
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.star_rounded,
+                  size: 12,
                   color: AppColors.white,
-                  fontWeight: FontWeight.bold,
-                  height: 1,
                 ),
-              ),
-            ),
-          ),
-          // Shimmer overlay for attention
-          SizedBox(
-            width: size,
-            height: size,
-            child: const DecoratedBox(
-              decoration: BoxDecoration(shape: BoxShape.circle),
+                const SizedBox(width: 3),
+                Text(
+                  '$xp',
+                  style: AppTypography.labelSmall.copyWith(
+                    color: AppColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           )
-          .animate(onPlay: (c) => c.repeat())
-          .shimmer(
-            duration: 3000.ms,
-            delay: 2000.ms,
-            color: AppColors.white.withValues(alpha: 0.3),
-          ),
+          .animate()
+          .fadeIn(duration: 300.ms)
+          .scale(begin: const Offset(0.8, 0.8), curve: Curves.elasticOut),
         ],
-      ),
+      ],
     );
   }
 }

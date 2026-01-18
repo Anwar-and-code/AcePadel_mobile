@@ -86,7 +86,7 @@ class HomeScreen extends StatelessWidget {
                         routeName: '/profile',
                       );
                     },
-                    trailing: const UserProgressRing(size: 46),
+                    trailing: const UserProgressRing(size: 46, showXp: true),
                   ),
                 ),
               ),
