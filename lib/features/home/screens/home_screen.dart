@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
+import '../../../core/services/user_profile_service.dart';
 import '../widgets/home_banner_carousel.dart';
 import '../widgets/home_action_cards.dart';
 import '../widgets/home_reservations_list.dart';
@@ -13,7 +14,7 @@ import '../../product_tour/product_tour.dart';
 /// Home screen with product tour integration
 /// 
 /// Accepts GlobalKeys from MainShell for product tour showcase targets.
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({
     super.key,
     this.tourBannerKey,
@@ -29,6 +30,18 @@ class HomeScreen extends StatelessWidget {
   
   /// GlobalKey for profile/progress ring showcase
   final GlobalKey? tourProfileKey;
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Charger le profil utilisateur au démarrage
+    UserProfileService.instance.loadProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,20 +86,27 @@ class HomeScreen extends StatelessWidget {
               Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
                 child: _wrapWithShowcase(
-                  key: tourProfileKey,
+                  key: widget.tourProfileKey,
                   step: TourSteps.profile,
                   stepIndex: 4,
-                  child: AppUserHeader(
-                    name: 'Alexandre',
-                    greeting: 'Hello,',
-                    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
-                    onAvatarTap: () {
-                      context.navigateSlide(
-                        const ProfileScreen(),
-                        routeName: '/profile',
+                  child: ListenableBuilder(
+                    listenable: UserProfileService.instance,
+                    builder: (context, _) {
+                      final profile = UserProfileService.instance.profile;
+                      return AppUserHeader(
+                        name: profile?.displayName ?? 'Utilisateur',
+                        greeting: 'Hello,',
+                        avatarUrl: profile?.avatarUrl,
+                        initials: profile?.initials ?? 'U',
+                        onAvatarTap: () {
+                          context.navigateSlide(
+                            const ProfileScreen(),
+                            routeName: '/profile',
+                          );
+                        },
+                        trailing: const UserProgressRing(size: 46, showXp: true),
                       );
                     },
-                    trailing: const UserProgressRing(size: 46, showXp: true),
                   ),
                 ),
               ),
@@ -95,7 +115,7 @@ class HomeScreen extends StatelessWidget {
 
               // Banner Carousel with tour target
               _wrapWithShowcase(
-                key: tourBannerKey,
+                key: widget.tourBannerKey,
                 step: TourSteps.banner,
                 stepIndex: 2,
                 child: const HomeBannerCarousel(),
@@ -115,19 +135,11 @@ class HomeScreen extends StatelessWidget {
               Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
                 child: _wrapWithShowcase(
-                  key: tourActionCardsKey,
+                  key: widget.tourActionCardsKey,
                   step: TourSteps.actionCards,
                   stepIndex: 3,
                   child: const HomeActionCards(),
                 ),
-              ),
-
-              AppSpacing.vGapXl,
-
-              // Historique des réservations
-              const Padding(
-                padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: HomeReservationsHistory(),
               ),
 
               AppSpacing.vGapXxl,

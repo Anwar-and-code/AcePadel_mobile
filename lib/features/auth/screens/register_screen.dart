@@ -165,7 +165,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                         AppSpacing.hGapXs,
                         Text(
-                          '+225 07 77 46 56 00',
+                          '+225 07 99 99 88 88',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textSecondary,
                           ),

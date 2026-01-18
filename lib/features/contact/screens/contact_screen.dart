@@ -34,7 +34,7 @@ class ContactScreen extends StatelessWidget {
             _ContactOption(
               icon: Icons.phone_outlined,
               title: 'Téléphone',
-              subtitle: '+225 07 77 46 56 00',
+              subtitle: '+225 07 99 99 88 88',
               onTap: () {},
             ),
             AppSpacing.vGapSm,
@@ -193,7 +193,7 @@ class _ClubInfoCard extends StatelessWidget {
                       AppSpacing.hGapXs,
                       Expanded(
                         child: Text(
-                          'Cocody Riviera Golf, Abidjan, Côte d\'Ivoire',
+                          'Treichville, Zone 3, Rue Cava Artisanal, Abidjan',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textSecondary,
                           ),

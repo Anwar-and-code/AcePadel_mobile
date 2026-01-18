@@ -161,11 +161,32 @@ class Reservation {
   }
 
   bool get isUpcoming {
+    if (status == ReservationStatus.canceled || status == ReservationStatus.expired) {
+      return false;
+    }
+    
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final resDate = DateTime(reservationDate.year, reservationDate.month, reservationDate.day);
-    return resDate.isAfter(today) || 
-           (resDate.isAtSameMomentAs(today) && status == ReservationStatus.confirmed);
+    
+    // Si la date est dans le futur, c'est à venir
+    if (resDate.isAfter(today)) return true;
+    
+    // Si c'est aujourd'hui, vérifier l'heure de fin
+    if (resDate.isAtSameMomentAs(today)) {
+      if (endTime == null) return false;
+      
+      final parts = endTime!.split(':');
+      final endHour = int.tryParse(parts[0]) ?? 0;
+      final endMinute = int.tryParse(parts.length > 1 ? parts[1] : '0') ?? 0;
+      
+      // La réservation est à venir si l'heure de fin n'est pas encore passée
+      final endDateTime = DateTime(now.year, now.month, now.day, endHour, endMinute);
+      return now.isBefore(endDateTime);
+    }
+    
+    // Date passée
+    return false;
   }
 
   bool get canCancel {

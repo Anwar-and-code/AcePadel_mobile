@@ -79,7 +79,7 @@ class _PhoneScreenState extends State<PhoneScreen> {
               AppPhoneField(
                 controller: _phoneController,
                 label: 'Numéro mobile',
-                hint: '07 77 46 56 00',
+                hint: '07 99 99 88 88',
                 onChanged: (value) => setState(() {}),
               ),
               

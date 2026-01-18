@@ -1,18 +1,30 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/user_profile_service.dart';
 import '../../../features/auth/screens/email_screen.dart';
-import 'settings_screen.dart';
+import '../../gamification/services/gamification_service_v2.dart';
 import 'personal_info_screen.dart';
-import 'favorites_screen.dart';
-import 'help_center_screen.dart';
-import 'about_screen.dart';
 import 'legal_screen.dart';
-import 'notifications_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Recharger le profil à l'ouverture
+    UserProfileService.instance.loadProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,17 +56,8 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     
-                    // Settings Button (Trailing)
-                    AppIconButton(
-                      icon: AppIcons.settings,
-                      onPressed: () {
-                        context.navigateSlide(
-                          const SettingsScreen(),
-                          routeName: '/settings',
-                        );
-                      },
-                      variant: AppButtonVariant.ghost,
-                    ),
+                    // Placeholder for symmetry
+                    const SizedBox(width: 40),
                   ],
                 ),
               ),
@@ -69,32 +72,38 @@ class ProfileScreen extends StatelessWidget {
               // Quick stats
               Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _StatCard(
-                        label: 'Réservations',
-                        value: '24',
-                        icon: AppIcons.reservationFilled,
-                        color: AppColors.brandPrimary,
+                child: ListenableBuilder(
+                  listenable: GamificationServiceV2.instance,
+                  builder: (context, _) {
+                    final gamification = GamificationServiceV2.instance;
+                    return IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _StatCard(
+                            label: 'Réservations',
+                            value: '${gamification.reservationsCount}',
+                            icon: AppIcons.reservationFilled,
+                            color: AppColors.brandPrimary,
+                          ),
+                          AppSpacing.hGapMd,
+                          _StatCard(
+                            label: 'Niveau',
+                            value: '${gamification.level}',
+                            icon: Icons.star_rounded,
+                            color: AppColors.brandSecondary,
+                          ),
+                          AppSpacing.hGapMd,
+                          _StatCard(
+                            label: 'Streak',
+                            value: '${gamification.currentStreak}',
+                            icon: Icons.local_fire_department,
+                            color: AppColors.success,
+                          ),
+                        ],
                       ),
-                      AppSpacing.hGapMd,
-                      _StatCard(
-                        label: 'Événements',
-                        value: '8',
-                        icon: AppIcons.eventsFilled,
-                        color: AppColors.brandSecondary,
-                      ),
-                      AppSpacing.hGapMd,
-                      _StatCard(
-                        label: 'Heures jouées',
-                        value: '36',
-                        icon: AppIcons.timer,
-                        color: AppColors.success,
-                      ),
-                    ],
-                  ),
+                    );
+                  },
                 ),
               ),
 
@@ -171,90 +180,6 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
 
-              AppSpacing.vGapMd,
-
-              // Delete account button
-              Padding(
-                padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: TextButton(
-                  onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (dialogContext) => AlertDialog(
-                        backgroundColor: AppColors.cardBackground,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        title: Row(
-                          children: [
-                            Icon(
-                              Icons.warning_amber_rounded,
-                              color: AppColors.error,
-                              size: 24,
-                            ),
-                            AppSpacing.hGapSm,
-                            Text(
-                              'Supprimer le compte',
-                              style: AppTypography.titleMedium.copyWith(
-                                color: AppColors.error,
-                              ),
-                            ),
-                          ],
-                        ),
-                        content: Text(
-                          'La suppression de votre compte est définitive. Toutes vos données seront supprimées immédiatement et vous ne pourrez pas les récupérer.',
-                          style: AppTypography.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(dialogContext),
-                            child: Text(
-                              'Non',
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(dialogContext);
-                              // TODO: Implement account deletion
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: const Text('Fonctionnalité à venir'),
-                                  backgroundColor: AppColors.brandPrimary,
-                                  behavior: SnackBarBehavior.floating,
-                                  margin: const EdgeInsets.all(16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Oui',
-                              style: AppTypography.bodyMedium.copyWith(
-                                color: AppColors.error,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                  child: Text(
-                    'Supprimer le compte',
-                    style: AppTypography.bodyMedium.copyWith(
-                      color: AppColors.error,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-
               AppSpacing.vGapXxl,
             ],
           ),
@@ -264,80 +189,264 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _ProfileHeader extends StatelessWidget {
+class _ProfileHeader extends StatefulWidget {
   const _ProfileHeader();
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // Avatar
-        Stack(
+  State<_ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends State<_ProfileHeader> {
+  bool _isUploading = false;
+
+  Future<void> _pickAndUploadImage() async {
+    final picker = ImagePicker();
+    
+    // Afficher le choix entre caméra et galerie
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: AppColors.backgroundPrimary,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.brandPrimary,
-                  width: 3,
+            Text('Changer la photo', style: AppTypography.titleMedium),
+            AppSpacing.vGapLg,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _PhotoOption(
+                  icon: Icons.camera_alt,
+                  label: 'Caméra',
+                  onTap: () => Navigator.pop(context, ImageSource.camera),
                 ),
-                image: const DecorationImage(
-                  image: NetworkImage(
-                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+                _PhotoOption(
+                  icon: Icons.photo_library,
+                  label: 'Galerie',
+                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                ),
+                if (UserProfileService.instance.profile?.hasAvatar == true)
+                  _PhotoOption(
+                    icon: Icons.delete,
+                    label: 'Supprimer',
+                    color: AppColors.error,
+                    onTap: () => Navigator.pop(context, null),
                   ),
-                  fit: BoxFit.cover,
-                ),
-              ),
+              ],
             ),
-            Positioned(
-              bottom: 0,
-              right: 0,
-              child: Container(
-                width: 32,
-                height: 32,
-                decoration: BoxDecoration(
-                  color: AppColors.brandPrimary,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.white,
-                    width: 2,
-                  ),
-                ),
-                child: const Icon(
-                  AppIcons.camera,
-                  size: 16,
-                  color: AppColors.white,
-                ),
-              ),
-            ),
+            AppSpacing.vGapLg,
           ],
         ),
+      ),
+    );
 
-        AppSpacing.vGapMd,
+    if (source == null && UserProfileService.instance.profile?.hasAvatar == true) {
+      // Supprimer la photo
+      setState(() => _isUploading = true);
+      await UserProfileService.instance.removeAvatar();
+      setState(() => _isUploading = false);
+      return;
+    }
 
-        // Name and info
-        Text(
-          'Alexandre KOFFI',
-          style: AppTypography.headlineSmall,
+    if (source == null) return;
+
+    final pickedFile = await picker.pickImage(
+      source: source,
+      maxWidth: 512,
+      maxHeight: 512,
+      imageQuality: 85,
+    );
+
+    if (pickedFile == null) return;
+
+    setState(() => _isUploading = true);
+
+    final file = File(pickedFile.path);
+    final result = await UserProfileService.instance.uploadAvatar(file);
+
+    setState(() => _isUploading = false);
+
+    if (result != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Photo mise à jour !'),
+          backgroundColor: AppColors.success,
         ),
-        AppSpacing.vGapXxs,
-        Text(
-          'alexandre.koffi@email.com',
-          style: AppTypography.bodyMedium.copyWith(
-            color: AppColors.textSecondary,
+      );
+    } else if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Erreur lors de l\'upload'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: UserProfileService.instance,
+      builder: (context, _) {
+        final profile = UserProfileService.instance.profile;
+        final isLoading = UserProfileService.instance.isLoading;
+
+        return Column(
+          children: [
+            // Avatar
+            Stack(
+              children: [
+                GestureDetector(
+                  onTap: _isUploading ? null : _pickAndUploadImage,
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.brandPrimary,
+                        width: 3,
+                      ),
+                      color: profile?.hasAvatar != true 
+                          ? AppColors.brandPrimary.withValues(alpha: 0.15)
+                          : null,
+                      image: profile?.hasAvatar == true
+                          ? DecorationImage(
+                              image: NetworkImage(profile!.avatarUrl!),
+                              fit: BoxFit.cover,
+                            )
+                          : null,
+                    ),
+                    child: profile?.hasAvatar != true
+                        ? Center(
+                            child: Text(
+                              profile?.initials ?? 'U',
+                              style: AppTypography.headlineLarge.copyWith(
+                                color: AppColors.brandPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+                if (_isUploading)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppColors.black.withValues(alpha: 0.5),
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.white,
+                          strokeWidth: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _isUploading ? null : _pickAndUploadImage,
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: AppColors.brandPrimary,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Icon(
+                        AppIcons.camera,
+                        size: 16,
+                        color: AppColors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            AppSpacing.vGapMd,
+
+            // Name and info
+            if (isLoading)
+              const CircularProgressIndicator()
+            else ...[
+              Text(
+                profile?.fullName ?? 'Utilisateur',
+                style: AppTypography.headlineSmall,
+              ),
+              AppSpacing.vGapXxs,
+              Text(
+                profile?.email ?? '',
+                style: AppTypography.bodyMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              if (profile?.phone != null && profile!.phone!.isNotEmpty) ...[
+                AppSpacing.vGapXs,
+                Text(
+                  profile.phone!,
+                  style: AppTypography.bodyMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ],
+            ],
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _PhotoOption extends StatelessWidget {
+  const _PhotoOption({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: (color ?? AppColors.brandPrimary).withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color ?? AppColors.brandPrimary),
           ),
-        ),
-        AppSpacing.vGapXs,
-        Text(
-          '+225 07 77 46 56 00',
-          style: AppTypography.bodyMedium.copyWith(
-            color: AppColors.textSecondary,
+          AppSpacing.vGapXs,
+          Text(
+            label,
+            style: AppTypography.caption.copyWith(
+              color: color ?? AppColors.textPrimary,
+            ),
           ),
-        ),
-
-      ],
+        ],
+      ),
     );
   }
 }
@@ -396,209 +505,212 @@ class _StatCard extends StatelessWidget {
 class _ProfileMenuSection extends StatelessWidget {
   const _ProfileMenuSection();
 
+  Future<void> _launchArmasoft() async {
+    final uri = Uri.parse('https://www.armasoft.ci');
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: AppSpacing.screenPaddingHorizontalOnly,
-          child: AppSectionHeader(title: 'Mon compte'),
-        ),
-        AppSpacing.vGapMd,
-        _MenuItem(
-          icon: AppIcons.profile,
-          title: 'Informations personnelles',
-          onTap: () {
-            context.navigateSlide(
-              const PersonalInfoScreen(),
-              routeName: '/profile/personal-info',
-            );
-          },
-        ),
+        // Mon compte Section
+        _buildSectionHeader('Mon compte'),
         AppSpacing.vGapSm,
-        _MenuItem(
-          icon: AppIcons.history,
-          title: 'Historique des réservations',
-          onTap: () {
-            // Navigate to reservation tab via bottom nav
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    Icon(AppIcons.calendar, color: AppColors.white),
-                    AppSpacing.hGapSm,
-                    Expanded(child: Text('Rendez-vous dans l\'onglet "Réservations"')),
-                  ],
+        _buildMenuCard(context, [
+          _MenuTile(
+            icon: Icons.person_outline,
+            title: 'Informations personnelles',
+            subtitle: 'Gérer vos données personnelles',
+            onTap: () {
+              context.navigateSlide(
+                const PersonalInfoScreen(),
+                routeName: '/profile/personal-info',
+              );
+            },
+          ),
+          _MenuTile(
+            icon: Icons.history,
+            title: 'Historique des réservations',
+            subtitle: 'Voir toutes vos réservations',
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      Icon(AppIcons.calendar, color: AppColors.white),
+                      AppSpacing.hGapSm,
+                      Expanded(child: Text('Rendez-vous dans l\'onglet "Réservations"')),
+                    ],
+                  ),
+                  backgroundColor: AppColors.brandPrimary,
+                  duration: const Duration(seconds: 2),
+                  behavior: SnackBarBehavior.floating,
                 ),
-                backgroundColor: AppColors.brandPrimary,
-                duration: const Duration(seconds: 2),
-                behavior: SnackBarBehavior.floating,
+              );
+            },
+          ),
+        ]),
+
+        AppSpacing.vGapXl,
+
+        // Légal Section
+        _buildSectionHeader('Légal'),
+        AppSpacing.vGapSm,
+        _buildMenuCard(context, [
+          _MenuTile(
+            icon: Icons.description_outlined,
+            title: 'Conditions d\'utilisation',
+            subtitle: 'Lire nos conditions générales',
+            onTap: () {
+              context.navigateSlide(
+                const TermsOfServiceScreen(),
+                routeName: '/legal/terms',
+              );
+            },
+          ),
+          _MenuTile(
+            icon: Icons.privacy_tip_outlined,
+            title: 'Politique de confidentialité',
+            subtitle: 'Comment nous protégeons vos données',
+            onTap: () {
+              context.navigateSlide(
+                const PrivacyPolicyScreen(),
+                routeName: '/legal/privacy',
+              );
+            },
+          ),
+        ]),
+
+        AppSpacing.vGapXl,
+
+        // Développé par ArmaSOFT
+        Padding(
+          padding: AppSpacing.screenPaddingHorizontalOnly,
+          child: GestureDetector(
+            onTap: _launchArmasoft,
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              decoration: BoxDecoration(
+                color: AppColors.cardBackground,
+                borderRadius: AppRadius.cardBorderRadius,
+                border: Border.all(color: AppColors.borderDefault),
               ),
-            );
-          },
-        ),
-        AppSpacing.vGapSm,
-        _MenuItem(
-          icon: AppIcons.favorite,
-          title: 'Favoris',
-          onTap: () {
-            context.navigateSlide(
-              const FavoritesScreen(),
-              routeName: '/profile/favorites',
-            );
-          },
-        ),
-        AppSpacing.vGapSm,
-        _MenuItem(
-          icon: AppIcons.notification,
-          title: 'Notifications',
-          onTap: () {
-            context.navigateSlide(
-              const NotificationsScreen(),
-              routeName: '/notifications',
-            );
-          },
+              child: Column(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.brandPrimary.withValues(alpha: 0.1),
+                      borderRadius: AppRadius.borderRadiusMd,
+                    ),
+                    child: Icon(
+                      Icons.code,
+                      color: AppColors.brandPrimary,
+                      size: 24,
+                    ),
+                  ),
+                  AppSpacing.vGapMd,
+                  Text(
+                    'Développé par',
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textTertiary,
+                    ),
+                  ),
+                  AppSpacing.vGapXxs,
+                  Text(
+                    'ArmaSOFT',
+                    style: AppTypography.titleMedium.copyWith(
+                      color: AppColors.brandPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  AppSpacing.vGapXxs,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.language,
+                        size: 14,
+                        color: AppColors.textTertiary,
+                      ),
+                      AppSpacing.hGapXxs,
+                      Text(
+                        'www.armasoft.ci',
+                        style: AppTypography.bodySmall.copyWith(
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
 
         AppSpacing.vGapXl,
 
-        const Padding(
-          padding: AppSpacing.screenPaddingHorizontalOnly,
-          child: AppSectionHeader(title: 'Support'),
-        ),
-        AppSpacing.vGapMd,
-        _MenuItem(
-          icon: AppIcons.help,
-          title: 'Centre d\'aide',
-          onTap: () {
-            context.navigateSlide(
-              const HelpCenterScreen(),
-              routeName: '/help',
-            );
-          },
-        ),
+        // Zone de danger - Supprimer mon compte
+        _buildSectionHeader('Zone de danger'),
         AppSpacing.vGapSm,
-        _MenuItem(
-          icon: AppIcons.info,
-          title: 'À propos',
-          onTap: () {
-            context.navigateSlide(
-              const AboutScreen(),
-              routeName: '/about',
-            );
-          },
-        ),
-        AppSpacing.vGapSm,
-        _MenuItem(
-          icon: AppIcons.share,
-          title: 'Partager l\'application',
-          onTap: () {
-            showModalBottomSheet(
-              context: context,
-              backgroundColor: AppColors.backgroundPrimary,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-              ),
-              builder: (context) => Padding(
-                padding: const EdgeInsets.all(AppSpacing.xl),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Partager PadelHouse',
-                      style: AppTypography.headlineSmall,
-                    ),
-                    AppSpacing.vGapMd,
-                    Text(
-                      'Invitez vos amis à rejoindre la communauté PadelHouse !',
-                      style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
-                      textAlign: TextAlign.center,
-                    ),
-                    AppSpacing.vGapLg,
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _ShareOption(icon: Icons.message, label: 'SMS', onTap: () {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Lien copié !'), backgroundColor: AppColors.success),
-                          );
-                        }),
-                        _ShareOption(icon: Icons.email, label: 'Email', onTap: () {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Lien copié !'), backgroundColor: AppColors.success),
-                          );
-                        }),
-                        _ShareOption(icon: Icons.copy, label: 'Copier', onTap: () {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Lien copié dans le presse-papier'), backgroundColor: AppColors.success),
-                          );
-                        }),
-                        _ShareOption(icon: Icons.more_horiz, label: 'Plus', onTap: () {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Partage...'), backgroundColor: AppColors.brandPrimary),
-                          );
-                        }),
-                      ],
-                    ),
-                    AppSpacing.vGapLg,
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
-
-        AppSpacing.vGapXl,
-
-        const Padding(
-          padding: AppSpacing.screenPaddingHorizontalOnly,
-          child: AppSectionHeader(title: 'Légal'),
-        ),
-        AppSpacing.vGapMd,
-        _MenuItem(
-          icon: Icons.description_outlined,
-          title: 'Conditions d\'utilisation',
-          onTap: () {
-            context.navigateSlide(
-              const TermsOfServiceScreen(),
-              routeName: '/legal/terms',
-            );
-          },
-        ),
-        AppSpacing.vGapSm,
-        _MenuItem(
-          icon: Icons.privacy_tip_outlined,
-          title: 'Politique de confidentialité',
-          onTap: () {
-            context.navigateSlide(
-              const PrivacyPolicyScreen(),
-              routeName: '/legal/privacy',
-            );
-          },
-        ),
+        _buildDangerCard(context, [
+          _MenuTile(
+            icon: Icons.delete_outline,
+            title: 'Supprimer mon compte',
+            subtitle: 'Supprimer définitivement votre compte',
+            iconColor: AppColors.error,
+            titleColor: AppColors.error,
+            onTap: () => _showDeleteAccountDialog(context),
+          ),
+        ]),
       ],
     );
   }
-}
 
-class _MenuItem extends StatelessWidget {
-  const _MenuItem({
-    required this.icon,
-    required this.title,
-    this.onTap,
-  });
+  Widget _buildDangerCard(BuildContext context, List<Widget> children) {
+    return Container(
+      margin: AppSpacing.screenPaddingHorizontalOnly,
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: AppRadius.cardBorderRadius,
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        children: [
+          for (int i = 0; i < children.length; i++) ...[
+            children[i],
+            if (i < children.length - 1)
+              Divider(
+                height: 1,
+                indent: AppSpacing.md + 40 + AppSpacing.md,
+                color: AppColors.borderDefault,
+              ),
+          ],
+        ],
+      ),
+    );
+  }
 
-  final IconData icon;
-  final String title;
-  final VoidCallback? onTap;
+  Widget _buildSectionHeader(String title) {
+    return Padding(
+      padding: AppSpacing.screenPaddingHorizontalOnly,
+      child: Text(
+        title,
+        style: AppTypography.labelLarge.copyWith(
+          color: AppColors.textSecondary,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildMenuCard(BuildContext context, List<Widget> children) {
     return Container(
       margin: AppSpacing.screenPaddingHorizontalOnly,
       decoration: BoxDecoration(
@@ -606,81 +718,198 @@ class _MenuItem extends StatelessWidget {
         borderRadius: AppRadius.cardBorderRadius,
         border: Border.all(color: AppColors.borderDefault),
       ),
-      child: Material(
-        color: Colors.transparent,
-        borderRadius: AppRadius.cardBorderRadius,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: AppRadius.cardBorderRadius,
-          child: Padding(
-            padding: AppSpacing.cardPaddingAll,
-            child: Row(
+      child: Column(
+        children: [
+          for (int i = 0; i < children.length; i++) ...[
+            children[i],
+            if (i < children.length - 1)
+              Divider(
+                height: 1,
+                indent: AppSpacing.md + 40 + AppSpacing.md,
+                color: AppColors.borderDefault,
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.backgroundPrimary,
+      isScrollControlled: false,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.borderDefault,
+                borderRadius: AppRadius.borderRadiusFull,
+              ),
+            ),
+            AppSpacing.vGapLg,
+
+            // Icon
+            Container(
+              width: 64,
+              height: 64,
+              decoration: BoxDecoration(
+                color: AppColors.error.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.warning_amber_rounded,
+                color: AppColors.error,
+                size: 32,
+              ),
+            ),
+            AppSpacing.vGapLg,
+
+            // Title
+            Text(
+              'Supprimer mon compte',
+              style: AppTypography.titleLarge.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            AppSpacing.vGapMd,
+
+            // Description
+            Text(
+              'Cette action est irréversible. Toutes vos données personnelles, réservations et historique seront supprimées définitivement.',
+              style: AppTypography.bodyMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            AppSpacing.vGapXl,
+
+            // Buttons
+            Row(
               children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceSubtle,
-                    borderRadius: AppRadius.borderRadiusMd,
-                  ),
-                  child: Icon(
-                    icon,
-                    size: 20,
-                    color: AppColors.brandPrimary,
+                Expanded(
+                  child: AppButton(
+                    label: 'Annuler',
+                    variant: AppButtonVariant.outline,
+                    onPressed: () => Navigator.pop(ctx),
                   ),
                 ),
                 AppSpacing.hGapMd,
                 Expanded(
-                  child: Text(
-                    title,
-                    style: AppTypography.bodyMedium,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(ctx);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Un email de confirmation vous a été envoyé'),
+                          backgroundColor: AppColors.warning,
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.error,
+                      foregroundColor: AppColors.white,
+                      padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: AppRadius.borderRadiusMd,
+                      ),
+                    ),
+                    child: Text(
+                      'Supprimer',
+                      style: AppTypography.labelLarge.copyWith(
+                        color: AppColors.white,
+                      ),
+                    ),
                   ),
-                ),
-                Icon(
-                  AppIcons.chevronRight,
-                  color: AppColors.iconTertiary,
                 ),
               ],
             ),
-          ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _ShareOption extends StatelessWidget {
-  const _ShareOption({
+class _MenuTile extends StatelessWidget {
+  const _MenuTile({
     required this.icon,
-    required this.label,
-    required this.onTap,
+    required this.title,
+    required this.subtitle,
+    this.onTap,
+    this.iconColor,
+    this.titleColor,
   });
 
   final IconData icon;
-  final String label;
-  final VoidCallback onTap;
+  final String title;
+  final String subtitle;
+  final VoidCallback? onTap;
+  final Color? iconColor;
+  final Color? titleColor;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              color: AppColors.brandPrimary.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(icon, color: AppColors.brandPrimary),
+    final color = iconColor ?? AppColors.brandPrimary;
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: AppRadius.borderRadiusMd,
+                ),
+                child: Icon(
+                  icon,
+                  size: 20,
+                  color: color,
+                ),
+              ),
+              AppSpacing.hGapMd,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTypography.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: titleColor,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                AppIcons.chevronRight,
+                color: iconColor ?? AppColors.iconTertiary,
+              ),
+            ],
           ),
-          AppSpacing.vGapXs,
-          Text(
-            label,
-            style: AppTypography.caption,
-          ),
-        ],
+        ),
       ),
     );
   }

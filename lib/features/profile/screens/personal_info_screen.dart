@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import '../../../core/services/user_profile_service.dart';
 
 class PersonalInfoScreen extends StatefulWidget {
   const PersonalInfoScreen({super.key});
@@ -9,39 +10,68 @@ class PersonalInfoScreen extends StatefulWidget {
 }
 
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
-  final _formKey = GlobalKey<FormState>();
   bool _isEditing = false;
+  bool _isSaving = false;
 
-  late TextEditingController _firstNameController;
-  late TextEditingController _lastNameController;
-  late TextEditingController _emailController;
-  late TextEditingController _phoneController;
-  late TextEditingController _birthDateController;
-  late TextEditingController _addressController;
+  String _firstName = '';
+  String _lastName = '';
+  String _email = '';
+  String _phone = '';
+  DateTime? _birthDate;
+  String _selectedGender = 'Aucun';
 
-  String _selectedLevel = 'Intermédiaire';
-  String _selectedHand = 'Droitier';
+  final List<String> _genderOptions = ['Aucun', 'Homme', 'Femme', 'Autre'];
 
   @override
   void initState() {
     super.initState();
-    _firstNameController = TextEditingController(text: 'Alexandre');
-    _lastNameController = TextEditingController(text: 'KOFFI');
-    _emailController = TextEditingController(text: 'alexandre.koffi@email.com');
-    _phoneController = TextEditingController(text: '+225 07 77 46 56 00');
-    _birthDateController = TextEditingController(text: '15/03/1990');
-    _addressController = TextEditingController(text: 'Abidjan, Cocody');
+    _loadProfileData();
   }
 
-  @override
-  void dispose() {
-    _firstNameController.dispose();
-    _lastNameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
-    _birthDateController.dispose();
-    _addressController.dispose();
-    super.dispose();
+  void _loadProfileData() {
+    final profile = UserProfileService.instance.profile;
+    setState(() {
+      _firstName = profile?.firstName ?? '';
+      _lastName = profile?.lastName ?? '';
+      _email = profile?.email ?? '';
+      _phone = profile?.phone ?? '';
+      _birthDate = profile?.birthDate;
+      _selectedGender = _mapGenderFromDb(profile?.gender);
+    });
+  }
+
+  String _mapGenderFromDb(String? gender) {
+    switch (gender?.toUpperCase()) {
+      case 'MALE':
+      case 'HOMME':
+        return 'Homme';
+      case 'FEMALE':
+      case 'FEMME':
+        return 'Femme';
+      case 'OTHER':
+      case 'AUTRE':
+        return 'Autre';
+      default:
+        return 'Aucun';
+    }
+  }
+
+  String _mapGenderToDb(String gender) {
+    switch (gender) {
+      case 'Homme':
+        return 'MALE';
+      case 'Femme':
+        return 'FEMALE';
+      case 'Autre':
+        return 'OTHER';
+      default:
+        return '';
+    }
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return 'Non renseigné';
+    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 
   @override
@@ -61,207 +91,92 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
         ),
         centerTitle: true,
         actions: [
-          TextButton(
-            onPressed: () {
-              if (_isEditing) {
-                if (_formKey.currentState!.validate()) {
-                  setState(() => _isEditing = false);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Informations mises à jour'),
-                      backgroundColor: AppColors.success,
-                    ),
-                  );
-                }
-              } else {
-                setState(() => _isEditing = true);
-              }
-            },
-            child: Text(
-              _isEditing ? 'Enregistrer' : 'Modifier',
-              style: AppTypography.labelLarge.copyWith(
-                color: AppColors.brandPrimary,
+          if (_isSaving)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            TextButton(
+              onPressed: _isEditing ? _handleSave : () => setState(() => _isEditing = true),
+              child: Text(
+                _isEditing ? 'Enregistrer' : 'Modifier',
+                style: AppTypography.labelLarge.copyWith(
+                  color: AppColors.brandPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              AppSpacing.vGapLg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppSpacing.vGapMd,
 
-              // Profile Picture Section
-              Center(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: 100,
-                      height: 100,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: AppColors.brandPrimary,
-                          width: 3,
-                        ),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
-                          ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    if (_isEditing)
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Sélection de photo'),
-                                backgroundColor: AppColors.brandPrimary,
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: 32,
-                            height: 32,
-                            decoration: BoxDecoration(
-                              color: AppColors.brandPrimary,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: AppColors.white,
-                                width: 2,
-                              ),
-                            ),
-                            child: const Icon(
-                              AppIcons.camera,
-                              size: 16,
-                              color: AppColors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
+            // Identité Section
+            _buildSectionHeader('Identité'),
+            AppSpacing.vGapSm,
+            _buildSettingsCard([
+              _InfoTile(
+                icon: Icons.person_outline,
+                title: 'Prénom',
+                value: _firstName.isEmpty ? 'Non renseigné' : _firstName,
+                isEditing: _isEditing,
+                onTap: _isEditing ? () => _showEditDialog('Prénom', _firstName, (v) => setState(() => _firstName = v)) : null,
               ),
-
-              AppSpacing.vGapXl,
-
-              // Personal Information Section
-              _buildSectionHeader('Identité'),
-              AppSpacing.vGapMd,
-              Padding(
-                padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: Column(
-                  children: [
-                    _buildTextField(
-                      controller: _firstNameController,
-                      label: 'Prénom',
-                      icon: Icons.person_outline,
-                      enabled: _isEditing,
-                    ),
-                    AppSpacing.vGapMd,
-                    _buildTextField(
-                      controller: _lastNameController,
-                      label: 'Nom',
-                      icon: Icons.person_outline,
-                      enabled: _isEditing,
-                    ),
-                    AppSpacing.vGapMd,
-                    _buildTextField(
-                      controller: _birthDateController,
-                      label: 'Date de naissance',
-                      icon: Icons.cake_outlined,
-                      enabled: _isEditing,
-                      onTap: _isEditing ? () => _selectDate() : null,
-                      readOnly: true,
-                    ),
-                  ],
-                ),
+              _InfoTile(
+                icon: Icons.badge_outlined,
+                title: 'Nom',
+                value: _lastName.isEmpty ? 'Non renseigné' : _lastName,
+                isEditing: _isEditing,
+                onTap: _isEditing ? () => _showEditDialog('Nom', _lastName, (v) => setState(() => _lastName = v)) : null,
               ),
-
-              AppSpacing.vGapXl,
-
-              // Contact Section
-              _buildSectionHeader('Contact'),
-              AppSpacing.vGapMd,
-              Padding(
-                padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: Column(
-                  children: [
-                    _buildTextField(
-                      controller: _emailController,
-                      label: 'Email',
-                      icon: Icons.email_outlined,
-                      enabled: _isEditing,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                    AppSpacing.vGapMd,
-                    _buildTextField(
-                      controller: _phoneController,
-                      label: 'Téléphone',
-                      icon: Icons.phone_outlined,
-                      enabled: _isEditing,
-                      keyboardType: TextInputType.phone,
-                    ),
-                    AppSpacing.vGapMd,
-                    _buildTextField(
-                      controller: _addressController,
-                      label: 'Adresse',
-                      icon: Icons.location_on_outlined,
-                      enabled: _isEditing,
-                    ),
-                  ],
-                ),
+              _InfoTile(
+                icon: Icons.cake_outlined,
+                title: 'Date de naissance',
+                value: _formatDate(_birthDate),
+                isEditing: _isEditing,
+                onTap: _isEditing ? _selectDate : null,
               ),
-
-              AppSpacing.vGapXl,
-
-              // Player Profile Section
-              _buildSectionHeader('Profil joueur'),
-              AppSpacing.vGapMd,
-              Padding(
-                padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: Column(
-                  children: [
-                    _buildDropdownField(
-                      label: 'Niveau',
-                      icon: Icons.trending_up,
-                      value: _selectedLevel,
-                      items: ['Débutant', 'Intermédiaire', 'Avancé', 'Expert'],
-                      enabled: _isEditing,
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedLevel = value);
-                        }
-                      },
-                    ),
-                    AppSpacing.vGapMd,
-                    _buildDropdownField(
-                      label: 'Main dominante',
-                      icon: Icons.back_hand_outlined,
-                      value: _selectedHand,
-                      items: ['Droitier', 'Gaucher', 'Ambidextre'],
-                      enabled: _isEditing,
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() => _selectedHand = value);
-                        }
-                      },
-                    ),
-                  ],
-                ),
+              _InfoTile(
+                icon: Icons.wc_outlined,
+                title: 'Genre',
+                value: _selectedGender,
+                isEditing: _isEditing,
+                onTap: _isEditing ? _showGenderSelector : null,
               ),
+            ]),
 
-              AppSpacing.vGapXxl,
-            ],
-          ),
+            AppSpacing.vGapXl,
+
+            // Contact Section
+            _buildSectionHeader('Contact'),
+            AppSpacing.vGapSm,
+            _buildSettingsCard([
+              _InfoTile(
+                icon: Icons.email_outlined,
+                title: 'Email',
+                value: _email.isEmpty ? 'Non renseigné' : _email,
+                isEditing: false, // Email jamais modifiable
+                isLocked: true,
+              ),
+              _InfoTile(
+                icon: Icons.phone_outlined,
+                title: 'Téléphone',
+                value: _phone.isEmpty ? 'Non renseigné' : _phone,
+                isEditing: _isEditing,
+                onTap: _isEditing ? () => _showEditDialog('Téléphone', _phone, (v) => setState(() => _phone = v), keyboardType: TextInputType.phone) : null,
+              ),
+            ]),
+
+            AppSpacing.vGapXxl,
+          ],
         ),
       ),
     );
@@ -280,92 +195,151 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    bool enabled = true,
-    TextInputType? keyboardType,
-    VoidCallback? onTap,
-    bool readOnly = false,
-  }) {
-    return TextFormField(
-      controller: controller,
-      enabled: enabled,
-      readOnly: readOnly,
-      keyboardType: keyboardType,
-      onTap: onTap,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.iconSecondary),
-        filled: true,
-        fillColor: enabled ? AppColors.surfaceSubtle : AppColors.surfaceDefault,
-        border: OutlineInputBorder(
-          borderRadius: AppRadius.borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.borderDefault),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.borderDefault),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: AppRadius.borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.brandPrimary, width: 2),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.borderDefault),
-        ),
+  Widget _buildSettingsCard(List<Widget> children) {
+    return Container(
+      margin: AppSpacing.screenPaddingHorizontalOnly,
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: AppRadius.cardBorderRadius,
+        border: Border.all(color: AppColors.borderDefault),
       ),
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Ce champ est requis';
-        }
-        return null;
-      },
+      child: Column(
+        children: [
+          for (int i = 0; i < children.length; i++) ...[
+            children[i],
+            if (i < children.length - 1)
+              Divider(
+                height: 1,
+                indent: AppSpacing.md + 40 + AppSpacing.md,
+                color: AppColors.borderDefault,
+              ),
+          ],
+        ],
+      ),
     );
   }
 
-  Widget _buildDropdownField({
-    required String label,
-    required IconData icon,
-    required String value,
-    required List<String> items,
-    required bool enabled,
-    required ValueChanged<String?> onChanged,
-  }) {
-    return DropdownButtonFormField<String>(
-      initialValue: value,
-      decoration: InputDecoration(
-        labelText: label,
-        prefixIcon: Icon(icon, color: AppColors.iconSecondary),
-        filled: true,
-        fillColor: enabled ? AppColors.surfaceSubtle : AppColors.surfaceDefault,
-        border: OutlineInputBorder(
-          borderRadius: AppRadius.borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.borderDefault),
+  Future<void> _handleSave() async {
+    setState(() => _isSaving = true);
+    
+    final success = await UserProfileService.instance.updateProfile(
+      firstName: _firstName.trim(),
+      lastName: _lastName.trim(),
+      phone: _phone.trim(),
+      gender: _mapGenderToDb(_selectedGender),
+      birthDate: _birthDate,
+    );
+    
+    setState(() {
+      _isSaving = false;
+      if (success) _isEditing = false;
+    });
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(success ? 'Informations mises à jour' : 'Erreur lors de la mise à jour'),
+          backgroundColor: success ? AppColors.success : AppColors.error,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.borderDefault),
+      );
+    }
+  }
+
+  void _showEditDialog(String title, String currentValue, Function(String) onSave, {TextInputType? keyboardType}) {
+    final controller = TextEditingController(text: currentValue);
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Modifier $title'),
+        content: TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          autofocus: true,
+          decoration: InputDecoration(
+            hintText: 'Entrez votre $title',
+            border: OutlineInputBorder(
+              borderRadius: AppRadius.borderRadiusMd,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: AppRadius.borderRadiusMd,
+              borderSide: BorderSide(color: AppColors.brandPrimary, width: 2),
+            ),
+          ),
         ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: AppRadius.borderRadiusMd,
-          borderSide: BorderSide(color: AppColors.borderDefault),
-        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Annuler', style: TextStyle(color: AppColors.textSecondary)),
+          ),
+          TextButton(
+            onPressed: () {
+              onSave(controller.text);
+              Navigator.pop(context);
+            },
+            child: Text('Confirmer', style: TextStyle(color: AppColors.brandPrimary, fontWeight: FontWeight.w600)),
+          ),
+        ],
       ),
-      items: items.map((item) => DropdownMenuItem(
-        value: item,
-        child: Text(item),
-      )).toList(),
-      onChanged: enabled ? onChanged : null,
     );
   }
 
-  void _selectDate() async {
+  void _showGenderSelector() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.backgroundPrimary,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(AppSpacing.xl),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Sélectionner le genre',
+              style: AppTypography.headlineSmall,
+            ),
+            AppSpacing.vGapLg,
+            ..._genderOptions.map((gender) => ListTile(
+              leading: Icon(
+                _getGenderIcon(gender),
+                color: _selectedGender == gender ? AppColors.brandPrimary : AppColors.iconSecondary,
+              ),
+              title: Text(gender),
+              trailing: _selectedGender == gender
+                  ? Icon(Icons.check, color: AppColors.brandPrimary)
+                  : null,
+              onTap: () {
+                setState(() => _selectedGender = gender);
+                Navigator.pop(context);
+              },
+            )),
+            AppSpacing.vGapLg,
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getGenderIcon(String gender) {
+    switch (gender) {
+      case 'Homme':
+        return Icons.male;
+      case 'Femme':
+        return Icons.female;
+      case 'Autre':
+        return Icons.transgender;
+      default:
+        return Icons.person_outline;
+    }
+  }
+
+  Future<void> _selectDate() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime(1990, 3, 15),
+      initialDate: _birthDate ?? DateTime(1990, 1, 1),
       firstDate: DateTime(1950),
       lastDate: DateTime.now(),
       builder: (context, child) {
@@ -380,9 +354,90 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       },
     );
     if (picked != null) {
-      setState(() {
-        _birthDateController.text = '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
-      });
+      setState(() => _birthDate = picked);
     }
+  }
+}
+
+class _InfoTile extends StatelessWidget {
+  const _InfoTile({
+    required this.icon,
+    required this.title,
+    required this.value,
+    this.isEditing = false,
+    this.isLocked = false,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String value;
+  final bool isEditing;
+  final bool isLocked;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final isPlaceholder = value == 'Non renseigné';
+    
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: Row(
+            children: [
+              Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: AppColors.brandPrimary.withValues(alpha: 0.1),
+                  borderRadius: AppRadius.borderRadiusMd,
+                ),
+                child: Icon(
+                  icon,
+                  size: 20,
+                  color: AppColors.brandPrimary,
+                ),
+              ),
+              AppSpacing.hGapMd,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textTertiary,
+                      ),
+                    ),
+                    AppSpacing.vGapXxs,
+                    Text(
+                      value,
+                      style: AppTypography.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: isPlaceholder ? AppColors.textTertiary : AppColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (isLocked)
+                Icon(
+                  Icons.lock_outline,
+                  size: 18,
+                  color: AppColors.textTertiary,
+                )
+              else if (isEditing)
+                Icon(
+                  AppIcons.chevronRight,
+                  color: AppColors.iconTertiary,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

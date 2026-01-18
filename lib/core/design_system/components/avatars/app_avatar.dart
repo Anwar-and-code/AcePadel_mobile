@@ -147,6 +147,7 @@ class AppUserHeader extends StatelessWidget {
     required this.name,
     this.greeting = 'Hello,',
     this.avatarUrl,
+    this.initials,
     this.onAvatarTap,
     this.trailing,
   });
@@ -154,6 +155,7 @@ class AppUserHeader extends StatelessWidget {
   final String name;
   final String greeting;
   final String? avatarUrl;
+  final String? initials;
   final VoidCallback? onAvatarTap;
   final Widget? trailing;
 
@@ -161,12 +163,7 @@ class AppUserHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        AppAvatar(
-          imageUrl: avatarUrl,
-          name: name,
-          size: AppAvatarSize.lg,
-          onTap: onAvatarTap,
-        ),
+        _buildAvatar(),
         AppSpacing.hGapSm,
         Expanded(
           child: Column(
@@ -193,6 +190,67 @@ class AppUserHeader extends StatelessWidget {
         if (trailing != null) trailing!,
       ],
     );
+  }
+
+  Widget _buildAvatar() {
+    Widget avatarWidget;
+    
+    // Si pas d'URL, afficher les initiales
+    if (avatarUrl == null || avatarUrl!.isEmpty) {
+      avatarWidget = Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.brandPrimary.withValues(alpha: 0.15),
+          border: Border.all(
+            color: AppColors.brandPrimary.withValues(alpha: 0.3),
+            width: 2,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            initials ?? _getInitialsFromName(),
+            style: AppTypography.titleMedium.copyWith(
+              color: AppColors.brandPrimary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      );
+    } else {
+      // Avec URL, afficher l'image
+      avatarWidget = Container(
+        width: 56,
+        height: 56,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppColors.brandPrimary.withValues(alpha: 0.3),
+            width: 2,
+          ),
+          image: DecorationImage(
+            image: NetworkImage(avatarUrl!),
+            fit: BoxFit.cover,
+          ),
+        ),
+      );
+    }
+
+    // Toujours envelopper avec GestureDetector pour le clic
+    return GestureDetector(
+      onTap: onAvatarTap,
+      child: avatarWidget,
+    );
+  }
+
+  String _getInitialsFromName() {
+    if (name.isEmpty) return 'U';
+    final parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
   }
 }
 

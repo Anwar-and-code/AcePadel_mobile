@@ -11,7 +11,7 @@ import '../../tokens/tokens.dart';
 /// ```dart
 /// AppTextField(
 ///   label: 'Numéro mobile',
-///   hint: '+225 07 77 46 56 00',
+///   hint: '+225 07 99 99 88 88',
 ///   prefixIcon: Icons.phone,
 /// )
 /// ```
@@ -204,7 +204,7 @@ class AppPhoneField extends StatelessWidget {
     super.key,
     this.controller,
     this.label,
-    this.hint = '+225 07 77 46 56 00',
+    this.hint = '+225 07 99 99 88 88',
     this.countryCode = '+225',
     this.errorText,
     this.onChanged,

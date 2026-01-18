@@ -217,14 +217,11 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
               _wrapWithShowcase(
                 key: widget.tourDateSelectorKey,
                 step: TourSteps.dateSelector,
-                child: AnimatedCrossFade(
-                  firstChild: _buildDateSelector(provider),
-                  secondChild: provider.selectedDate != null
-                      ? _buildSelectedDateSummary(provider.selectedDate!)
-                      : const SizedBox.shrink(),
-                  crossFadeState: _isDateExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                  duration: AppAnimations.durationNormal,
-                ),
+                child: _isDateExpanded 
+                    ? _buildDateSelector(provider)
+                    : (provider.selectedDate != null
+                        ? _buildSelectedDateSummary(provider.selectedDate!)
+                        : const SizedBox.shrink()),
               ),
 
               // Step 2: Créneau (après date)
@@ -243,14 +240,11 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
                   ),
                 ),
                 AppSpacing.vGapMd,
-                AnimatedCrossFade(
-                  firstChild: _buildTimeSlotSelector(provider),
-                  secondChild: provider.selectedSlot != null
-                      ? _buildSelectedSlotSummary(provider.selectedSlot!)
-                      : const SizedBox.shrink(),
-                  crossFadeState: _isSlotExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                  duration: AppAnimations.durationNormal,
-                ),
+                _isSlotExpanded 
+                    ? _buildTimeSlotSelector(provider)
+                    : (provider.selectedSlot != null
+                        ? _buildSelectedSlotSummary(provider.selectedSlot!)
+                        : const SizedBox.shrink()),
               ],
 
               // Step 3: Terrain (après créneau)
@@ -272,14 +266,11 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
                 _wrapWithShowcase(
                   key: widget.tourCourtSelectorKey,
                   step: TourSteps.courtSelector,
-                  child: AnimatedCrossFade(
-                    firstChild: _buildCourtSelector(provider),
-                    secondChild: provider.selectedTerrain != null
-                        ? _buildSelectedCourtSummary(provider.selectedTerrain!)
-                        : const SizedBox.shrink(),
-                    crossFadeState: _isCourtExpanded ? CrossFadeState.showFirst : CrossFadeState.showSecond,
-                    duration: AppAnimations.durationNormal,
-                  ),
+                  child: _isCourtExpanded 
+                      ? _buildCourtSelector(provider)
+                      : (provider.selectedTerrain != null
+                          ? _buildSelectedCourtSummary(provider.selectedTerrain!)
+                          : const SizedBox.shrink()),
                 ),
               ],
 
@@ -336,21 +327,21 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
 
   Widget _buildDateSelector(ReservationProvider provider) {
     final dates = _getWeekDates();
-    return SizedBox(
-      height: 120,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: AppSpacing.screenPaddingHorizontalOnly,
-        itemCount: dates.length,
-        itemBuilder: (context, index) {
-          final date = dates[index];
-          final isSelected = provider.selectedDate != null &&
-              provider.selectedDate!.day == date.day &&
-              provider.selectedDate!.month == date.month &&
-              provider.selectedDate!.year == date.year;
-          return Padding(
-            padding: EdgeInsets.only(right: AppSpacing.sm),
-            child: _DateCard(
+    return Padding(
+      padding: AppSpacing.screenPaddingHorizontalOnly,
+      child: SizedBox(
+        height: 110,
+        child: ListView.separated(
+          scrollDirection: Axis.horizontal,
+          itemCount: dates.length,
+          separatorBuilder: (_, __) => const SizedBox(width: AppSpacing.sm),
+          itemBuilder: (context, index) {
+            final date = dates[index];
+            final isSelected = provider.selectedDate != null &&
+                provider.selectedDate!.day == date.day &&
+                provider.selectedDate!.month == date.month &&
+                provider.selectedDate!.year == date.year;
+            return _DateCard(
               date: date,
               isSelected: isSelected,
               onTap: () {
@@ -361,9 +352,9 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
                   _isCourtExpanded = true;
                 });
               },
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -674,14 +665,25 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
           Navigator.pop(context);
           final reservation = await provider.createReservation();
           if (reservation != null) {
+            // 1. Gamification d'abord (avec await pour attendre les animations)
             final slotHour = int.tryParse(provider.selectedSlot?.startTime.split(':').first ?? '12') ?? 12;
-            GamificationServiceV2.instance.onReservationMade(hour: slotHour);
+            await GamificationServiceV2.instance.onReservationMade(hour: slotHour);
+            
+            // 2. Recharger les réservations
             await provider.loadUserReservations();
+            
+            // 3. Naviguer vers l'historique
             if (mounted) {
+              setState(() {
+                _currentTab = 1;
+                // Reset les sélections pour une nouvelle réservation
+                _isDateExpanded = true;
+                _isSlotExpanded = true;
+                _isCourtExpanded = true;
+              });
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Réservation confirmée ! Référence: ${reservation.reference}'), backgroundColor: AppColors.success),
               );
-              setState(() => _currentTab = 1);
             }
           } else if (provider.errorMessage != null && mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -757,8 +759,8 @@ class _DateCard extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: AppAnimations.durationNormal,
-        width: 85,
-        padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+        width: 80,
+        height: 100,
         decoration: BoxDecoration(
           color: isSelected ? AppColors.brandPrimary : AppColors.surfaceSubtle,
           borderRadius: AppRadius.borderRadiusMd,
@@ -768,9 +770,9 @@ class _DateCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(dayNames[date.weekday - 1], style: AppTypography.labelMedium.copyWith(color: isSelected ? AppColors.white : AppColors.textSecondary, fontWeight: FontWeight.bold)),
-            AppSpacing.vGapXxs,
+            const SizedBox(height: 4),
             Text(date.day.toString(), style: AppTypography.headlineSmall.copyWith(color: isSelected ? AppColors.white : AppColors.textPrimary, fontWeight: FontWeight.bold)),
-            AppSpacing.vGapXxs,
+            const SizedBox(height: 4),
             Text(monthNames[date.month - 1], style: AppTypography.labelMedium.copyWith(color: isSelected ? AppColors.white : AppColors.textSecondary, fontWeight: FontWeight.bold)),
           ],
         ),

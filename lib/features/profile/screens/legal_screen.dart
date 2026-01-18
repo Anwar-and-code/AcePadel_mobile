@@ -123,8 +123,8 @@ L'utilisation continue de l'application après modification vaut acceptation des
 Pour toute question concernant ces conditions d'utilisation, contactez-nous :
 
 Email : legal@padelhouse.ci
-Téléphone : +225 07 77 46 56 00
-Adresse : Abidjan, Cocody, Côte d'Ivoire
+Téléphone : +225 07 99 99 88 88
+Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 ''',
             ),
 
@@ -306,8 +306,8 @@ Pour toute question concernant cette politique de confidentialité :
 
 Délégué à la Protection des Données
 Email : privacy@padelhouse.ci
-Téléphone : +225 07 77 46 56 00
-Adresse : Abidjan, Cocody, Côte d'Ivoire
+Téléphone : +225 07 99 99 88 88
+Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 ''',
             ),
 

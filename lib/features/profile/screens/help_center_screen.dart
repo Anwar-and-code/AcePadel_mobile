@@ -103,7 +103,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Tél: +225 07 77 46 56 00'),
+                            content: Text('Tél: +225 07 99 99 88 88'),
                             backgroundColor: AppColors.brandPrimary,
                           ),
                         );

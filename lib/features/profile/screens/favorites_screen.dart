@@ -66,14 +66,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
     final courts = [
       _FavoriteCourt(
         name: 'Terrain A',
-        location: 'PadelHouse Cocody',
+        location: 'PadelHouse Treichville',
         rating: 4.8,
         imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',
         isFavorite: true,
       ),
       _FavoriteCourt(
         name: 'Terrain B',
-        location: 'PadelHouse Cocody',
+        location: 'PadelHouse Treichville',
         rating: 4.6,
         imageUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&q=80',
         isFavorite: true,
@@ -107,14 +107,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
       _FavoriteEvent(
         title: 'Tournoi Amical',
         date: '15 Jan 2026',
-        location: 'PadelHouse Cocody',
+        location: 'PadelHouse Treichville',
         participants: 16,
         imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&q=80',
       ),
       _FavoriteEvent(
         title: 'Cours Débutant',
         date: '20 Jan 2026',
-        location: 'PadelHouse Cocody',
+        location: 'PadelHouse Treichville',
         participants: 8,
         imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
       ),
