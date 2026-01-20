@@ -508,7 +508,7 @@ class _ProfileMenuSection extends StatelessWidget {
   Future<void> _launchArmasoft() async {
     final uri = Uri.parse('https://www.armasoft.ci');
     if (await canLaunchUrl(uri)) {
-      await launchUrl(uri, mode: LaunchMode.externalApplication);
+      await launchUrl(uri, mode: LaunchMode.inAppWebView);
     }
   }
 

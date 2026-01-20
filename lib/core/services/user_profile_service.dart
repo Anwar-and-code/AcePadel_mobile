@@ -141,24 +141,24 @@ class UserProfileService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final updates = <String, dynamic>{};
-      if (firstName != null) updates['first_name'] = firstName;
-      if (lastName != null) updates['last_name'] = lastName;
-      if (phone != null) updates['phone'] = phone;
-      if (gender != null) updates['gender'] = gender;
+      final updates = <String, dynamic>{
+        'first_name': firstName ?? '',
+        'last_name': lastName ?? '',
+        'phone': phone ?? '',
+        'gender': gender ?? '',
+      };
+      
       if (birthDate != null) {
         updates['birth_date'] = birthDate.toIso8601String().split('T')[0];
       }
 
-      if (updates.isNotEmpty) {
-        await _supabase
-            .from('profiles')
-            .update(updates)
-            .eq('id', user.id);
-        
-        // Recharger le profil
-        await loadProfile();
-      }
+      await _supabase
+          .from('profiles')
+          .update(updates)
+          .eq('id', user.id);
+      
+      // Recharger le profil
+      await loadProfile();
 
       _isLoading = false;
       notifyListeners();

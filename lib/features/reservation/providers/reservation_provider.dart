@@ -86,7 +86,7 @@ class ReservationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadSlotsForDate(DateTime date) async {
+  Future<void> loadSlotsForDate(DateTime date, {bool autoAdvance = true}) async {
     _slotsState = ReservationLoadingState.loading;
     _errorMessage = null;
     notifyListeners();
@@ -102,11 +102,50 @@ class ReservationProvider extends ChangeNotifier {
       }
       
       _slotsState = ReservationLoadingState.loaded;
+      notifyListeners();
+      
+      // Auto-advance to next day if no available slots
+      if (autoAdvance && !_hasAvailableSlotsForDate(date)) {
+        final nextDate = date.add(const Duration(days: 1));
+        final maxDate = DateTime.now().add(const Duration(days: 6));
+        if (nextDate.isBefore(maxDate) || _isSameDay(nextDate, maxDate)) {
+          _selectedDate = nextDate;
+          await loadSlotsForDate(nextDate, autoAdvance: true);
+          return;
+        }
+      }
     } catch (e) {
       _slotsState = ReservationLoadingState.error;
       _errorMessage = e.toString();
+      notifyListeners();
     }
-    notifyListeners();
+  }
+
+  bool _hasAvailableSlotsForDate(DateTime date) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final selectedDate = DateTime(date.year, date.month, date.day);
+    
+    // Filter slots that are not reserved
+    var availableSlots = _availableSlots.where((s) => !s.isReserved).toList();
+    
+    // If today, also filter out past time slots
+    if (_isSameDay(selectedDate, today)) {
+      final currentHour = now.hour;
+      final currentMinute = now.minute;
+      availableSlots = availableSlots.where((slot) {
+        final timeParts = slot.startTime.split(':');
+        final slotHour = int.tryParse(timeParts[0]) ?? 0;
+        final slotMinute = int.tryParse(timeParts[1]) ?? 0;
+        return slotHour > currentHour || (slotHour == currentHour && slotMinute > currentMinute);
+      }).toList();
+    }
+    
+    return availableSlots.isNotEmpty;
+  }
+
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
   Future<void> loadUserReservations() async {
@@ -132,12 +171,12 @@ class ReservationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void selectDate(DateTime date) {
+  void selectDate(DateTime date, {bool autoAdvance = true}) {
     _selectedDate = date;
     _selectedTerrain = null;
     _selectedSlot = null;
     notifyListeners();
-    loadSlotsForDate(date);
+    loadSlotsForDate(date, autoAdvance: autoAdvance);
   }
 
   void selectTerrain(Terrain terrain) {

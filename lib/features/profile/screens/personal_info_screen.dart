@@ -11,7 +11,6 @@ class PersonalInfoScreen extends StatefulWidget {
 }
 
 class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
-  bool _isEditing = false;
   bool _isSaving = false;
 
   String _firstName = '';
@@ -20,6 +19,13 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   String _phone = '';
   DateTime? _birthDate;
   String _selectedGender = 'Aucun';
+
+  // Original values to detect changes
+  String _originalFirstName = '';
+  String _originalLastName = '';
+  String _originalPhone = '';
+  DateTime? _originalBirthDate;
+  String _originalGender = 'Aucun';
 
   final List<String> _genderOptions = ['Aucun', 'Homme', 'Femme', 'Autre'];
   
@@ -43,7 +49,22 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
       _phone = profile?.phone ?? '';
       _birthDate = profile?.birthDate;
       _selectedGender = _mapGenderFromDb(profile?.gender);
+      
+      // Store original values
+      _originalFirstName = _firstName;
+      _originalLastName = _lastName;
+      _originalPhone = _phone;
+      _originalBirthDate = _birthDate;
+      _originalGender = _selectedGender;
     });
+  }
+
+  bool get _hasChanges {
+    return _firstName != _originalFirstName ||
+           _lastName != _originalLastName ||
+           _phone != _originalPhone ||
+           _birthDate != _originalBirthDate ||
+           _selectedGender != _originalGender;
   }
 
   String _mapGenderFromDb(String? gender) {
@@ -96,28 +117,6 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
           style: AppTypography.titleLarge,
         ),
         centerTitle: true,
-        actions: [
-          if (_isSaving)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _isEditing ? _handleSave : () => setState(() => _isEditing = true),
-              child: Text(
-                _isEditing ? 'Enregistrer' : 'Modifier',
-                style: AppTypography.labelLarge.copyWith(
-                  color: AppColors.brandPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-        ],
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -133,29 +132,29 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 icon: Icons.person_outline,
                 title: 'Prénom',
                 value: _firstName.isEmpty ? 'Non renseigné' : _firstName,
-                isEditing: _isEditing,
-                onTap: _isEditing ? () => _showEditDialog('Prénom', _firstName, (v) => setState(() => _firstName = v)) : null,
+                isEditing: true,
+                onTap: () => _showEditDialog('Prénom', _firstName, (v) => setState(() => _firstName = v)),
               ),
               _InfoTile(
                 icon: Icons.badge_outlined,
                 title: 'Nom',
                 value: _lastName.isEmpty ? 'Non renseigné' : _lastName,
-                isEditing: _isEditing,
-                onTap: _isEditing ? () => _showEditDialog('Nom', _lastName, (v) => setState(() => _lastName = v)) : null,
+                isEditing: true,
+                onTap: () => _showEditDialog('Nom', _lastName, (v) => setState(() => _lastName = v)),
               ),
               _InfoTile(
                 icon: Icons.cake_outlined,
                 title: 'Date de naissance',
                 value: _formatDate(_birthDate),
-                isEditing: _isEditing,
-                onTap: _isEditing ? _selectDate : null,
+                isEditing: true,
+                onTap: _selectDate,
               ),
               _InfoTile(
                 icon: Icons.wc_outlined,
                 title: 'Genre',
                 value: _selectedGender,
-                isEditing: _isEditing,
-                onTap: _isEditing ? _showGenderSelector : null,
+                isEditing: true,
+                onTap: _showGenderSelector,
               ),
             ]),
 
@@ -176,13 +175,48 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
                 icon: Icons.phone_outlined,
                 title: 'Téléphone',
                 value: _phone.isEmpty ? 'Non renseigné' : _phone,
-                isEditing: _isEditing,
-                onTap: _isEditing ? () => _showEditDialog('Téléphone', _phone, (v) => setState(() => _phone = v), keyboardType: TextInputType.phone) : null,
+                isEditing: true,
+                onTap: () => _showEditDialog('Téléphone', _phone, (v) => setState(() => _phone = v), keyboardType: TextInputType.phone),
               ),
             ]),
 
             AppSpacing.vGapXxl,
+            
+            // Bottom padding for button
+            const SizedBox(height: 80),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: FilledButton(
+            onPressed: _hasChanges && !_isSaving ? _handleSave : null,
+            style: FilledButton.styleFrom(
+              backgroundColor: _hasChanges ? AppColors.success : AppColors.neutral300,
+              disabledBackgroundColor: AppColors.neutral300,
+              minimumSize: const Size(double.infinity, 52),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: _isSaving
+                ? SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.white,
+                    ),
+                  )
+                : Text(
+                    'Enregistrer les modifications',
+                    style: AppTypography.labelLarge.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
         ),
       ),
     );
@@ -238,7 +272,14 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
     
     setState(() {
       _isSaving = false;
-      if (success) _isEditing = false;
+      if (success) {
+        // Update original values after successful save
+        _originalFirstName = _firstName;
+        _originalLastName = _lastName;
+        _originalPhone = _phone;
+        _originalBirthDate = _birthDate;
+        _originalGender = _selectedGender;
+      }
     });
     
     if (mounted) {

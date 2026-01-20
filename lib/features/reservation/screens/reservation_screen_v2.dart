@@ -1170,14 +1170,14 @@ class _ReservationDetailsSheet extends StatelessWidget {
                         child: TextButton(
                           onPressed: onCancel,
                           style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16), side: BorderSide(color: AppColors.error.withValues(alpha: 0.5))),
                             backgroundColor: AppColors.error.withValues(alpha: 0.05),
                           ),
-                          child: Text('Annuler la réservation', style: AppTypography.labelLarge.copyWith(color: AppColors.error, fontWeight: FontWeight.w600)),
+                          child: Text('Annuler', style: AppTypography.labelLarge.copyWith(color: AppColors.error, fontWeight: FontWeight.w600)),
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                     ],
                     Expanded(
                       child: ElevatedButton(
