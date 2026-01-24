@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'dart:ui' as ui;
 import 'package:showcaseview/showcaseview.dart';
 import '../../../core/design_system/design_system.dart';
-import '../../gamification/gamification.dart';
 import '../../product_tour/product_tour.dart';
 import '../models/booking.dart';
 import '../widgets/booking_details_modal.dart';
@@ -1370,13 +1369,8 @@ class _BookingConfirmationSheet extends StatelessWidget {
                         ),
                         child: ElevatedButton(
                           onPressed: () {
-                            // Close the bottom sheet first
+                            // Close the bottom sheet
                             Navigator.of(context).pop();
-                            
-                            // Trigger gamification - the CelebrationOverlay handles all animations
-                            // Extract hour from slot for time-based achievements
-                            final slotHour = int.tryParse(slot.time.split(':').first) ?? 12;
-                            GamificationServiceV2.instance.onReservationMade(hour: slotHour);
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.transparent,

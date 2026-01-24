@@ -3,8 +3,19 @@ import '../../../core/design_system/design_system.dart';
 import '../models/event.dart';
 import 'event_detail_screen.dart';
 
-class EventsScreen extends StatelessWidget {
+class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
+
+  @override
+  State<EventsScreen> createState() => _EventsScreenState();
+}
+
+class _EventsScreenState extends State<EventsScreen> {
+  Future<void> _onRefresh() async {
+    // Simuler un rechargement des événements
+    await Future.delayed(const Duration(milliseconds: 500));
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +24,18 @@ class EventsScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: AppColors.backgroundPrimary,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: Text(
           'Événements',
           style: AppTypography.titleLarge,
         ),
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: _onRefresh,
+        color: AppColors.brandPrimary,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -93,6 +109,7 @@ class EventsScreen extends StatelessWidget {
             AppSpacing.vGapXxl,
           ],
         ),
+      ),
       ),
     );
   }

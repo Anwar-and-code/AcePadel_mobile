@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../models/models.dart';
 import '../services/reservation_service.dart';
 import '../../../core/services/auth_service.dart';
-import '../../gamification/services/gamification_service_v2.dart';
+import '../../../core/services/points_service.dart';
 
 enum ReservationLoadingState {
   initial,
@@ -258,11 +258,8 @@ class ReservationProvider extends ChangeNotifier {
       
       _userReservations.insert(0, reservation);
       
-      // Gamification: Award XP for reservation
-      final hour = _selectedSlot!.startTime != null 
-          ? int.tryParse(_selectedSlot!.startTime!.split(':')[0]) 
-          : null;
-      await GamificationServiceV2.instance.onReservationMade(hour: hour);
+      // Ajouter des points pour la réservation
+      await PointsService.instance.addPointsForReservation(reservation.id);
       
       final slotIndex = _availableSlots.indexWhere(
         (s) => s.terrainId == _selectedTerrain!.id && s.timeSlotId == _selectedSlot!.timeSlotId

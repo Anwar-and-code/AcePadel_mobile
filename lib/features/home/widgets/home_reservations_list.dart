@@ -83,8 +83,8 @@ class _HomeActiveReservationState extends State<HomeActiveReservation> {
                     title: 'Réservations',
                     action: 'Voir tout',
                     onActionTap: () {
-                      // Navigate to Reservation tab (index 1)
-                      MainShellTabNotification(tabIndex: 1).dispatch(context);
+                      // Navigate to Reservation tab (index 1) with History sub-tab (index 1)
+                      MainShellTabNotification(tabIndex: 1, subTabIndex: 1).dispatch(context);
                     },
                   ),
                 ),

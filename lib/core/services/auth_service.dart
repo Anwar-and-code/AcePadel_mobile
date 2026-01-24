@@ -193,9 +193,9 @@ class AuthService {
     required String email,
     required String firstName,
     required String lastName,
+    required String gender,
     required DateTime birthDate,
     String? phone,
-    String? gender,
   }) async {
     try {
       final user = _supabase.auth.currentUser;
@@ -221,7 +221,7 @@ class AuthService {
           'last_name': lastName,
           'birth_date': birthDate.toIso8601String().split('T')[0],
           'phone': phone,
-          if (gender != null) 'gender': gender,
+          'gender': gender,
         }).eq('id', user.id);
       } else {
         // Créer un nouveau profil

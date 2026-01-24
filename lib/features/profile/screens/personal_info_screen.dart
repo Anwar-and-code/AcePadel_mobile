@@ -37,6 +37,12 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   @override
   void initState() {
     super.initState();
+    _refreshAndLoadProfile();
+  }
+
+  Future<void> _refreshAndLoadProfile() async {
+    // Recharger le profil depuis Supabase
+    await UserProfileService.instance.loadProfile();
     _loadProfileData();
   }
 
@@ -69,12 +75,15 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
 
   String _mapGenderFromDb(String? gender) {
     switch (gender?.toUpperCase()) {
+      case 'M':
       case 'MALE':
       case 'HOMME':
         return 'Homme';
+      case 'F':
       case 'FEMALE':
       case 'FEMME':
         return 'Femme';
+      case 'O':
       case 'OTHER':
       case 'AUTRE':
         return 'Autre';
@@ -86,11 +95,11 @@ class _PersonalInfoScreenState extends State<PersonalInfoScreen> {
   String _mapGenderToDb(String gender) {
     switch (gender) {
       case 'Homme':
-        return 'MALE';
+        return 'M';
       case 'Femme':
-        return 'FEMALE';
+        return 'F';
       case 'Autre':
-        return 'OTHER';
+        return 'O';
       default:
         return '';
     }

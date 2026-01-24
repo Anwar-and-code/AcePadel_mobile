@@ -7,7 +7,7 @@ import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
 import '../../../core/services/user_profile_service.dart';
 import '../../../features/auth/screens/email_screen.dart';
-import '../../gamification/services/gamification_service_v2.dart';
+import '../../../core/services/points_service.dart';
 import 'personal_info_screen.dart';
 import 'legal_screen.dart';
 
@@ -66,46 +66,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Profile info
               const _ProfileHeader(),
-
-              AppSpacing.vGapXl,
-
-              // Quick stats
-              Padding(
-                padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: ListenableBuilder(
-                  listenable: GamificationServiceV2.instance,
-                  builder: (context, _) {
-                    final gamification = GamificationServiceV2.instance;
-                    return IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          _StatCard(
-                            label: 'Réservations',
-                            value: '${gamification.reservationsCount}',
-                            icon: AppIcons.reservationFilled,
-                            color: AppColors.brandPrimary,
-                          ),
-                          AppSpacing.hGapMd,
-                          _StatCard(
-                            label: 'Niveau',
-                            value: '${gamification.level}',
-                            icon: Icons.star_rounded,
-                            color: AppColors.brandSecondary,
-                          ),
-                          AppSpacing.hGapMd,
-                          _StatCard(
-                            label: 'Streak',
-                            value: '${gamification.currentStreak}',
-                            icon: Icons.local_fire_department,
-                            color: AppColors.success,
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
 
               AppSpacing.vGapXl,
 

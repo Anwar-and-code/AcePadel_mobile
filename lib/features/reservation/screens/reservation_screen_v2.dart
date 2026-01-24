@@ -4,7 +4,6 @@ import 'dart:ui' as ui;
 import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../../../core/design_system/design_system.dart';
-import '../../gamification/gamification.dart';
 import '../../product_tour/product_tour.dart';
 import '../models/models.dart';
 import '../providers/reservation_provider.dart';
@@ -14,17 +13,32 @@ class ReservationScreenV2 extends StatefulWidget {
     super.key,
     this.tourDateSelectorKey,
     this.tourCourtSelectorKey,
+    this.initialTab = 0,
   });
 
   final GlobalKey? tourDateSelectorKey;
   final GlobalKey? tourCourtSelectorKey;
+  final int initialTab;
 
   @override
-  State<ReservationScreenV2> createState() => _ReservationScreenV2State();
+  State<ReservationScreenV2> createState() => ReservationScreenV2State();
 }
 
-class _ReservationScreenV2State extends State<ReservationScreenV2> {
+class ReservationScreenV2State extends State<ReservationScreenV2> {
   int _currentTab = 0;
+  
+  void switchToTab(int index) {
+    setState(() => _currentTab = index);
+  }
+  
+  Future<void> _onRefresh() async {
+    await _provider.loadTerrains();
+    await _provider.loadUserReservations();
+    if (_provider.selectedDate != null) {
+      await _provider.loadSlotsForDate(_provider.selectedDate!);
+    }
+  }
+  
   bool _isDateExpanded = true;
   bool _isSlotExpanded = true;
   bool _isCourtExpanded = true;
@@ -34,6 +48,7 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
   @override
   void initState() {
     super.initState();
+    _currentTab = widget.initialTab;
     _provider = ReservationProvider();
     _initializeData();
   }
@@ -64,6 +79,7 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
         appBar: AppBar(
           backgroundColor: AppColors.backgroundPrimary,
           elevation: 0,
+          automaticallyImplyLeading: false,
           title: Text('Réservation', style: AppTypography.titleLarge),
           centerTitle: true,
         ),
@@ -194,7 +210,11 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
   Widget _buildBookingTab() {
     return Consumer<ReservationProvider>(
       builder: (context, provider, _) {
-        return SingleChildScrollView(
+        return RefreshIndicator(
+          onRefresh: _onRefresh,
+          color: AppColors.brandPrimary,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -291,6 +311,7 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
               AppSpacing.vGapXxl,
             ],
           ),
+        ),
         );
       },
     );
@@ -665,11 +686,7 @@ class _ReservationScreenV2State extends State<ReservationScreenV2> {
           Navigator.pop(context);
           final reservation = await provider.createReservation();
           if (reservation != null) {
-            // 1. Gamification d'abord (avec await pour attendre les animations)
-            final slotHour = int.tryParse(provider.selectedSlot?.startTime.split(':').first ?? '12') ?? 12;
-            await GamificationServiceV2.instance.onReservationMade(hour: slotHour);
-            
-            // 2. Recharger les réservations
+            // Recharger les réservations
             await provider.loadUserReservations();
             
             // 3. Naviguer vers l'historique

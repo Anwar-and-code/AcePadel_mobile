@@ -3,12 +3,14 @@ import 'package:flutter/services.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/user_profile_service.dart';
 import '../../../app/main_shell.dart';
 
 class OnboardingPhoneScreen extends StatefulWidget {
   final String email;
   final String prenom;
   final String nom;
+  final String gender;
   final DateTime birthDate;
   
   const OnboardingPhoneScreen({
@@ -16,6 +18,7 @@ class OnboardingPhoneScreen extends StatefulWidget {
     required this.email,
     required this.prenom,
     required this.nom,
+    required this.gender,
     required this.birthDate,
   });
 
@@ -90,6 +93,7 @@ class _OnboardingPhoneScreenState extends State<OnboardingPhoneScreen> {
       email: widget.email,
       firstName: widget.prenom,
       lastName: widget.nom,
+      gender: widget.gender,
       birthDate: widget.birthDate,
       phone: _phoneNumber,
     );
@@ -98,6 +102,9 @@ class _OnboardingPhoneScreenState extends State<OnboardingPhoneScreen> {
       setState(() => _isLoading = false);
       
       if (result['success'] == true) {
+        // Recharger le profil pour avoir les données à jour
+        await UserProfileService.instance.loadProfile();
+        
         Navigator.of(context).pushAndRemoveUntil(
           AppPageRoute(
             page: const MainShell(),

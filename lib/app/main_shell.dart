@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../core/design_system/design_system.dart';
 import '../core/services/product_tour_service.dart';
-import '../features/gamification/gamification.dart';
+import '../core/services/user_profile_service.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/home/widgets/home_action_cards.dart';
 import '../features/reservation/screens/reservation_screen_v2.dart';
 import '../features/events/screens/events_screen.dart';
-import '../features/social/screens/social_screen.dart';
+import '../features/reclamation/reclamation.dart';
 import '../features/product_tour/product_tour.dart';
 
 /// Main application shell with bottom navigation
@@ -33,6 +33,7 @@ class _MainShellState extends State<MainShell> {
   final GlobalKey _dateSelectorKey = GlobalKey();
   final GlobalKey _courtSelectorKey = GlobalKey();
   final GlobalKey _eventsNavKey = GlobalKey();
+  final GlobalKey<ReservationScreenV2State> _reservationKey = GlobalKey<ReservationScreenV2State>();
 
   late final List<Widget> _screens;
 
@@ -53,9 +54,9 @@ class _MainShellState extends State<MainShell> {
       activeIcon: AppIcons.eventsFilled,
     ),
     AppNavItem(
-      label: 'Social',
-      icon: AppIcons.group,
-      activeIcon: AppIcons.groupFilled,
+      label: 'Réclamation',
+      icon: AppIcons.support,
+      activeIcon: AppIcons.supportFilled,
     ),
   ];
 
@@ -70,11 +71,12 @@ class _MainShellState extends State<MainShell> {
         tourProfileKey: _profileKey,
       ),
       ReservationScreenV2(
+        key: _reservationKey,
         tourDateSelectorKey: _dateSelectorKey,
         tourCourtSelectorKey: _courtSelectorKey,
       ),
       const EventsScreen(),
-      const SocialScreen(),
+      const ReclamationScreen(),
     ];
   }
 
@@ -101,6 +103,12 @@ class _MainShellState extends State<MainShell> {
     return NotificationListener<MainShellTabNotification>(
       onNotification: (notification) {
         setState(() => _currentIndex = notification.tabIndex);
+        // Si un subTabIndex est spécifié et qu'on va sur l'onglet réservation
+        if (notification.subTabIndex != null && notification.tabIndex == 1) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _reservationKey.currentState?.switchToTab(notification.subTabIndex!);
+          });
+        }
         return true; // Stop propagation
       },
       child: ShowCaseWidget(
@@ -117,7 +125,11 @@ class _MainShellState extends State<MainShell> {
       },
       builder: (context) => _MainShellContent(
         currentIndex: _currentIndex,
-        onTabChanged: (index) => setState(() => _currentIndex = index),
+        onTabChanged: (index) {
+          setState(() => _currentIndex = index);
+          // Recharger le profil quand on change d'onglet
+          UserProfileService.instance.loadProfile();
+        },
         screens: _screens,
         navItems: _navItems,
         navBarKey: _navBarKey,
@@ -186,8 +198,7 @@ class _MainShellContentState extends State<_MainShellContent> {
 
   @override
   Widget build(BuildContext context) {
-    return CelebrationOverlay(
-      child: Scaffold(
+    return Scaffold(
         body: IndexedStack(
           index: widget.currentIndex,
           children: widget.screens,
@@ -214,7 +225,6 @@ class _MainShellContentState extends State<_MainShellContent> {
             items: widget.navItems,
           ),
         ),
-      ),
     );
   }
 }

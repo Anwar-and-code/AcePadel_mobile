@@ -126,12 +126,14 @@ class OnboardingBirthdateScreen extends StatefulWidget {
   final String email;
   final String prenom;
   final String nom;
+  final String gender;
   
   const OnboardingBirthdateScreen({
     super.key,
     required this.email,
     required this.prenom,
     required this.nom,
+    required this.gender,
   });
 
   @override
@@ -222,6 +224,7 @@ class _OnboardingBirthdateScreenState extends State<OnboardingBirthdateScreen> {
           email: widget.email,
           prenom: widget.prenom,
           nom: widget.nom,
+          gender: widget.gender,
           birthDate: _selectedDate!,
         ),
         routeName: '/auth/onboarding/phone',
@@ -458,86 +461,91 @@ class _OnboardingBirthdateScreenState extends State<OnboardingBirthdateScreen> {
       context: context,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        height: 300,
         decoration: BoxDecoration(
           color: AppColors.surfaceDefault,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: Column(
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.md,
-                vertical: AppSpacing.sm,
-              ),
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: AppColors.borderDefault),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
                 ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: Text(
-                      'Annuler',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.textSecondary,
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: AppColors.borderDefault),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Annuler',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    title,
-                    style: AppTypography.titleSmall.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      onSelected(tempIndex);
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      'OK',
-                      style: AppTypography.bodyMedium.copyWith(
-                        color: AppColors.brandPrimary,
+                    Text(
+                      title,
+                      style: AppTypography.titleSmall.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-            // Picker
-            Expanded(
-              child: CupertinoPicker(
-                scrollController: FixedExtentScrollController(
-                  initialItem: initialIndex >= 0 ? initialIndex : 0,
+                    const SizedBox(width: 60), // Balance
+                  ],
                 ),
-                itemExtent: 44,
-                onSelectedItemChanged: (index) => tempIndex = index,
-                selectionOverlay: Container(
-                  decoration: BoxDecoration(
-                    border: Border.symmetric(
-                      horizontal: BorderSide(
-                        color: AppColors.brandPrimary.withValues(alpha: 0.2),
+              ),
+              // Picker
+              SizedBox(
+                height: 250,
+                child: CupertinoPicker(
+                  scrollController: FixedExtentScrollController(
+                    initialItem: initialIndex >= 0 ? initialIndex : 0,
+                  ),
+                  itemExtent: 44,
+                  onSelectedItemChanged: (index) => tempIndex = index,
+                  selectionOverlay: Container(
+                    decoration: BoxDecoration(
+                      border: Border.symmetric(
+                        horizontal: BorderSide(
+                          color: AppColors.brandPrimary.withValues(alpha: 0.2),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                children: items.map((item) => Center(
-                  child: Text(
-                    item,
-                    style: AppTypography.titleMedium.copyWith(
-                      color: AppColors.textPrimary,
+                  children: items.map((item) => Center(
+                    child: Text(
+                      item,
+                      style: AppTypography.titleMedium.copyWith(
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                )).toList(),
+                  )).toList(),
+                ),
               ),
-            ),
-          ],
+              // Confirm button
+              Padding(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                child: AppButton(
+                  label: 'Confirmer',
+                  onPressed: () {
+                    onSelected(tempIndex);
+                    Navigator.pop(context);
+                  },
+                  variant: AppButtonVariant.primary,
+                  size: AppButtonSize.large,
+                  isFullWidth: true,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

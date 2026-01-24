@@ -4,11 +4,12 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/user_profile_service.dart';
+import '../../../core/services/points_service.dart';
+import '../../../core/widgets/points_badge.dart';
 import '../widgets/home_banner_carousel.dart';
 import '../widgets/home_action_cards.dart';
 import '../widgets/home_reservations_list.dart';
 import '../../profile/screens/profile_screen.dart';
-import '../../gamification/widgets/user_progress_ring.dart';
 import '../../product_tour/product_tour.dart';
 
 /// Home screen with product tour integration
@@ -35,12 +36,51 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+  DateTime? _lastRefresh;
+  static const _refreshThreshold = Duration(minutes: 5);
+
   @override
   void initState() {
     super.initState();
-    // Charger le profil utilisateur au démarrage
+    WidgetsBinding.instance.addObserver(this);
+    _loadData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _refreshIfNeeded();
+    }
+  }
+
+  void _loadData() {
+    _lastRefresh = DateTime.now();
     UserProfileService.instance.loadProfile();
+    PointsService.instance.loadPoints();
+  }
+
+  void _refreshIfNeeded() {
+    if (_lastRefresh == null) {
+      _loadData();
+      return;
+    }
+    
+    final timeSinceLastRefresh = DateTime.now().difference(_lastRefresh!);
+    if (timeSinceLastRefresh >= _refreshThreshold) {
+      _loadData();
+    }
+  }
+
+  Future<void> _onRefresh() async {
+    _lastRefresh = DateTime.now();
+    await UserProfileService.instance.loadProfile();
   }
 
   @override
@@ -48,7 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: RefreshIndicator(
+          onRefresh: _onRefresh,
+          color: AppColors.brandPrimary,
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -64,10 +108,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     const AppLogo(
                       size: AppLogoSize.medium,
                     ),
-                    AppIconButton(
-                      icon: Icons.phone,
+                    TextButton.icon(
                       onPressed: () => _showCallDialog(context),
-                      variant: AppButtonVariant.ghost,
+                      icon: Icon(Icons.phone, color: AppColors.brandPrimary, size: 20),
+                      label: Text(
+                        'Contacter',
+                        style: AppTypography.labelMedium.copyWith(
+                          color: AppColors.brandPrimary,
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -95,14 +144,14 @@ class _HomeScreenState extends State<HomeScreen> {
                             routeName: '/profile',
                           );
                         },
-                        trailing: const UserProgressRing(size: 46, showXp: true),
+                        trailing: const PointsBadge(),
                       );
                     },
                   ),
                 ),
               ),
 
-              AppSpacing.vGapLg,
+              AppSpacing.vGapMd,
 
               // Banner Carousel with tour target
               _wrapWithShowcase(
@@ -112,7 +161,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const HomeBannerCarousel(),
               ),
 
-              AppSpacing.vGapXl,
+              AppSpacing.vGapMd,
 
               // Réservation en cours (priorité)
               const Padding(
@@ -120,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: HomeActiveReservation(),
               ),
 
-              AppSpacing.vGapXl,
+              AppSpacing.vGapMd,
 
               // Let's Padel Section with tour target
               Padding(
@@ -133,9 +182,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              AppSpacing.vGapXxl,
+              AppSpacing.vGapLg,
             ],
           ),
+        ),
         ),
       ),
     );
@@ -207,46 +257,116 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             AppSpacing.vGapXl,
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: AppColors.brandPrimary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+            // Bouton Appeler
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    launchUrl(Uri.parse('tel:$phoneNumber'));
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.md,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.brandPrimary.withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: AppColors.brandPrimary.withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: AppColors.brandPrimary.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.phone, color: AppColors.brandPrimary, size: 22),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Text(
+                            'Appeler sur la ligne directe',
+                            style: AppTypography.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
+                      ],
+                    ),
+                  ),
                 ),
-                child: Icon(Icons.phone, color: AppColors.brandPrimary),
               ),
-              title: Text(
-                'Appeler sur la ligne directe',
-                style: AppTypography.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                launchUrl(Uri.parse('tel:$phoneNumber'));
-              },
             ),
-            const Divider(),
-            ListTile(
-              leading: Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF25D366).withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+            AppSpacing.vGapMd,
+            // Bouton WhatsApp
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    launchUrl(Uri.parse('https://wa.me/2250799998888'));
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.md,
+                    ),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF25D366).withValues(alpha: 0.05),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: const Color(0xFF25D366).withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF25D366),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.call, color: Colors.white, size: 22),
+                        ),
+                        const SizedBox(width: AppSpacing.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'WhatsApp',
+                                style: AppTypography.bodyMedium.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: const Color(0xFF25D366),
+                                ),
+                              ),
+                              Text(
+                                'Réponse rapide',
+                                style: AppTypography.bodySmall.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(Icons.arrow_forward_ios, size: 16, color: AppColors.textSecondary),
+                      ],
+                    ),
+                  ),
                 ),
-                child: const Icon(Icons.chat, color: Color(0xFF25D366)),
               ),
-              title: Text(
-                'Appeler via WhatsApp',
-                style: AppTypography.bodyMedium.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onTap: () {
-                Navigator.pop(context);
-                launchUrl(Uri.parse('https://wa.me/2250799998888'));
-              },
             ),
             AppSpacing.vGapLg,
           ],

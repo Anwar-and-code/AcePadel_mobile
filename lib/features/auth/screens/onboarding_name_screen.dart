@@ -23,6 +23,12 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
   final _formKey = GlobalKey<FormState>();
   final _prenomController = TextEditingController();
   final _nomController = TextEditingController();
+  String? _selectedGender;
+  
+  final List<Map<String, String>> _genderOptions = [
+    {'value': 'M', 'label': 'Homme'},
+    {'value': 'F', 'label': 'Femme'},
+  ];
 
   @override
   void initState() {
@@ -45,11 +51,21 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
 
   void _onContinue() {
     if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedGender == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Veuillez sélectionner votre genre'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+        return;
+      }
       context.navigateSlide(
         OnboardingBirthdateScreen(
           email: widget.email,
           prenom: _prenomController.text,
           nom: _nomController.text,
+          gender: _selectedGender!,
         ),
         routeName: '/auth/onboarding/birthdate',
       );
@@ -63,10 +79,111 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
     return null;
   }
 
+  void _showGenderPicker() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: BoxDecoration(
+          color: AppColors.surfaceDefault,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(AppSpacing.md),
+                decoration: BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(color: AppColors.borderDefault),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Annuler',
+                        style: AppTypography.bodyMedium.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      'Sélectionnez votre genre',
+                      style: AppTypography.titleSmall.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 60), // Balance
+                  ],
+                ),
+              ),
+              // Options
+              ..._genderOptions.map((option) {
+                final isSelected = _selectedGender == option['value'];
+                return InkWell(
+                  onTap: () {
+                    setState(() => _selectedGender = option['value']);
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.md,
+                    ),
+                    decoration: BoxDecoration(
+                      color: isSelected 
+                          ? AppColors.brandPrimary.withValues(alpha: 0.05)
+                          : Colors.transparent,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: AppColors.borderDefault.withValues(alpha: 0.5),
+                        ),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            option['label']!,
+                            style: AppTypography.bodyLarge.copyWith(
+                              color: isSelected 
+                                  ? AppColors.brandPrimary 
+                                  : AppColors.textPrimary,
+                              fontWeight: isSelected 
+                                  ? FontWeight.w600 
+                                  : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                        if (isSelected)
+                          Icon(
+                            Icons.check_circle,
+                            color: AppColors.brandPrimary,
+                            size: 24,
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              }).toList(),
+              const SizedBox(height: AppSpacing.md),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final isFormValid = _prenomController.text.isNotEmpty && 
-                        _nomController.text.isNotEmpty;
+                        _nomController.text.isNotEmpty &&
+                        _selectedGender != null;
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
 
     return Scaffold(
@@ -150,12 +267,71 @@ class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
                         hint: 'Entrez votre prénom',
                         prefixIcon: Icons.person_outline,
                         textCapitalization: TextCapitalization.words,
-                        textInputAction: TextInputAction.done,
+                        textInputAction: TextInputAction.next,
                         validator: _validateName,
                         onChanged: (value) => setState(() {}),
-                        onSubmitted: (_) {
-                          if (isFormValid) _onContinue();
-                        },
+                      ),
+                      
+                      AppSpacing.vGapMd,
+                      
+                      // Genre field
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Genre',
+                            style: AppTypography.inputLabel,
+                          ),
+                          AppSpacing.vGapXs,
+                          GestureDetector(
+                            onTap: _showGenderPicker,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.md,
+                                vertical: AppSpacing.md,
+                              ),
+                              decoration: BoxDecoration(
+                                color: AppColors.inputBackground,
+                                borderRadius: AppRadius.inputBorderRadius,
+                                border: Border.all(
+                                  color: _selectedGender != null 
+                                      ? AppColors.brandPrimary 
+                                      : AppColors.inputBorder,
+                                  width: _selectedGender != null ? 1.5 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.wc_outlined,
+                                    color: _selectedGender != null 
+                                        ? AppColors.brandPrimary 
+                                        : AppColors.iconSecondary,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: AppSpacing.sm),
+                                  Expanded(
+                                    child: Text(
+                                      _selectedGender != null
+                                          ? _genderOptions.firstWhere((o) => o['value'] == _selectedGender)['label']!
+                                          : 'Sélectionnez votre genre',
+                                      style: _selectedGender != null
+                                          ? AppTypography.bodyMedium.copyWith(
+                                              color: AppColors.textPrimary,
+                                              fontWeight: FontWeight.w500,
+                                            )
+                                          : AppTypography.inputHint,
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_drop_down,
+                                    color: AppColors.iconSecondary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       
                     ],

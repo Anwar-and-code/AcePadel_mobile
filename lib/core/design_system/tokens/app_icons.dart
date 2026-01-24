@@ -133,6 +133,8 @@ abstract final class AppIcons {
   static const IconData groupFilled = PhosphorIconsFill.usersThree;
   static const IconData coaching = PhosphorIconsRegular.chalkboardTeacher;
   static const IconData coachingFilled = PhosphorIconsFill.chalkboardTeacher;
+  static const IconData support = PhosphorIconsRegular.headset;
+  static const IconData supportFilled = PhosphorIconsFill.headset;
   
   // --- Media ---
   static const IconData camera = PhosphorIconsRegular.camera;

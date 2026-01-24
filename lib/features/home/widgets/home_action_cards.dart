@@ -7,7 +7,8 @@ import '../../../core/design_system/design_system.dart';
 /// Notification to trigger tab switch in MainShell
 class MainShellTabNotification extends Notification {
   final int tabIndex;
-  const MainShellTabNotification({required this.tabIndex});
+  final int? subTabIndex;
+  const MainShellTabNotification({required this.tabIndex, this.subTabIndex});
 }
 
 class HomeActionCards extends StatelessWidget {
