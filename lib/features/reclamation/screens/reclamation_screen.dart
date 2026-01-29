@@ -61,34 +61,10 @@ class _ReclamationScreenState extends State<ReclamationScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenPaddingHorizontal,
-                vertical: AppSpacing.md,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Réclamations',
-                    style: AppTypography.headlineMedium,
-                  ),
-                  AppSpacing.vGapXxs,
-                  Text(
-                    'Signalez un problème ou une suggestion',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            // Header avec filtres intégrés
+            _buildHeader(),
 
-            // Filtres
-            _buildFilters(),
-
-            AppSpacing.vGapMd,
+            AppSpacing.vGapSm,
 
             // Content
             Expanded(
@@ -132,51 +108,140 @@ class _ReclamationScreenState extends State<ReclamationScreen> {
     );
   }
 
-  Widget _buildFilters() {
-    return Column(
-      children: [
-        // Filtre par statut
-        SizedBox(
-          height: 40,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.screenPaddingHorizontal,
+        AppSpacing.md,
+        AppSpacing.screenPaddingHorizontal,
+        AppSpacing.lg,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.cardBackground,
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Titre et sous-titre
+          Row(
             children: [
-              _FilterChip(
-                label: 'Tous',
-                isSelected: _selectedStatus == null,
-                onTap: () => setState(() => _selectedStatus = null),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.brandPrimary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.support_agent_rounded,
+                  color: AppColors.brandPrimary,
+                  size: 24,
+                ),
               ),
-              const SizedBox(width: 8),
-              ...ReclamationStatus.values.map((status) => Padding(
-                padding: const EdgeInsets.only(right: 8),
-                child: _FilterChip(
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Réclamations',
+                      style: AppTypography.headlineMedium,
+                    ),
+                    Text(
+                      'Signalez un problème ou une suggestion',
+                      style: AppTypography.bodySmall.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          
+          AppSpacing.vGapLg,
+          
+          // Section Filtres
+          _buildFilterSection(
+            icon: Icons.filter_list_rounded,
+            label: 'Statut',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _FilterChip(
+                  label: 'Tous',
+                  isSelected: _selectedStatus == null,
+                  onTap: () => setState(() => _selectedStatus = null),
+                ),
+                ...ReclamationStatus.values.map((status) => _FilterChip(
                   label: status.label,
                   isSelected: _selectedStatus == status,
                   color: Color(status.colorValue),
                   onTap: () => setState(() => _selectedStatus = status),
-                ),
-              )),
-            ],
+                )),
+              ],
+            ),
           ),
-        ),
-        AppSpacing.vGapSm,
-        // Filtre par date
-        SizedBox(
-          height: 36,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            children: DateFilter.values.map((filter) => Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: _DateFilterChip(
+          
+          AppSpacing.vGapMd,
+          
+          // Filtre par période
+          _buildFilterSection(
+            icon: Icons.calendar_today_rounded,
+            label: 'Période',
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: DateFilter.values.map((filter) => _DateFilterChip(
                 label: filter.label,
                 isSelected: _selectedDateFilter == filter,
                 onTap: () => setState(() => _selectedDateFilter = filter),
-              ),
-            )).toList(),
+              )).toList(),
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterSection({
+    required IconData icon,
+    required String label,
+    required Widget child,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              icon,
+              size: 16,
+              color: AppColors.textSecondary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: AppTypography.labelSmall.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
         ),
+        const SizedBox(height: 10),
+        child,
       ],
     );
   }
@@ -336,24 +401,37 @@ class _FilterChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final chipColor = color ?? AppColors.brandPrimary;
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? chipColor : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? chipColor : AppColors.borderDefault,
-            width: 1.5,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: isSelected ? chipColor : AppColors.backgroundPrimary,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: isSelected ? chipColor : AppColors.borderDefault,
+              width: 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: chipColor.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
-        ),
-        child: Text(
-          label,
-          style: AppTypography.labelMedium.copyWith(
-            color: isSelected ? Colors.white : AppColors.textSecondary,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          child: Text(
+            label,
+            style: AppTypography.labelSmall.copyWith(
+              color: isSelected ? Colors.white : AppColors.textSecondary,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            ),
           ),
         ),
       ),
@@ -375,39 +453,31 @@ class _DateFilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected 
-              ? AppColors.brandPrimary.withValues(alpha: 0.1) 
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.brandPrimary : AppColors.borderDefault,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (isSelected) ...[
-              Icon(
-                Icons.calendar_today,
-                size: 14,
-                color: AppColors.brandPrimary,
-              ),
-              const SizedBox(width: 4),
-            ],
-            Text(
-              label,
-              style: AppTypography.labelSmall.copyWith(
-                color: isSelected ? AppColors.brandPrimary : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-              ),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.brandPrimary.withValues(alpha: 0.12)
+                : AppColors.backgroundPrimary,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isSelected ? AppColors.brandPrimary : AppColors.borderDefault,
+              width: 1,
             ),
-          ],
+          ),
+          child: Text(
+            label,
+            style: AppTypography.labelSmall.copyWith(
+              color: isSelected ? AppColors.brandPrimary : AppColors.textSecondary,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            ),
+          ),
         ),
       ),
     );

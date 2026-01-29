@@ -275,8 +275,8 @@ class AuthService {
     final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID'];
     
     _googleSignIn = GoogleSignIn(
-      clientId: !kIsWeb && Platform.isIOS ? iosClientId : null,
-      serverClientId: webClientId,
+      clientId: kIsWeb ? webClientId : (Platform.isIOS ? iosClientId : null),
+      serverClientId: kIsWeb ? null : webClientId,
       scopes: ['email', 'profile'],
     );
   }

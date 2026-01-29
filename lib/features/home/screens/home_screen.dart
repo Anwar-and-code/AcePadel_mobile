@@ -110,6 +110,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                     ),
                     TextButton.icon(
                       onPressed: () => _showCallDialog(context),
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
                       icon: Icon(Icons.phone, color: AppColors.brandPrimary, size: 20),
                       label: Text(
                         'Contacter',

@@ -53,7 +53,7 @@ class HomeActionCards extends StatelessWidget {
                       child: _BentoCard(
                         title: 'Replays',
                         icon: AppIcons.playCircle,
-                        imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=400&q=80',
+                        imageUrl: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&q=80',
                         color: AppColors.brandSecondary,
                         onTap: () => Navigator.pushNamed(context, AppRouter.replays),
                       ),
@@ -64,7 +64,7 @@ class HomeActionCards extends StatelessWidget {
                       child: _BentoCard(
                         title: 'Coaching',
                         icon: AppIcons.coaching,
-                        imageUrl: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&q=80',
+                        imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&q=80',
                         color: AppColors.brandPrimary,
                         onTap: () => Navigator.pushNamed(context, AppRouter.coaching),
                       ),
