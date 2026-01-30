@@ -129,6 +129,12 @@ class _MainShellState extends State<MainShell> {
           setState(() => _currentIndex = index);
           // Recharger le profil quand on change d'onglet
           UserProfileService.instance.loadProfile();
+          // Réinitialiser l'onglet Réservation sur "Réserver" quand on y navigue
+          if (index == 1) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              _reservationKey.currentState?.switchToTab(0);
+            });
+          }
         },
         screens: _screens,
         navItems: _navItems,

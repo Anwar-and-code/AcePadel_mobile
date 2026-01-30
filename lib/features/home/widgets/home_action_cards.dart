@@ -37,8 +37,8 @@ class HomeActionCards extends StatelessWidget {
                   color: AppColors.brandPrimary,
                   isLarge: true,
                   onTap: () {
-                    // Dispatch notification to MainShell to switch to Reservation tab
-                    MainShellTabNotification(tabIndex: 1).dispatch(context);
+                    // Dispatch notification to MainShell to switch to Reservation tab (onglet Réserver)
+                    MainShellTabNotification(tabIndex: 1, subTabIndex: 0).dispatch(context);
                   },
                 ),
               ),

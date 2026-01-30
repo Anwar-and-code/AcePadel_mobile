@@ -110,6 +110,17 @@ class ReservationService {
     try {
       final dateStr = date.toIso8601String().split('T')[0];
 
+      // Vérifier la disponibilité du créneau avant de réserver
+      final isAvailable = await isSlotAvailable(
+        terrainId: terrainId,
+        timeSlotId: timeSlotId,
+        date: date,
+      );
+      
+      if (!isAvailable) {
+        throw ReservationException('Ce créneau vient d\'être réservé par un autre utilisateur. Veuillez en choisir un autre.');
+      }
+
       final response = await _supabase
           .from('reservations')
           .insert({
@@ -129,7 +140,7 @@ class ReservationService {
       return Reservation.fromJson(response);
     } on PostgrestException catch (e) {
       if (e.code == '23505') {
-        throw ReservationException('Ce créneau est déjà réservé');
+        throw ReservationException('Ce créneau vient d\'être réservé par un autre utilisateur. Veuillez en choisir un autre.');
       }
       throw ReservationException('Erreur lors de la réservation: ${e.message}');
     } catch (e) {

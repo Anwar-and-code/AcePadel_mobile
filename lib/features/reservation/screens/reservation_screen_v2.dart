@@ -7,6 +7,7 @@ import '../../../core/design_system/design_system.dart';
 import '../../product_tour/product_tour.dart';
 import '../models/models.dart';
 import '../providers/reservation_provider.dart';
+import '../widgets/booking_success_dialog.dart';
 
 class ReservationScreenV2 extends StatefulWidget {
   const ReservationScreenV2({
@@ -685,25 +686,26 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
         onConfirm: () async {
           Navigator.pop(context);
           final reservation = await provider.createReservation();
-          if (reservation != null) {
+          if (reservation != null && mounted) {
             // Recharger les réservations
             await provider.loadUserReservations();
             
-            // 3. Naviguer vers l'historique
-            if (mounted) {
-              setState(() {
-                _currentTab = 1;
-                // Reset les sélections pour une nouvelle réservation
-                _isDateExpanded = true;
-                _isSlotExpanded = true;
-                _isCourtExpanded = true;
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Réservation confirmée ! Référence: ${reservation.reference}'), backgroundColor: AppColors.success),
-              );
-            }
+            // D'abord naviguer vers l'onglet historique
+            setState(() {
+              _currentTab = 1;
+              _isDateExpanded = true;
+              _isSlotExpanded = true;
+              _isCourtExpanded = true;
+            });
+            
+            // Attendre que le frame soit rendu puis afficher le dialog
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                BookingSuccessDialog.show(this.context, reservation, () {});
+              }
+            });
           } else if (provider.errorMessage != null && mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
+            ScaffoldMessenger.of(this.context).showSnackBar(
               SnackBar(content: Text(provider.errorMessage!), backgroundColor: AppColors.error),
             );
           }
