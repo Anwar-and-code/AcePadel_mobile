@@ -57,6 +57,15 @@
 			<key>CFBundleURLName</key>
 			<string>io.padelhouse.app</string>
 		</dict>
+		<!-- Google Sign-In URL Scheme (reversed client ID) -->
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.619980350516-2njvtib5trtc7agdpbj94cjb7iskfcla</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.googleusercontent.apps.619980350516-2njvtib5trtc7agdpbj94cjb7iskfcla</string>
+		</dict>
 	</array>
 </dict>
 </plist>

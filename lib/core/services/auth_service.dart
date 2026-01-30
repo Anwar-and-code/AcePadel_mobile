@@ -274,11 +274,27 @@ class AuthService {
     final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID'];
     final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID'];
     
-    _googleSignIn = GoogleSignIn(
-      clientId: kIsWeb ? webClientId : (Platform.isIOS ? iosClientId : null),
-      serverClientId: kIsWeb ? null : webClientId,
-      scopes: ['email', 'profile'],
-    );
+    if (kIsWeb) {
+      // Web: utilise uniquement clientId (serverClientId non supporté)
+      _googleSignIn = GoogleSignIn(
+        clientId: webClientId,
+        scopes: ['email', 'profile', 'openid'],
+      );
+    } else if (Platform.isIOS) {
+      // iOS: utilise clientId iOS + serverClientId pour obtenir idToken
+      _googleSignIn = GoogleSignIn(
+        clientId: iosClientId,
+        serverClientId: webClientId,
+        scopes: ['email', 'profile', 'openid'],
+      );
+    } else {
+      // Android: utilise serverClientId (Web Client ID) pour obtenir idToken
+      // Le SHA-1 du certificat doit être configuré dans Google Cloud Console
+      _googleSignIn = GoogleSignIn(
+        serverClientId: webClientId,
+        scopes: ['email', 'profile', 'openid'],
+      );
+    }
   }
 
   /// Connexion avec Google OAuth natif (Google Play Services)
