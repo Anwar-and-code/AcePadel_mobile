@@ -361,44 +361,44 @@ class _EmailScreenState extends State<EmailScreen> {
               AppSpacing.vGapLg,
 
               // Google sign-in button
-              SizedBox(
-                height: 56,
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: _signInWithGoogle,
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: const Color(0xFFFFFFFF),
-                    side: BorderSide(color: AppColors.inputBorder),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: AppRadius.inputBorderRadius,
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/google_icon.png',
-                        width: 20,
-                        height: 20,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.g_mobiledata,
-                          size: 24,
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Continuer avec Google',
-                        style: AppTypography.buttonMedium.copyWith(
-                          color: AppColors.textPrimary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              AppSpacing.vGapMd,
+              // SizedBox(
+              //   height: 56,
+              //   width: double.infinity,
+              //   child: OutlinedButton(
+              //     onPressed: _signInWithGoogle,
+              //     style: OutlinedButton.styleFrom(
+              //       backgroundColor: const Color(0xFFFFFFFF),
+              //       side: BorderSide(color: AppColors.inputBorder),
+              //       shape: RoundedRectangleBorder(
+              //         borderRadius: AppRadius.inputBorderRadius,
+              //       ),
+              //     ),
+              //     child: Row(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         Image.asset(
+              //           'assets/images/google_icon.png',
+              //           width: 20,
+              //           height: 20,
+              //           errorBuilder: (_, __, ___) => const Icon(
+              //             Icons.g_mobiledata,
+              //             size: 24,
+              //             color: AppColors.textPrimary,
+              //           ),
+              //         ),
+              //         const SizedBox(width: 12),
+              //         Text(
+              //           'Continuer avec Google',
+              //           style: AppTypography.buttonMedium.copyWith(
+              //             color: AppColors.textPrimary,
+              //           ),
+              //         ),
+              //       ],
+              //     ),
+              //   ),
+              // ),
+              //
+              // AppSpacing.vGapMd,
 
               // Microsoft sign-in button
               SizedBox(
