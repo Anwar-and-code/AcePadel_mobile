@@ -30,7 +30,7 @@ class HomeActionCards extends StatelessWidget {
               Expanded(
                 flex: 5,
                 child: _BentoCard(
-                  title: 'Réserver\nun terrain',
+                  title: 'Réserver\nun court',
                   subtitle: 'Jouez maintenant',
                   icon: AppIcons.sportsTennis,
                   imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',

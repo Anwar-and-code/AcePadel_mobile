@@ -97,7 +97,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     AppSpacing.vGapMd,
                     Text(
-                      'PadelHouse est la première application de réservation de terrains de padel en Côte d\'Ivoire. Notre mission est de démocratiser l\'accès au padel et de créer une communauté passionnée autour de ce sport en pleine expansion.',
+                      'PadelHouse est la première application de réservation de courts de padel en Côte d\'Ivoire. Notre mission est de démocratiser l\'accès au padel et de créer une communauté passionnée autour de ce sport en pleine expansion.',
                       style: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.5,
@@ -105,7 +105,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     AppSpacing.vGapMd,
                     Text(
-                      'Nous offrons une expérience de réservation simple et intuitive, permettant à tous les joueurs de trouver et réserver des terrains en quelques clics.',
+                      'Nous offrons une expérience de réservation simple et intuitive, permettant à tous les joueurs de trouver et réserver des courts en quelques clics.',
                       style: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.5,
@@ -141,7 +141,7 @@ class AboutScreen extends StatelessWidget {
                     _FeatureItem(
                       icon: Icons.calendar_today,
                       title: 'Réservation facile',
-                      description: 'Réservez votre terrain en quelques secondes',
+                      description: 'Réservez votre court en quelques secondes',
                     ),
                     _FeatureItem(
                       icon: Icons.people,

@@ -87,8 +87,8 @@ class BookingDetailsModal extends StatelessWidget {
           _CompactDetailRow(
             icon: Icons.sports_tennis,
             iconColor: AppColors.success,
-            label: 'Terrain',
-            value: 'Terrain ${booking.courtName}',
+            label: 'Court',
+            value: 'Court ${booking.courtName}',
           ),
           AppSpacing.vGapMd,
           _CompactDetailRow(

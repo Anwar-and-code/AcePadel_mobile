@@ -41,7 +41,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
       title: 'Match du 5 Janvier',
       date: DateTime(2026, 1, 5, 19, 0),
       duration: const Duration(hours: 1, minutes: 23),
-      court: 'Terrain A',
+      court: 'Court A',
       thumbnailUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80',
       players: ['Alexandre K.', 'Julie M.', 'Marc D.', 'Sophie L.'],
       score: '6-4, 7-5',
@@ -54,7 +54,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
       title: 'Tournoi Amical - Finale',
       date: DateTime(2026, 1, 3, 15, 30),
       duration: const Duration(hours: 1, minutes: 45),
-      court: 'Terrain B',
+      court: 'Court B',
       thumbnailUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80',
       players: ['Alexandre K.', 'Pierre R.', 'Thomas B.', 'Lucas V.'],
       score: '6-3, 4-6, 6-2',
@@ -67,7 +67,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
       title: 'Match Entraînement',
       date: DateTime(2025, 12, 28, 18, 0),
       duration: const Duration(minutes: 58),
-      court: 'Terrain A',
+      court: 'Court A',
       thumbnailUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80',
       players: ['Alexandre K.', 'Julie M.'],
       score: '6-2, 6-4',
@@ -80,7 +80,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
       title: 'Session Cours Collectif',
       date: DateTime(2025, 12, 20, 10, 0),
       duration: const Duration(hours: 2, minutes: 10),
-      court: 'Terrain C',
+      court: 'Court C',
       thumbnailUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
       players: ['Groupe Débutants'],
       score: 'Entraînement',
@@ -312,7 +312,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
             SizedBox(
               width: double.infinity,
               child: AppButton(
-                label: 'Réserver un terrain',
+                label: 'Réserver un court',
                 onPressed: () => Navigator.pop(context),
               ),
             ),
@@ -1267,7 +1267,7 @@ class _ReplayDetailsSheet extends StatelessWidget {
                     Expanded(
                       child: _InfoCard(
                         icon: Icons.location_on,
-                        title: 'Terrain',
+                        title: 'Court',
                         value: replay.court,
                       ),
                     ),

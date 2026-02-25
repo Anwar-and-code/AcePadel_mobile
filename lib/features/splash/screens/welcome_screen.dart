@@ -48,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                             ),
                             AppSpacing.vGapMd,
                             Text(
-                              'Terrain de Padel',
+                              'Court de Padel',
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),

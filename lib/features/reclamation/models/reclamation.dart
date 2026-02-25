@@ -99,7 +99,7 @@ class Reclamation {
 enum ReclamationCategory {
   general('general', 'Général'),
   reservation('reservation', 'Réservation'),
-  terrain('terrain', 'Terrain'),
+  terrain('terrain', 'Court'),
   paiement('paiement', 'Paiement'),
   autre('autre', 'Autre');
 

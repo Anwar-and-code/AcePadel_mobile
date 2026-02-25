@@ -45,7 +45,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.brandPrimary,
           tabs: const [
-            Tab(text: 'Terrains'),
+            Tab(text: 'Courts'),
             Tab(text: 'Événements'),
             Tab(text: 'Joueurs'),
           ],
@@ -65,14 +65,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
   Widget _buildCourtsTab() {
     final courts = [
       _FavoriteCourt(
-        name: 'Terrain A',
+        name: 'Court A',
         location: 'PadelHouse Treichville',
         rating: 4.8,
         imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',
         isFavorite: true,
       ),
       _FavoriteCourt(
-        name: 'Terrain B',
+        name: 'Court B',
         location: 'PadelHouse Treichville',
         rating: 4.6,
         imageUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&q=80',

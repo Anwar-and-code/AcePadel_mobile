@@ -15,7 +15,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   final List<OnboardingPage> _pages = [
     OnboardingPage(
       title: 'Réservez en quelques clics',
-      description: 'Consultez les disponibilités en temps réel et réservez votre terrain de padel en moins de 30 secondes.',
+      description: 'Consultez les disponibilités en temps réel et réservez votre court de padel en moins de 30 secondes.',
       imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80',
       icon: Icons.touch_app_outlined,
     ),

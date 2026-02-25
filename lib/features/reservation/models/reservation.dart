@@ -245,5 +245,5 @@ class Reservation {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'Reservation(id: $id, status: $status, terrain: $terrainCode)';
+  String toString() => 'Reservation(id: $id, status: $status, court: $terrainCode)';
 }

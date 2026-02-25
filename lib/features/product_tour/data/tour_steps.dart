@@ -36,7 +36,7 @@ class TourSteps {
   static const actionCards = TourStep(
     id: 'action_cards',
     title: 'Réservez facilement',
-    description: 'Accédez rapidement à vos terrains favoris et aux services disponibles.',
+    description: 'Accédez rapidement à vos courts favoris et aux services disponibles.',
     icon: Icons.sports_tennis,
   );
 
@@ -56,8 +56,8 @@ class TourSteps {
 
   static const courtSelector = TourStep(
     id: 'court_selector',
-    title: 'Sélectionnez un terrain',
-    description: 'Choisissez parmi nos terrains disponibles et consultez leurs caractéristiques.',
+    title: 'Sélectionnez un court',
+    description: 'Choisissez parmi nos courts disponibles et consultez leurs caractéristiques.',
     icon: Icons.grid_view,
   );
 

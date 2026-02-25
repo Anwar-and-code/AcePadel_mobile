@@ -33,7 +33,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
   }
   
   Future<void> _onRefresh() async {
-    await _provider.loadTerrains();
+    await _provider.loadCourts();
     await _provider.loadUserReservations();
     if (_provider.selectedDate != null) {
       await _provider.loadSlotsForDate(_provider.selectedDate!);
@@ -55,7 +55,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
   }
 
   Future<void> _initializeData() async {
-    await _provider.loadTerrains();
+    await _provider.loadCourts();
     await _provider.loadUserReservations();
   }
 
@@ -268,7 +268,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
                         : const SizedBox.shrink()),
               ],
 
-              // Step 3: Terrain (après créneau)
+              // Step 3: Court (après créneau)
               if (provider.selectedSlot != null) ...[
                 AppSpacing.vGapXl,
                 Padding(
@@ -277,9 +277,9 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
                     onTap: () => setState(() => _isCourtExpanded = true),
                     child: _buildStepHeader(
                       step: 3,
-                      title: 'Choisir un terrain',
-                      isCompleted: provider.selectedTerrain != null,
-                      showEditAction: !_isCourtExpanded && provider.selectedTerrain != null,
+                      title: 'Choisir un court',
+                      isCompleted: provider.selectedCourt != null,
+                      showEditAction: !_isCourtExpanded && provider.selectedCourt != null,
                     ),
                   ),
                 ),
@@ -289,8 +289,8 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
                   step: TourSteps.courtSelector,
                   child: _isCourtExpanded 
                       ? _buildCourtSelector(provider)
-                      : (provider.selectedTerrain != null
-                          ? _buildSelectedCourtSummary(provider.selectedTerrain!)
+                      : (provider.selectedCourt != null
+                          ? _buildSelectedCourtSummary(provider.selectedCourt!)
                           : const SizedBox.shrink()),
                 ),
               ],
@@ -438,12 +438,12 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
           itemBuilder: (context, index) {
             final slot = slots[index];
             final isSelected = provider.selectedSlot?.timeSlotId == slot.timeSlotId;
-            final availableTerrains = provider.availableSlots.where((s) => s.timeSlotId == slot.timeSlotId && !s.isReserved).length;
+            final availableCourts = provider.availableSlots.where((s) => s.timeSlotId == slot.timeSlotId && !s.isReserved).length;
             return _TimeSlotRow(
               slot: slot,
               isSelected: isSelected,
-              availableTerrains: availableTerrains,
-              onTap: availableTerrains > 0 ? () {
+              availableTerrains: availableCourts,
+              onTap: availableCourts > 0 ? () {
                 provider.selectSlotByTimeSlotId(slot.timeSlotId);
                 setState(() {
                   _isSlotExpanded = false;
@@ -463,16 +463,16 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
 
   Widget _buildCourtSelector(ReservationProvider provider) {
     if (provider.selectedSlot == null) return const SizedBox.shrink();
-    final terrainsForSlot = provider.availableSlots
+    final courtsForSlot = provider.availableSlots
         .where((s) => s.timeSlotId == provider.selectedSlot!.timeSlotId)
         .toList()
       ..sort((a, b) => a.terrainCode.compareTo(b.terrainCode));
-    if (terrainsForSlot.isEmpty) {
-      return _buildEmptyState('Aucun terrain disponible', 'Essayez un autre créneau');
+    if (courtsForSlot.isEmpty) {
+      return _buildEmptyState('Aucun court disponible', 'Essayez un autre créneau');
     }
     
-    final firstRow = terrainsForSlot.take(2).toList();
-    final secondRow = terrainsForSlot.skip(2).take(2).toList();
+    final firstRow = courtsForSlot.take(2).toList();
+    final secondRow = courtsForSlot.skip(2).take(2).toList();
     
     return Padding(
       padding: AppSpacing.screenPaddingHorizontalOnly,
@@ -480,18 +480,18 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
         children: [
           Row(
             children: firstRow.map((slot) {
-              final terrain = provider.terrains.firstWhere((t) => t.id == slot.terrainId, orElse: () => Terrain(id: slot.terrainId, code: slot.terrainCode, isActive: true, createdAt: DateTime.now()));
-              final isSelected = provider.selectedTerrain?.id == terrain.id;
+              final court = provider.courts.firstWhere((t) => t.id == slot.terrainId, orElse: () => Court(id: slot.terrainId, code: slot.terrainCode, isActive: true, createdAt: DateTime.now()));
+              final isSelected = provider.selectedCourt?.id == court.id;
               final isAvailable = !slot.isReserved;
               return Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: _CourtCard(
-                    terrain: terrain,
+                    terrain: court,
                     isSelected: isSelected,
                     isAvailable: isAvailable,
                     onTap: isAvailable ? () {
-                      provider.selectTerrain(terrain);
+                      provider.selectCourt(court);
                       setState(() => _isCourtExpanded = false);
                     } : null,
                   ),
@@ -503,18 +503,18 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
             const SizedBox(height: 8),
             Row(
               children: secondRow.map((slot) {
-                final terrain = provider.terrains.firstWhere((t) => t.id == slot.terrainId, orElse: () => Terrain(id: slot.terrainId, code: slot.terrainCode, isActive: true, createdAt: DateTime.now()));
-                final isSelected = provider.selectedTerrain?.id == terrain.id;
+                final court = provider.courts.firstWhere((t) => t.id == slot.terrainId, orElse: () => Court(id: slot.terrainId, code: slot.terrainCode, isActive: true, createdAt: DateTime.now()));
+                final isSelected = provider.selectedCourt?.id == court.id;
                 final isAvailable = !slot.isReserved;
                 return Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     child: _CourtCard(
-                      terrain: terrain,
+                      terrain: court,
                       isSelected: isSelected,
                       isAvailable: isAvailable,
                       onTap: isAvailable ? () {
-                        provider.selectTerrain(terrain);
+                        provider.selectCourt(court);
                         setState(() => _isCourtExpanded = false);
                       } : null,
                     ),
@@ -528,8 +528,8 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
     );
   }
 
-  Widget _buildSelectedCourtSummary(Terrain terrain) {
-    return _buildSummaryCard(icon: Icons.sports_tennis, text: 'Terrain ${terrain.code}', onTap: () => setState(() => _isCourtExpanded = true));
+  Widget _buildSelectedCourtSummary(Court terrain) {
+    return _buildSummaryCard(icon: Icons.sports_tennis, text: 'Court ${terrain.code}', onTap: () => setState(() => _isCourtExpanded = true));
   }
 
   Widget _buildSummaryCard({required IconData icon, required String text, required VoidCallback onTap}) {
@@ -633,7 +633,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
                               children: [
                                 Text('Aucune réservation à venir', style: AppTypography.labelLarge.copyWith(fontWeight: FontWeight.w600)),
                                 AppSpacing.vGapXxs,
-                                Text('Réservez un terrain pour votre prochaine partie !', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                                Text('Réservez un court pour votre prochaine partie !', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
                               ],
                             ),
                           ),
@@ -680,7 +680,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => _BookingConfirmationSheet(
-        terrain: provider.selectedTerrain!,
+        terrain: provider.selectedCourt!,
         slot: provider.selectedSlot!,
         date: provider.selectedDate!,
         onConfirm: () async {
@@ -804,12 +804,12 @@ class _TimeSlotRow extends StatelessWidget {
   const _TimeSlotRow({required this.slot, required this.isSelected, required this.availableTerrains, this.onTap});
   final AvailableSlot slot;
   final bool isSelected;
-  final int availableTerrains;
+  final int availableTerrains; // number of available courts
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final isDisabled = availableTerrains == 0;
+    final isDisabled = availableTerrains == 0; // availableTerrains = available courts count
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -832,7 +832,7 @@ class _TimeSlotRow extends StatelessWidget {
                       ),
                     ] else ...[
                       AppSpacing.hGapSm,
-                      Text('$availableTerrains terrains', style: AppTypography.caption.copyWith(color: AppColors.success)),
+                      Text('$availableTerrains courts', style: AppTypography.caption.copyWith(color: AppColors.success)),
                     ],
                   ],
                 ),
@@ -855,7 +855,7 @@ class _TimeSlotRow extends StatelessWidget {
 
 class _CourtCard extends StatelessWidget {
   const _CourtCard({required this.terrain, required this.isSelected, required this.isAvailable, this.onTap});
-  final Terrain terrain;
+  final Court terrain;
   final bool isSelected;
   final bool isAvailable;
   final VoidCallback? onTap;
@@ -939,7 +939,7 @@ class _ReservationCard extends StatelessWidget {
                         ],
                       ),
                       AppSpacing.vGapXxs,
-                      Text('Terrain ${reservation.terrainCode ?? '--'}', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                      Text('Court ${reservation.terrainCode ?? '--'}', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
                     ],
                   ),
                 ),
@@ -958,7 +958,7 @@ class _ReservationCard extends StatelessWidget {
 
 class _BookingConfirmationSheet extends StatelessWidget {
   const _BookingConfirmationSheet({required this.terrain, required this.slot, required this.date, required this.onConfirm});
-  final Terrain terrain;
+  final Court terrain;
   final AvailableSlot slot;
   final DateTime date;
   final VoidCallback onConfirm;
@@ -1006,7 +1006,7 @@ class _BookingConfirmationSheet extends StatelessWidget {
                     const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(height: 1, color: AppColors.neutral200)),
                     _buildInfoRow(Icons.access_time_filled_outlined, 'Créneau', '${slot.startTime.substring(0, 5)} - ${slot.endTime.substring(0, 5)}', AppColors.brandPrimary),
                     const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(height: 1, color: AppColors.neutral200)),
-                    _buildInfoRow(Icons.sports_tennis_outlined, 'Terrain', 'Terrain ${terrain.code}', AppColors.success),
+                    _buildInfoRow(Icons.sports_tennis_outlined, 'Court', 'Court ${terrain.code}', AppColors.success),
                   ],
                 ),
               ),
@@ -1171,7 +1171,7 @@ class _ReservationDetailsSheet extends StatelessWidget {
                     const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(height: 1, color: AppColors.neutral200)),
                     _buildInfoRow(Icons.access_time_filled_outlined, 'Créneau', '${reservation.formattedStartTime} - ${reservation.formattedEndTime}', AppColors.info),
                     const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(height: 1, color: AppColors.neutral200)),
-                    _buildInfoRow(Icons.sports_tennis_outlined, 'Terrain', 'Terrain ${reservation.terrainCode ?? '--'}', AppColors.success),
+                    _buildInfoRow(Icons.sports_tennis_outlined, 'Court', 'Court ${reservation.terrainCode ?? '--'}', AppColors.success),
                     if (reservation.price != null) ...[
                       const Padding(padding: EdgeInsets.symmetric(vertical: 12), child: Divider(height: 1, color: AppColors.neutral200)),
                       _buildInfoRow(Icons.payments_outlined, 'Prix', '${reservation.price} FCFA', AppColors.warning),

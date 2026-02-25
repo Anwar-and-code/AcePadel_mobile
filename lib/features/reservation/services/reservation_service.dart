@@ -4,7 +4,7 @@ import '../models/models.dart';
 class ReservationService {
   static final _supabase = Supabase.instance.client;
 
-  static Future<List<Terrain>> getTerrains({bool activeOnly = true}) async {
+  static Future<List<Court>> getCourts({bool activeOnly = true}) async {
     try {
       var query = _supabase.from('terrains').select();
       
@@ -15,10 +15,10 @@ class ReservationService {
       final response = await query.order('code');
       
       return (response as List)
-          .map((json) => Terrain.fromJson(json as Map<String, dynamic>))
+          .map((json) => Court.fromJson(json as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      throw ReservationException('Erreur lors du chargement des terrains: $e');
+      throw ReservationException('Erreur lors du chargement des courts: $e');
     }
   }
 
@@ -55,7 +55,7 @@ class ReservationService {
     }
   }
 
-  static Future<List<AvailableSlot>> getAvailableSlotsForDateAndTerrain(
+  static Future<List<AvailableSlot>> getAvailableSlotsForDateAndCourt(
     DateTime date,
     int terrainId,
   ) async {
@@ -67,7 +67,7 @@ class ReservationService {
     }
   }
 
-  static Future<Map<int, List<AvailableSlot>>> getAvailableSlotsGroupedByTerrain(DateTime date) async {
+  static Future<Map<int, List<AvailableSlot>>> getAvailableSlotsGroupedByCourt(DateTime date) async {
     try {
       final slots = await getAvailableSlotsForDate(date);
       final Map<int, List<AvailableSlot>> grouped = {};
@@ -83,7 +83,7 @@ class ReservationService {
     }
   }
 
-  static Future<Map<int, int>> getAvailableSlotCountByTerrain(DateTime date) async {
+  static Future<Map<int, int>> getAvailableSlotCountByCourt(DateTime date) async {
     try {
       final slots = await getAvailableSlotsForDate(date);
       final Map<int, int> counts = {};

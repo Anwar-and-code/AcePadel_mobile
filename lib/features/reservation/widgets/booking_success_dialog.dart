@@ -292,7 +292,7 @@ class _BookingSuccessDialogState extends State<BookingSuccessDialog>
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Votre terrain vous attend',
+                    'Votre court vous attend',
                     style: AppTypography.bodyMedium.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -341,8 +341,8 @@ class _BookingSuccessDialogState extends State<BookingSuccessDialog>
                         ),
                         _buildDetailRow(
                           Icons.sports_tennis_outlined,
-                          'Terrain',
-                          'Terrain ${widget.reservation.terrainCode ?? '--'}',
+                          'Court',
+                          'Court ${widget.reservation.terrainCode ?? '--'}',
                           AppColors.success,
                         ),
                       ],

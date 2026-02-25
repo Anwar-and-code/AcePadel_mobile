@@ -371,7 +371,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 },
                 child: _buildStepHeader(
                   step: 3,
-                  title: 'Choisir un terrain',
+                  title: 'Choisir un court',
                   isCompleted: _selectedCourt != null,
                   showEditAction: !_isCourtExpanded,
                 ),
@@ -597,7 +597,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
             ),
             AppSpacing.hGapMd,
             Text(
-              'Terrain ${court.name}',
+              'Court ${court.name}',
               style: AppTypography.titleSmall.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,
@@ -743,7 +743,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                           ),
                           AppSpacing.vGapXxs,
                           Text(
-                            'Réservez un terrain pour votre prochaine partie !',
+                            'Réservez un court pour votre prochaine partie !',
                             style: AppTypography.bodySmall.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -1290,8 +1290,8 @@ class _BookingConfirmationSheet extends StatelessWidget {
                     _buildInfoRow(
                       context,
                       icon: Icons.sports_tennis_outlined,
-                      label: 'Terrain',
-                      value: 'Terrain ${court.name}',
+                      label: 'Court',
+                      value: 'Court ${court.name}',
                       iconColor: AppColors.success,
                     ),
                   ],
@@ -1562,7 +1562,7 @@ class _BookingHistoryCard extends StatelessWidget {
                       ),
                       AppSpacing.vGapXxs,
                       Text(
-                        'Terrain ${booking.courtName}',
+                        'Court ${booking.courtName}',
                         style: AppTypography.bodySmall.copyWith(
                           color: AppColors.textSecondary,
                         ),

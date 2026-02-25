@@ -12,47 +12,47 @@ enum ReservationLoadingState {
 }
 
 class ReservationProvider extends ChangeNotifier {
-  ReservationLoadingState _terrainsState = ReservationLoadingState.initial;
+  ReservationLoadingState _courtsState = ReservationLoadingState.initial;
   ReservationLoadingState _slotsState = ReservationLoadingState.initial;
   ReservationLoadingState _reservationsState = ReservationLoadingState.initial;
   ReservationLoadingState _bookingState = ReservationLoadingState.initial;
 
-  List<Terrain> _terrains = [];
+  List<Court> _courts = [];
   List<AvailableSlot> _availableSlots = [];
   List<Reservation> _userReservations = [];
   Map<int, int> _availableSlotCounts = {};
   
   DateTime? _selectedDate;
-  Terrain? _selectedTerrain;
+  Court? _selectedCourt;
   AvailableSlot? _selectedSlot;
   
   String? _errorMessage;
 
-  ReservationLoadingState get terrainsState => _terrainsState;
+  ReservationLoadingState get courtsState => _courtsState;
   ReservationLoadingState get slotsState => _slotsState;
   ReservationLoadingState get reservationsState => _reservationsState;
   ReservationLoadingState get bookingState => _bookingState;
 
-  List<Terrain> get terrains => _terrains;
+  List<Court> get courts => _courts;
   List<AvailableSlot> get availableSlots => _availableSlots;
   List<Reservation> get userReservations => _userReservations;
   
   DateTime? get selectedDate => _selectedDate;
-  Terrain? get selectedTerrain => _selectedTerrain;
+  Court? get selectedCourt => _selectedCourt;
   AvailableSlot? get selectedSlot => _selectedSlot;
   
   String? get errorMessage => _errorMessage;
 
-  List<AvailableSlot> get slotsForSelectedTerrain {
-    if (_selectedTerrain == null) return [];
-    return _availableSlots.where((s) => s.terrainId == _selectedTerrain!.id).toList();
+  List<AvailableSlot> get slotsForSelectedCourt {
+    if (_selectedCourt == null) return [];
+    return _availableSlots.where((s) => s.terrainId == _selectedCourt!.id).toList();
   }
 
-  List<AvailableSlot> get availableSlotsForSelectedTerrain {
-    return slotsForSelectedTerrain.where((s) => !s.isReserved).toList();
+  List<AvailableSlot> get availableSlotsForSelectedCourt {
+    return slotsForSelectedCourt.where((s) => !s.isReserved).toList();
   }
 
-  Map<int, int> get availableSlotCountByTerrain => _availableSlotCounts;
+  Map<int, int> get availableSlotCountByCourt => _availableSlotCounts;
 
   List<Reservation> get upcomingReservations {
     return _userReservations.where((r) => r.isUpcoming).toList()
@@ -69,18 +69,18 @@ class ReservationProvider extends ChangeNotifier {
       ..sort((a, b) => b.reservationDate.compareTo(a.reservationDate));
   }
 
-  bool get canBook => _selectedDate != null && _selectedTerrain != null && _selectedSlot != null;
+  bool get canBook => _selectedDate != null && _selectedCourt != null && _selectedSlot != null;
 
-  Future<void> loadTerrains() async {
-    _terrainsState = ReservationLoadingState.loading;
+  Future<void> loadCourts() async {
+    _courtsState = ReservationLoadingState.loading;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      _terrains = await ReservationService.getTerrains();
-      _terrainsState = ReservationLoadingState.loaded;
+      _courts = await ReservationService.getCourts();
+      _courtsState = ReservationLoadingState.loaded;
     } catch (e) {
-      _terrainsState = ReservationLoadingState.error;
+      _courtsState = ReservationLoadingState.error;
       _errorMessage = e.toString();
     }
     notifyListeners();
@@ -95,9 +95,9 @@ class ReservationProvider extends ChangeNotifier {
       _availableSlots = await ReservationService.getAvailableSlotsForDate(date);
       
       _availableSlotCounts = {};
-      for (final terrain in _terrains) {
-        _availableSlotCounts[terrain.id] = _availableSlots
-            .where((s) => s.terrainId == terrain.id && !s.isReserved)
+      for (final court in _courts) {
+        _availableSlotCounts[court.id] = _availableSlots
+            .where((s) => s.terrainId == court.id && !s.isReserved)
             .length;
       }
       
@@ -173,28 +173,28 @@ class ReservationProvider extends ChangeNotifier {
 
   void selectDate(DateTime date, {bool autoAdvance = true}) {
     _selectedDate = date;
-    _selectedTerrain = null;
+    _selectedCourt = null;
     _selectedSlot = null;
     notifyListeners();
     loadSlotsForDate(date, autoAdvance: autoAdvance);
   }
 
-  void selectTerrain(Terrain terrain) {
+  void selectCourt(Court court) {
     if (_selectedSlot != null) {
-      final slotForTerrain = _availableSlots.firstWhere(
-        (s) => s.timeSlotId == _selectedSlot!.timeSlotId && s.terrainId == terrain.id,
+      final slotForCourt = _availableSlots.firstWhere(
+        (s) => s.timeSlotId == _selectedSlot!.timeSlotId && s.terrainId == court.id,
         orElse: () => _selectedSlot!,
       );
-      _selectedSlot = slotForTerrain;
+      _selectedSlot = slotForCourt;
     }
-    _selectedTerrain = terrain;
+    _selectedCourt = court;
     notifyListeners();
   }
 
   void selectSlot(AvailableSlot slot) {
     if (slot.isReserved) return;
     _selectedSlot = slot;
-    _selectedTerrain = null;
+    _selectedCourt = null;
     notifyListeners();
   }
 
@@ -204,13 +204,13 @@ class ReservationProvider extends ChangeNotifier {
       orElse: () => _availableSlots.firstWhere((s) => s.timeSlotId == timeSlotId),
     );
     _selectedSlot = slot;
-    _selectedTerrain = null;
+    _selectedCourt = null;
     notifyListeners();
   }
 
   void clearSelection() {
     _selectedDate = null;
-    _selectedTerrain = null;
+    _selectedCourt = null;
     _selectedSlot = null;
     _availableSlots = [];
     _availableSlotCounts = {};
@@ -222,15 +222,15 @@ class ReservationProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void resetTerrainSelection() {
-    _selectedTerrain = null;
+  void resetCourtSelection() {
+    _selectedCourt = null;
     _selectedSlot = null;
     notifyListeners();
   }
 
   Future<Reservation?> createReservation() async {
     if (!canBook) {
-      _errorMessage = 'Veuillez sélectionner une date, un terrain et un créneau';
+      _errorMessage = 'Veuillez sélectionner une date, un court et un créneau';
       notifyListeners();
       return null;
     }
@@ -248,7 +248,7 @@ class ReservationProvider extends ChangeNotifier {
 
     try {
       final reservation = await ReservationService.createReservation(
-        terrainId: _selectedTerrain!.id,
+        terrainId: _selectedCourt!.id,
         timeSlotId: _selectedSlot!.timeSlotId,
         date: _selectedDate!,
         userId: user.id,
@@ -262,7 +262,7 @@ class ReservationProvider extends ChangeNotifier {
       await PointsService.instance.addPointsForReservation(reservation.id);
       
       final slotIndex = _availableSlots.indexWhere(
-        (s) => s.terrainId == _selectedTerrain!.id && s.timeSlotId == _selectedSlot!.timeSlotId
+        (s) => s.terrainId == _selectedCourt!.id && s.timeSlotId == _selectedSlot!.timeSlotId
       );
       if (slotIndex != -1) {
         _availableSlots[slotIndex] = AvailableSlot(
@@ -276,9 +276,9 @@ class ReservationProvider extends ChangeNotifier {
         );
       }
       
-      if (_availableSlotCounts.containsKey(_selectedTerrain!.id)) {
-        _availableSlotCounts[_selectedTerrain!.id] = 
-            (_availableSlotCounts[_selectedTerrain!.id] ?? 1) - 1;
+      if (_availableSlotCounts.containsKey(_selectedCourt!.id)) {
+        _availableSlotCounts[_selectedCourt!.id] = 
+            (_availableSlotCounts[_selectedCourt!.id] ?? 1) - 1;
       }
       
       clearSelection();
@@ -313,7 +313,7 @@ class ReservationProvider extends ChangeNotifier {
 
   Future<void> refreshAll() async {
     await Future.wait([
-      loadTerrains(),
+      loadCourts(),
       loadUserReservations(),
       if (_selectedDate != null) loadSlotsForDate(_selectedDate!),
     ]);

@@ -91,7 +91,7 @@ class AppCard extends StatelessWidget {
 }
 
 /// Action Card - Card with image overlay (from Home screen)
-/// Used for "Réserver un terrain" and "Voir les replays" cards
+/// Used for "Réserver un court" and "Voir les replays" cards
 class AppActionCard extends StatelessWidget {
   const AppActionCard({
     super.key,
