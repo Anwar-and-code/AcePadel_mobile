@@ -5,6 +5,7 @@ import '../../../core/design_system/design_system.dart';
 enum ReservationStatus {
   pending,
   confirmed,
+  paid,
   canceled,
   expired;
 
@@ -14,6 +15,8 @@ enum ReservationStatus {
         return ReservationStatus.pending;
       case 'CONFIRMED':
         return ReservationStatus.confirmed;
+      case 'PAID':
+        return ReservationStatus.paid;
       case 'CANCELED':
         return ReservationStatus.canceled;
       case 'EXPIRED':
@@ -33,6 +36,8 @@ enum ReservationStatus {
         return 'En attente';
       case ReservationStatus.confirmed:
         return 'Confirmée';
+      case ReservationStatus.paid:
+        return 'Payée';
       case ReservationStatus.canceled:
         return 'Annulée';
       case ReservationStatus.expired:
@@ -45,6 +50,8 @@ enum ReservationStatus {
       case ReservationStatus.pending:
         return AppBadgeVariant.warning;
       case ReservationStatus.confirmed:
+        return AppBadgeVariant.success;
+      case ReservationStatus.paid:
         return AppBadgeVariant.success;
       case ReservationStatus.canceled:
         return AppBadgeVariant.error;
@@ -59,6 +66,8 @@ enum ReservationStatus {
         return AppColors.warning;
       case ReservationStatus.confirmed:
         return AppColors.success;
+      case ReservationStatus.paid:
+        return AppColors.success;
       case ReservationStatus.canceled:
         return AppColors.error;
       case ReservationStatus.expired:
@@ -72,6 +81,8 @@ enum ReservationStatus {
         return Icons.schedule;
       case ReservationStatus.confirmed:
         return Icons.check_circle;
+      case ReservationStatus.paid:
+        return Icons.payments;
       case ReservationStatus.canceled:
         return Icons.cancel;
       case ReservationStatus.expired:

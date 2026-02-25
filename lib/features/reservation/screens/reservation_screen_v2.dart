@@ -30,11 +30,29 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
   
   void switchToTab(int index) {
     setState(() => _currentTab = index);
+    if (index == 1) {
+      _provider.loadUserReservations();
+    }
+  }
+
+  Future<void> refreshData() async {
+    _provider.clearSelection();
+    setState(() {
+      _isDateExpanded = true;
+      _isSlotExpanded = true;
+      _isCourtExpanded = true;
+    });
+    await _provider.loadCourts();
+    await _provider.loadUserReservations();
   }
   
   Future<void> _onRefresh() async {
     await _provider.loadCourts();
     await _provider.loadUserReservations();
+    // Sync global provider for HomeActiveReservation
+    if (mounted) {
+      context.read<ReservationProvider>().loadUserReservations();
+    }
     if (_provider.selectedDate != null) {
       await _provider.loadSlotsForDate(_provider.selectedDate!);
     }
@@ -422,7 +440,6 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
     }
     return Container(
       margin: AppSpacing.screenPaddingHorizontalOnly,
-      constraints: const BoxConstraints(maxHeight: 300),
       decoration: BoxDecoration(
         color: AppColors.surfaceDefault,
         borderRadius: AppRadius.borderRadiusMd,
@@ -432,6 +449,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
         borderRadius: AppRadius.borderRadiusMd,
         child: ListView.separated(
           shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
           padding: EdgeInsets.zero,
           itemCount: slots.length,
           separatorBuilder: (_, __) => Divider(height: 1, color: AppColors.borderDefault),
@@ -687,8 +705,11 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
           Navigator.pop(context);
           final reservation = await provider.createReservation();
           if (reservation != null && mounted) {
-            // Recharger les réservations
+            // Recharger les réservations (local provider + global provider pour HomeActiveReservation)
             await provider.loadUserReservations();
+            if (mounted) {
+              this.context.read<ReservationProvider>().loadUserReservations();
+            }
             
             // D'abord naviguer vers l'onglet historique
             setState(() {

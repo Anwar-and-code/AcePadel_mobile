@@ -183,7 +183,7 @@ class ReservationService {
           ''')
           .eq('user_id', userId)
           .gte('reservation_date', today)
-          .inFilter('status', ['CONFIRMED', 'PENDING'])
+          .inFilter('status', ['CONFIRMED', 'PENDING', 'PAID'])
           .order('reservation_date')
           .order('time_slots(start_time)');
       
@@ -251,7 +251,7 @@ class ReservationService {
           .eq('terrain_id', terrainId)
           .eq('time_slot_id', timeSlotId)
           .eq('reservation_date', dateStr)
-          .inFilter('status', ['CONFIRMED', 'PENDING'])
+          .inFilter('status', ['CONFIRMED', 'PENDING', 'PAID'])
           .maybeSingle();
       
       return response == null;

@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
 import '../core/design_system/design_system.dart';
 import '../core/services/product_tour_service.dart';
 import '../core/services/user_profile_service.dart';
+import '../core/services/points_service.dart';
 import '../features/home/screens/home_screen.dart';
 import '../features/home/widgets/home_action_cards.dart';
 import '../features/reservation/screens/reservation_screen_v2.dart';
+import '../features/reservation/providers/reservation_provider.dart';
 import '../features/events/screens/events_screen.dart';
+import '../features/events/services/event_service.dart';
 import '../features/reclamation/reclamation.dart';
+import '../features/reclamation/services/reclamation_service.dart';
 import '../features/product_tour/product_tour.dart';
 
 /// Main application shell with bottom navigation
@@ -98,6 +103,31 @@ class _MainShellState extends State<MainShell> {
     }
   }
 
+  void _refreshTabData(int index) {
+    switch (index) {
+      case 0: // Accueil
+        UserProfileService.instance.loadProfile();
+        PointsService.instance.loadPoints();
+        EventService.instance.loadEvents();
+        context.read<ReservationProvider>().loadUserReservations();
+        break;
+      case 1: // Réservation
+        UserProfileService.instance.loadProfile();
+        context.read<ReservationProvider>().loadUserReservations();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _reservationKey.currentState?.refreshData();
+          _reservationKey.currentState?.switchToTab(0);
+        });
+        break;
+      case 2: // Événements
+        EventService.instance.loadEvents();
+        break;
+      case 3: // Réclamation
+        ReclamationService.instance.loadReclamations();
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return NotificationListener<MainShellTabNotification>(
@@ -127,14 +157,7 @@ class _MainShellState extends State<MainShell> {
         currentIndex: _currentIndex,
         onTabChanged: (index) {
           setState(() => _currentIndex = index);
-          // Recharger le profil quand on change d'onglet
-          UserProfileService.instance.loadProfile();
-          // Réinitialiser l'onglet Réservation sur "Réserver" quand on y navigue
-          if (index == 1) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              _reservationKey.currentState?.switchToTab(0);
-            });
-          }
+          _refreshTabData(index);
         },
         screens: _screens,
         navItems: _navItems,
