@@ -68,14 +68,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
         name: 'Court A',
         location: 'PadelHouse Treichville',
         rating: 4.8,
-        imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',
+        imageUrl: AppImages.favoriteCourt1,
         isFavorite: true,
       ),
       _FavoriteCourt(
         name: 'Court B',
         location: 'PadelHouse Treichville',
         rating: 4.6,
-        imageUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=400&q=80',
+        imageUrl: AppImages.favoriteCourt2,
         isFavorite: true,
       ),
     ];
@@ -109,14 +109,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
         date: '15 Jan 2026',
         location: 'PadelHouse Treichville',
         participants: 16,
-        imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&q=80',
+        imageUrl: AppImages.favoriteEvent1,
       ),
       _FavoriteEvent(
         title: 'Cours Débutant',
         date: '20 Jan 2026',
         location: 'PadelHouse Treichville',
         participants: 8,
-        imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80',
+        imageUrl: AppImages.favoriteEvent2,
       ),
     ];
 
@@ -143,19 +143,19 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
         name: 'Julie Martin',
         level: 'Intermédiaire',
         matchesPlayed: 12,
-        avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80',
+        avatarUrl: AppImages.playerAvatar1,
       ),
       _FavoritePlayer(
         name: 'Marc Dubois',
         level: 'Avancé',
         matchesPlayed: 8,
-        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80',
+        avatarUrl: AppImages.playerAvatar2,
       ),
       _FavoritePlayer(
         name: 'Sophie Laurent',
         level: 'Expert',
         matchesPlayed: 15,
-        avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80',
+        avatarUrl: AppImages.playerAvatar3,
       ),
     ];
 

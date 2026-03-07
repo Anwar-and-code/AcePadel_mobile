@@ -16,25 +16,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     OnboardingPage(
       title: 'Réservez en quelques clics',
       description: 'Consultez les disponibilités en temps réel et réservez votre court de padel en moins de 30 secondes.',
-      imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80',
+      imageUrl: AppImages.onboardingReservation,
       icon: Icons.touch_app_outlined,
     ),
     OnboardingPage(
       title: 'Choisissez votre créneau',
       description: 'Des créneaux flexibles adaptés à votre emploi du temps. Matin, midi ou soirée, jouez quand vous voulez.',
-      imageUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80',
+      imageUrl: AppImages.onboardingSchedule,
       icon: Icons.schedule_outlined,
     ),
     OnboardingPage(
       title: 'Participez aux événements',
       description: 'Tournois, initiations, soirées afterwork... Rejoignez une communauté passionnée de padel.',
-      imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&q=80',
+      imageUrl: AppImages.onboardingEvents,
       icon: Icons.emoji_events_outlined,
     ),
     OnboardingPage(
       title: 'Suivez vos performances',
       description: 'Historique de réservations, statistiques et replays de vos matchs. Progressez à chaque session.',
-      imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80',
+      imageUrl: AppImages.onboardingPerformance,
       icon: Icons.insights_outlined,
     ),
   ];

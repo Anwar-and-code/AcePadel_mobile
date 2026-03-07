@@ -33,7 +33,7 @@ class HomeActionCards extends StatelessWidget {
                   title: 'Réserver\nun court',
                   subtitle: 'Jouez maintenant',
                   icon: AppIcons.sportsTennis,
-                  imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&q=80',
+                  imageUrl: AppImages.homeReservation,
                   color: AppColors.brandPrimary,
                   isLarge: true,
                   onTap: () {
@@ -53,7 +53,7 @@ class HomeActionCards extends StatelessWidget {
                       child: _BentoCard(
                         title: 'Replays',
                         icon: AppIcons.playCircle,
-                        imageUrl: 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?w=400&q=80',
+                        imageUrl: AppImages.homeReplays,
                         color: AppColors.brandSecondary,
                         onTap: () => Navigator.pushNamed(context, AppRouter.replays),
                       ),
@@ -64,7 +64,7 @@ class HomeActionCards extends StatelessWidget {
                       child: _BentoCard(
                         title: 'Coaching',
                         icon: AppIcons.coaching,
-                        imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=400&q=80',
+                        imageUrl: AppImages.homeCoaching,
                         color: AppColors.brandPrimary,
                         onTap: () => Navigator.pushNamed(context, AppRouter.coaching),
                       ),

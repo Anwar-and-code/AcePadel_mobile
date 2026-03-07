@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/push_notification_service.dart';
 import '../../../core/services/user_profile_service.dart';
 import '../../../features/auth/screens/email_screen.dart';
 import '../../../core/services/points_service.dart';
@@ -109,6 +110,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           TextButton(
                             onPressed: () async {
                               Navigator.pop(dialogContext);
+                              // Désactiver le token FCM avant déconnexion
+                              await PushNotificationService().unregisterOnLogout();
                               // Sign out from Supabase
                               await AuthService.signOut();
                               // Navigate to login screen

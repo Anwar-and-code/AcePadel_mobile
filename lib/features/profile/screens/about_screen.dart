@@ -190,19 +190,19 @@ class AboutScreen extends StatelessWidget {
                         _TeamMemberAvatar(
                           name: 'Fondateur',
                           role: 'CEO',
-                          imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
+                          imageUrl: AppImages.teamMember1,
                         ),
                         AppSpacing.hGapMd,
                         _TeamMemberAvatar(
                           name: 'Tech Lead',
                           role: 'CTO',
-                          imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
+                          imageUrl: AppImages.teamMember2,
                         ),
                         AppSpacing.hGapMd,
                         _TeamMemberAvatar(
                           name: 'Designer',
                           role: 'UX/UI',
-                          imageUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80',
+                          imageUrl: AppImages.teamMember3,
                         ),
                       ],
                     ),
