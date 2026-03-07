@@ -9,26 +9,24 @@ import 'core/design_system/design_system.dart';
 import 'core/services/push_notification_service.dart';
 import 'app/app_router.dart';
 import 'features/reservation/providers/reservation_provider.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await dotenv.load(fileName: '.env');
-  
+
   // Initialiser Firebase (mobile uniquement)
   if (!kIsWeb) {
     try {
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
     } catch (e) {
       debugPrint('[Firebase] Init error: $e');
     }
   }
-  
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL']!,
-    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
-  );
-  
+
+  await Supabase.initialize(url: dotenv.env['SUPABASE_URL']!, anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
+
   // Initialiser les Push Notifications (mobile uniquement)
   if (!kIsWeb) {
     await PushNotificationService().initialize(
@@ -42,12 +40,9 @@ Future<void> main() async {
       },
     );
   }
-  
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-  
+
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
@@ -56,7 +51,7 @@ Future<void> main() async {
       systemNavigationBarIconBrightness: Brightness.dark,
     ),
   );
-  
+
   runApp(const PadelHouseApp());
 }
 
