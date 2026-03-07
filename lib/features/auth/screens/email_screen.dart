@@ -40,29 +40,29 @@ class _EmailScreenState extends State<EmailScreen> {
   Future<void> _handleOAuthSuccess() async {
     // Enregistrer le token FCM après connexion OAuth réussie
     await PushNotificationService().registerAfterLogin();
-    
+
     final profile = await AuthService.getCurrentProfile();
     final isNewUser = profile == null;
-    
+
     if (!mounted) return;
-    
+
     if (isNewUser) {
       // Nouvel utilisateur -> Onboarding
       final user = AuthService.currentUser;
-      
+
       // Extraire nom et prénom des métadonnées OAuth
       final userMetadata = user?.userMetadata;
       String? firstName;
       String? lastName;
-      
+
       if (userMetadata != null) {
         // Google fournit: given_name, family_name, full_name
         // Microsoft fournit: name, given_name, family_name
-        firstName = userMetadata['given_name'] as String? 
+        firstName = userMetadata['given_name'] as String?
             ?? userMetadata['first_name'] as String?;
-        lastName = userMetadata['family_name'] as String? 
+        lastName = userMetadata['family_name'] as String?
             ?? userMetadata['last_name'] as String?;
-        
+
         // Si seulement full_name est disponible, essayer de le diviser
         if ((firstName == null || lastName == null) && userMetadata['full_name'] != null) {
           final fullName = userMetadata['full_name'] as String;
@@ -74,7 +74,7 @@ class _EmailScreenState extends State<EmailScreen> {
             }
           }
         }
-        
+
         // Microsoft peut aussi fournir 'name'
         if ((firstName == null || lastName == null) && userMetadata['name'] != null) {
           final name = userMetadata['name'] as String;
@@ -87,7 +87,7 @@ class _EmailScreenState extends State<EmailScreen> {
           }
         }
       }
-      
+
       Navigator.of(context).pushAndRemoveUntil(
         AppPageRoute(
           page: OnboardingNameScreen(
@@ -98,7 +98,7 @@ class _EmailScreenState extends State<EmailScreen> {
           transitionType: PageTransitionType.phase,
           settings: const RouteSettings(name: '/auth/onboarding/name'),
         ),
-        (route) => false,
+            (route) => false,
       );
     } else {
       // Utilisateur existant -> Home
@@ -108,7 +108,7 @@ class _EmailScreenState extends State<EmailScreen> {
           transitionType: PageTransitionType.phase,
           settings: const RouteSettings(name: '/main'),
         ),
-        (route) => false,
+            (route) => false,
       );
     }
   }
@@ -135,13 +135,13 @@ class _EmailScreenState extends State<EmailScreen> {
     setState(() => _isLoading = true);
 
     final email = _emailController.text.trim();
-    
+
     // Envoyer le code OTP via Supabase
     final result = await AuthService.sendOtp(email);
-    
+
     if (mounted) {
       setState(() => _isLoading = false);
-      
+
       if (result['success'] == true) {
         // Navigate to OTP screen with slide transition
         context.navigateSlide(
@@ -281,18 +281,6 @@ class _EmailScreenState extends State<EmailScreen> {
                         ),
                       ],
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        'assets/images/microsoft_icon.png',
-                        width: 20,
-                        height: 20,
-                        errorBuilder: (_, __, ___) => const Icon(
-                          Icons.window,
-                          size: 24,
-                          color: AppColors.textPrimary,
 
                     AppSpacing.vGapXl,
 
@@ -318,12 +306,6 @@ class _EmailScreenState extends State<EmailScreen> {
                           size: 14,
                           color: AppColors.textTertiary,
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Text(
-                        'Continuer avec Microsoft',
-                        style: AppTypography.buttonMedium.copyWith(
-                          color: AppColors.textPrimary,
                         const SizedBox(width: 6),
                         Text(
                           'Connexion sécurisée par code à usage unique',
@@ -332,9 +314,6 @@ class _EmailScreenState extends State<EmailScreen> {
                             fontSize: 12,
                           ),
                         ),
-                      ),
-                    ],
-                  ),
                       ],
                     ),
                   ],
@@ -342,17 +321,6 @@ class _EmailScreenState extends State<EmailScreen> {
               ),
             ),
 
-              AppSpacing.vGapXxl,
-              AppSpacing.vGapXxl,
-
-              // Terms and conditions at the bottom
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
             // Terms pinned at the bottom
             Padding(
               padding: const EdgeInsets.fromLTRB(32, 0, 32, 16),
