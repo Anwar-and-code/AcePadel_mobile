@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/push_notification_service.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -96,6 +97,8 @@ class _SplashScreenState extends State<SplashScreen>
       
       if (mounted) {
         if (profile != null) {
+          // Réenregistrer le token FCM au retour
+          await PushNotificationService().registerAfterLogin();
           // Profile exists -> go to main
           Navigator.of(context).pushReplacementNamed('/main');
         } else {

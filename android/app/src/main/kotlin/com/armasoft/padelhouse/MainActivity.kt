@@ -1,4 +1,4 @@
-package com.padelhouse.padelhouse
+package com.armasoft.padelhouse
 
 import io.flutter.embedding.android.FlutterActivity
 

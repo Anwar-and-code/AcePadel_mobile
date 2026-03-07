@@ -1,21 +1,21 @@
 import 'package:flutter/foundation.dart';
 
 @immutable
-class Terrain {
+class Court {
   final int id;
   final String code;
   final bool isActive;
   final DateTime createdAt;
 
-  const Terrain({
+  const Court({
     required this.id,
     required this.code,
     required this.isActive,
     required this.createdAt,
   });
 
-  factory Terrain.fromJson(Map<String, dynamic> json) {
-    return Terrain(
+  factory Court.fromJson(Map<String, dynamic> json) {
+    return Court(
       id: json['id'] as int,
       code: json['code'] as String,
       isActive: json['is_active'] as bool? ?? true,
@@ -32,13 +32,13 @@ class Terrain {
     };
   }
 
-  Terrain copyWith({
+  Court copyWith({
     int? id,
     String? code,
     bool? isActive,
     DateTime? createdAt,
   }) {
-    return Terrain(
+    return Court(
       id: id ?? this.id,
       code: code ?? this.code,
       isActive: isActive ?? this.isActive,
@@ -49,12 +49,12 @@ class Terrain {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
-    return other is Terrain && other.id == id;
+    return other is Court && other.id == id;
   }
 
   @override
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'Terrain(id: $id, code: $code, isActive: $isActive)';
+  String toString() => 'Court(id: $id, code: $code, isActive: $isActive)';
 }

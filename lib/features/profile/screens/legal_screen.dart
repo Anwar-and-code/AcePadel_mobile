@@ -46,8 +46,8 @@ L'utilisation de notre application implique l'acceptation pleine et entière des
             _LegalSection(
               title: '2. Description du service',
               content: '''
-PadelHouse est une plateforme de réservation de terrains de padel permettant aux utilisateurs de :
-• Réserver des créneaux horaires sur les terrains disponibles
+PadelHouse est une plateforme de réservation de courts de padel permettant aux utilisateurs de :
+• Réserver des créneaux horaires sur les courts disponibles
 • Gérer leurs réservations (modification, annulation)
 • Participer à des événements et tournois
 • Communiquer avec d'autres joueurs via la messagerie intégrée

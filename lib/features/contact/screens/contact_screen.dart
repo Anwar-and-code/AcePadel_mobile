@@ -150,7 +150,7 @@ class _ClubInfoCard extends StatelessWidget {
               height: 150,
               width: double.infinity,
               child: Image.network(
-                'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&q=80',
+                AppImages.contactLocation,
                 fit: BoxFit.cover,
                 errorBuilder: (_, __, ___) => Container(
                   color: AppColors.neutral200,

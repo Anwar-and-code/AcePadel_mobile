@@ -29,7 +29,7 @@ const List<ZodiacSign> _zodiacSigns = [
   ZodiacSign(
     name: 'Bélier',
     emoji: '♈',
-    phrase: 'Un Bélier sur le terrain ? Attention aux smashs de feu ! 🔥',
+    phrase: 'Un Bélier sur le court ? Attention aux smashs de feu ! 🔥',
     startMonth: 3, startDay: 21, endMonth: 4, endDay: 19,
   ),
   ZodiacSign(
@@ -65,7 +65,7 @@ const List<ZodiacSign> _zodiacSigns = [
   ZodiacSign(
     name: 'Balance',
     emoji: '♎',
-    phrase: 'Une Balance sur le terrain ! L\'équilibre parfait en double ! ⚖️',
+    phrase: 'Une Balance sur le court ! L\'équilibre parfait en double ! ⚖️',
     startMonth: 9, startDay: 23, endMonth: 10, endDay: 22,
   ),
   ZodiacSign(

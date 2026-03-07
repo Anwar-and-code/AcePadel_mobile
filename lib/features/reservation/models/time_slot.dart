@@ -179,5 +179,5 @@ class AvailableSlot {
   int get hashCode => Object.hash(terrainId, timeSlotId);
 
   @override
-  String toString() => 'AvailableSlot(terrain: $terrainCode, $timeRange, reserved: $isReserved)';
+  String toString() => 'AvailableSlot(court: $terrainCode, $timeRange, reserved: $isReserved)';
 }

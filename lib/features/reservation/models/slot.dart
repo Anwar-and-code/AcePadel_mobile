@@ -118,5 +118,5 @@ class Slot {
   int get hashCode => id.hashCode;
 
   @override
-  String toString() => 'Slot(id: $id, terrainId: $terrainId, $timeRange, reserved: $isReserved)';
+  String toString() => 'Slot(id: $id, courtId: $terrainId, $timeRange, reserved: $isReserved)';
 }

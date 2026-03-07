@@ -5,11 +5,14 @@ import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/user_profile_service.dart';
 import '../../../core/services/points_service.dart';
+import '../../events/services/event_service.dart';
 import '../../../core/widgets/points_badge.dart';
+import 'package:provider/provider.dart';
 import '../widgets/home_banner_carousel.dart';
 import '../widgets/home_action_cards.dart';
 import '../widgets/home_reservations_list.dart';
 import '../../profile/screens/profile_screen.dart';
+import '../../reservation/providers/reservation_provider.dart';
 import '../../product_tour/product_tour.dart';
 
 /// Home screen with product tour integration
@@ -64,6 +67,8 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
     _lastRefresh = DateTime.now();
     UserProfileService.instance.loadProfile();
     PointsService.instance.loadPoints();
+    EventService.instance.loadEvents();
+    context.read<ReservationProvider>().loadUserReservations();
   }
 
   void _refreshIfNeeded() {
@@ -80,7 +85,11 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
 
   Future<void> _onRefresh() async {
     _lastRefresh = DateTime.now();
-    await UserProfileService.instance.loadProfile();
+    await Future.wait([
+      UserProfileService.instance.loadProfile(),
+      EventService.instance.loadEvents(),
+      context.read<ReservationProvider>().loadUserReservations(),
+    ]);
   }
 
   @override

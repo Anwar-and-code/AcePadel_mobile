@@ -646,7 +646,7 @@ final List<Message> _sampleMessages = [
   Message(
     id: '3',
     userName: 'Julie Martin',
-    text: '19h ça vous va ? J\'ai réservé le terrain A',
+    text: '19h ça vous va ? J\'ai réservé le court A',
     time: '14:30',
     isSentByMe: false,
   ),

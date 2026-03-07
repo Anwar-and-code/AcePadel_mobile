@@ -33,7 +33,7 @@ class WelcomeScreen extends StatelessWidget {
                 child: ClipRRect(
                   borderRadius: AppRadius.borderRadiusXl,
                   child: Image.network(
-                    'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80',
+                    AppImages.welcomeHero,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
@@ -48,7 +48,7 @@ class WelcomeScreen extends StatelessWidget {
                             ),
                             AppSpacing.vGapMd,
                             Text(
-                              'Terrain de Padel',
+                              'Court de Padel',
                               style: AppTypography.bodyMedium.copyWith(
                                 color: AppColors.textSecondary,
                               ),

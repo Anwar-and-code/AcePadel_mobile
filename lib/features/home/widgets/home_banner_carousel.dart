@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import '../../events/models/event.dart';
+import '../../events/services/event_service.dart';
+import '../../events/screens/event_detail_screen.dart';
 
 class HomeBannerCarousel extends StatefulWidget {
   const HomeBannerCarousel({super.key});
@@ -10,39 +13,49 @@ class HomeBannerCarousel extends StatefulWidget {
 
 class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
   final PageController _pageController = PageController();
+  final _eventService = EventService.instance;
   int _currentPage = 0;
 
-  final List<BannerItem> _banners = [
-    BannerItem(
-      imageUrl: 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=800&q=80',
-      title: 'Réservez votre terrain',
-    ),
-    BannerItem(
-      imageUrl: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80',
-      title: 'Tournoi ce weekend',
-    ),
-    BannerItem(
-      imageUrl: 'https://images.unsplash.com/photo-1622279457486-62dcc4a431d6?w=800&q=80',
-      title: 'Cours de padel',
-    ),
-    BannerItem(
-      imageUrl: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80',
-      title: 'Nouveaux équipements',
-    ),
-    BannerItem(
-      imageUrl: 'https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=800&q=80',
-      title: 'Club PadelHouse',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _eventService.addListener(_onEventsChanged);
+    if (_eventService.events.isEmpty) {
+      _eventService.loadEvents();
+    }
+  }
 
   @override
   void dispose() {
+    _eventService.removeListener(_onEventsChanged);
     _pageController.dispose();
     super.dispose();
   }
 
+  void _onEventsChanged() {
+    if (mounted) setState(() {});
+  }
+
+  List<Event> get _displayEvents => _eventService.upcomingEvents;
+
   @override
   Widget build(BuildContext context) {
+    if (_eventService.isLoading && _displayEvents.isEmpty) {
+      return SizedBox(
+        height: 180,
+        child: Center(
+          child: CircularProgressIndicator(
+            color: AppColors.brandPrimary,
+            strokeWidth: 2,
+          ),
+        ),
+      );
+    }
+
+    if (_displayEvents.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Column(
       children: [
         SizedBox(
@@ -52,26 +65,33 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
             onPageChanged: (index) {
               setState(() => _currentPage = index);
             },
-            itemCount: _banners.length,
+            itemCount: _displayEvents.length,
             itemBuilder: (context, index) {
               return Padding(
                 padding: AppSpacing.screenPaddingHorizontalOnly,
-                child: _BannerCard(
-                  banner: _banners[index],
-                  onNext: () {
-                    _pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
-                  onPrevious: () {
-                    _pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  },
+                child: _EventBannerCard(
+                  event: _displayEvents[index],
+                  onNext: index < _displayEvents.length - 1
+                      ? () => _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          )
+                      : null,
+                  onPrevious: index > 0
+                      ? () => _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          )
+                      : null,
                   onTap: () {
-                    _showBannerDetails(context, _banners[index]);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EventDetailScreen(
+                          event: _displayEvents[index],
+                        ),
+                      ),
+                    );
                   },
                 ),
               );
@@ -80,138 +100,23 @@ class _HomeBannerCarouselState extends State<HomeBannerCarousel> {
         ),
         AppSpacing.vGapMd,
         AppPageIndicator(
-          count: _banners.length,
+          count: _displayEvents.length,
           currentIndex: _currentPage,
         ),
       ],
     );
   }
-
-  void _showBannerDetails(BuildContext context, BannerItem banner) {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.backgroundPrimary,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
-      ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: AppRadius.cardBorderRadius,
-              child: Image.network(
-                banner.imageUrl,
-                height: 150,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-            AppSpacing.vGapLg,
-            Text(
-              banner.title,
-              style: AppTypography.headlineSmall.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            AppSpacing.vGapMd,
-            Text(
-              _getBannerDescription(banner.title),
-              style: AppTypography.bodyMedium.copyWith(
-                color: AppColors.textSecondary,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            AppSpacing.vGapLg,
-            AppButton(
-              label: _getBannerAction(banner.title),
-              isFullWidth: true,
-              onPressed: () {
-                Navigator.pop(context);
-                _handleBannerAction(context, banner.title);
-              },
-            ),
-            AppSpacing.vGapLg,
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _getBannerDescription(String title) {
-    switch (title) {
-      case 'Réservez votre terrain':
-        return 'Réservez facilement votre terrain de padel en quelques clics. Choisissez la date, l\'heure et le terrain de votre choix.';
-      case 'Tournoi ce weekend':
-        return 'Participez à notre tournoi amical ce weekend ! Inscriptions ouvertes pour tous les niveaux.';
-      case 'Cours de padel':
-        return 'Améliorez votre technique avec nos cours dispensés par des professionnels certifiés.';
-      case 'Nouveaux équipements':
-        return 'Découvrez nos derniers équipements : raquettes, balles et accessoires de qualité.';
-      case 'Club PadelHouse':
-        return 'Rejoignez le club PadelHouse et profitez d\'avantages exclusifs et de tarifs préférentiels.';
-      default:
-        return 'Découvrez cette offre exclusive chez PadelHouse.';
-    }
-  }
-
-  String _getBannerAction(String title) {
-    switch (title) {
-      case 'Réservez votre terrain':
-        return 'Réserver maintenant';
-      case 'Tournoi ce weekend':
-        return 'S\'inscrire au tournoi';
-      case 'Cours de padel':
-        return 'Voir les cours';
-      case 'Nouveaux équipements':
-        return 'Voir les équipements';
-      case 'Club PadelHouse':
-        return 'Rejoindre le club';
-      default:
-        return 'En savoir plus';
-    }
-  }
-
-  void _handleBannerAction(BuildContext context, String title) {
-    String message;
-    switch (title) {
-      case 'Réservez votre terrain':
-        message = 'Redirection vers les réservations...';
-        break;
-      case 'Tournoi ce weekend':
-        Navigator.pushNamed(context, '/tournaments');
-        return;
-      case 'Cours de padel':
-        message = 'Les cours seront bientôt disponibles !';
-        break;
-      case 'Nouveaux équipements':
-        message = 'Boutique bientôt disponible !';
-        break;
-      case 'Club PadelHouse':
-        message = 'Inscription au club en cours...';
-        break;
-      default:
-        message = 'Action en cours...';
-    }
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: AppColors.brandPrimary,
-      ),
-    );
-  }
 }
 
-class _BannerCard extends StatelessWidget {
-  const _BannerCard({
-    required this.banner,
+class _EventBannerCard extends StatelessWidget {
+  const _EventBannerCard({
+    required this.event,
     this.onNext,
     this.onPrevious,
     this.onTap,
   });
 
-  final BannerItem banner;
+  final Event event;
   final VoidCallback? onNext;
   final VoidCallback? onPrevious;
   final VoidCallback? onTap;
@@ -229,65 +134,158 @@ class _BannerCard extends StatelessWidget {
           fit: StackFit.expand,
           children: [
             // Image
-            InkWell(
+            GestureDetector(
               onTap: onTap,
-              child: Image.network(
-                banner.imageUrl,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    color: AppColors.neutral200,
-                    child: Center(
-                      child: Icon(
-                        AppIcons.image,
-                        size: 48,
-                        color: AppColors.neutral400,
+              child: event.coverImageUrl != null
+                  ? Image.network(
+                      event.coverImageUrl!,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Container(
+                        color: AppColors.neutral200,
+                        child: Center(
+                          child: Icon(
+                            AppIcons.events,
+                            size: 48,
+                            color: AppColors.neutral400,
+                          ),
+                        ),
+                      ),
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Container(
+                          color: AppColors.neutral100,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                              color: AppColors.brandPrimary,
+                              strokeWidth: 2,
+                            ),
+                          ),
+                        );
+                      },
+                    )
+                  : Container(
+                      color: AppColors.neutral200,
+                      child: Center(
+                        child: Icon(
+                          AppIcons.events,
+                          size: 48,
+                          color: AppColors.neutral400,
+                        ),
                       ),
                     ),
-                  );
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    color: AppColors.neutral100,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
-                            : null,
-                        color: AppColors.brandPrimary,
-                        strokeWidth: 2,
-                      ),
+            ),
+
+            // Bottom gradient overlay
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: onTap,
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(12, 24, 12, 10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.75),
+                        Colors.transparent,
+                      ],
                     ),
-                  );
-                },
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: [
+                          AppBadge(
+                            label: event.categoryLabel,
+                            variant: AppBadgeVariant.secondary,
+                            size: AppBadgeSize.small,
+                          ),
+                          if (event.isFree) ...[
+                            const SizedBox(width: 6),
+                            AppBadge(
+                              label: 'Gratuit',
+                              variant: AppBadgeVariant.success,
+                              size: AppBadgeSize.small,
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        event.title,
+                        style: AppTypography.titleSmall.copyWith(
+                          color: AppColors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Icon(AppIcons.calendar, size: 12, color: AppColors.white.withValues(alpha: 0.8)),
+                          const SizedBox(width: 4),
+                          Text(
+                            event.formattedDate,
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.white.withValues(alpha: 0.8),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Icon(AppIcons.location, size: 12, color: AppColors.white.withValues(alpha: 0.8)),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              event.location,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.white.withValues(alpha: 0.8),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
 
             // Navigation arrows
-            Positioned(
-              left: AppSpacing.sm,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: _NavigationArrow(
-                  icon: AppIcons.chevronLeft,
-                  onTap: onPrevious,
+            if (onPrevious != null)
+              Positioned(
+                left: AppSpacing.sm,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: _NavigationArrow(
+                    icon: AppIcons.chevronLeft,
+                    onTap: onPrevious,
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              right: AppSpacing.sm,
-              top: 0,
-              bottom: 0,
-              child: Center(
-                child: _NavigationArrow(
-                  icon: AppIcons.chevronRight,
-                  onTap: onNext,
+            if (onNext != null)
+              Positioned(
+                right: AppSpacing.sm,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: _NavigationArrow(
+                    icon: AppIcons.chevronRight,
+                    onTap: onNext,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -323,11 +321,4 @@ class _NavigationArrow extends StatelessWidget {
       ),
     );
   }
-}
-
-class BannerItem {
-  final String imageUrl;
-  final String title;
-
-  BannerItem({required this.imageUrl, required this.title});
 }

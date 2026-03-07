@@ -731,8 +731,8 @@ final List<_FAQCategory> _faqCategories = [
     icon: Icons.calendar_today,
     items: [
       _FAQItemData(
-        question: 'Comment réserver un terrain ?',
-        answer: 'Pour réserver un terrain, accédez à l\'onglet "Réservation", sélectionnez la date et l\'heure souhaitées, puis choisissez le terrain disponible. Confirmez votre réservation et procédez au paiement.',
+        question: 'Comment réserver un court ?',
+        answer: 'Pour réserver un court, accédez à l\'onglet "Réservation", sélectionnez la date et l\'heure souhaitées, puis choisissez le court disponible. Confirmez votre réservation et procédez au paiement.',
       ),
       _FAQItemData(
         question: 'Puis-je annuler ma réservation ?',

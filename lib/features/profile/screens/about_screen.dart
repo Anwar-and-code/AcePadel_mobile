@@ -97,7 +97,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     AppSpacing.vGapMd,
                     Text(
-                      'PadelHouse est la première application de réservation de terrains de padel en Côte d\'Ivoire. Notre mission est de démocratiser l\'accès au padel et de créer une communauté passionnée autour de ce sport en pleine expansion.',
+                      'PadelHouse est la première application de réservation de courts de padel en Côte d\'Ivoire. Notre mission est de démocratiser l\'accès au padel et de créer une communauté passionnée autour de ce sport en pleine expansion.',
                       style: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.5,
@@ -105,7 +105,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     AppSpacing.vGapMd,
                     Text(
-                      'Nous offrons une expérience de réservation simple et intuitive, permettant à tous les joueurs de trouver et réserver des terrains en quelques clics.',
+                      'Nous offrons une expérience de réservation simple et intuitive, permettant à tous les joueurs de trouver et réserver des courts en quelques clics.',
                       style: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.5,
@@ -141,7 +141,7 @@ class AboutScreen extends StatelessWidget {
                     _FeatureItem(
                       icon: Icons.calendar_today,
                       title: 'Réservation facile',
-                      description: 'Réservez votre terrain en quelques secondes',
+                      description: 'Réservez votre court en quelques secondes',
                     ),
                     _FeatureItem(
                       icon: Icons.people,
@@ -190,19 +190,19 @@ class AboutScreen extends StatelessWidget {
                         _TeamMemberAvatar(
                           name: 'Fondateur',
                           role: 'CEO',
-                          imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80',
+                          imageUrl: AppImages.teamMember1,
                         ),
                         AppSpacing.hGapMd,
                         _TeamMemberAvatar(
                           name: 'Tech Lead',
                           role: 'CTO',
-                          imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80',
+                          imageUrl: AppImages.teamMember2,
                         ),
                         AppSpacing.hGapMd,
                         _TeamMemberAvatar(
                           name: 'Designer',
                           role: 'UX/UI',
-                          imageUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80',
+                          imageUrl: AppImages.teamMember3,
                         ),
                       ],
                     ),

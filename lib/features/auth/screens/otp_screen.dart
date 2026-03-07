@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/auth_service.dart';
+import '../../../core/services/push_notification_service.dart';
 import '../../../app/main_shell.dart';
 import '../../../core/services/points_service.dart';
 import 'register_screen.dart';
@@ -71,6 +72,9 @@ class _OtpScreenState extends State<OtpScreen> {
       setState(() => _isVerifying = false);
       
       if (result['success'] == true) {
+        // Enregistrer le token FCM après connexion réussie
+        await PushNotificationService().registerAfterLogin();
+        
         final isNewUser = result['is_new_user'] == true;
         
         if (isNewUser) {

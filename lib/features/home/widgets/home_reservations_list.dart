@@ -414,7 +414,7 @@ class _ReservationCard extends StatelessWidget {
                       ),
                       AppSpacing.vGapXxs,
                       Text(
-                        'Terrain $courtName',
+                        'Court $courtName',
                         style: AppTypography.bodySmall.copyWith(
                           color: AppColors.textSecondary,
                         ),
