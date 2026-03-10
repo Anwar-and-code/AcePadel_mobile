@@ -55,7 +55,8 @@ class HomeActionCards extends StatelessWidget {
                         icon: AppIcons.playCircle,
                         imageUrl: AppImages.homeReplays,
                         color: AppColors.brandSecondary,
-                        onTap: () => Navigator.pushNamed(context, AppRouter.replays),
+                        isDisabled: true,
+                        comingSoonLabel: 'Bientôt',
                       ),
                     ),
                     const Gap(12),
@@ -66,7 +67,8 @@ class HomeActionCards extends StatelessWidget {
                         icon: AppIcons.coaching,
                         imageUrl: AppImages.homeCoaching,
                         color: AppColors.brandPrimary,
-                        onTap: () => Navigator.pushNamed(context, AppRouter.coaching),
+                        isDisabled: true,
+                        comingSoonLabel: 'Bientôt',
                       ),
                     ),
                   ],
@@ -92,6 +94,8 @@ class _BentoCard extends StatelessWidget {
     required this.color,
     this.isLarge = false,
     this.onTap,
+    this.isDisabled = false,
+    this.comingSoonLabel,
   });
 
   final String title;
@@ -101,6 +105,8 @@ class _BentoCard extends StatelessWidget {
   final Color color;
   final bool isLarge;
   final VoidCallback? onTap;
+  final bool isDisabled;
+  final String? comingSoonLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -120,15 +126,25 @@ class _BentoCard extends StatelessWidget {
         child: Material(
           color: AppColors.surfaceDefault,
           child: InkWell(
-            onTap: onTap,
+            onTap: isDisabled ? null : onTap,
             child: Stack(
               fit: StackFit.expand,
               children: [
                 // 1. Background Image using NetworkImage
-                Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: AppColors.neutral300),
+                ColorFiltered(
+                  colorFilter: isDisabled
+                      ? const ColorFilter.matrix(<double>[
+                          0.2126, 0.7152, 0.0722, 0, 0,
+                          0.2126, 0.7152, 0.0722, 0, 0,
+                          0.2126, 0.7152, 0.0722, 0, 0,
+                          0,      0,      0,      1, 0,
+                        ])
+                      : const ColorFilter.mode(Colors.transparent, BlendMode.dst),
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(color: AppColors.neutral300),
+                  ),
                 ),
 
                 // 2. Gradient Overlay (Glass/Dark)
@@ -137,18 +153,24 @@ class _BentoCard extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        AppColors.black.withValues(alpha: 0.3),
-                        AppColors.black.withValues(alpha: 0.8),
-                      ],
+                      colors: isDisabled
+                          ? [
+                              Colors.transparent,
+                              AppColors.black.withValues(alpha: 0.4),
+                              AppColors.black.withValues(alpha: 0.85),
+                            ]
+                          : [
+                              Colors.transparent,
+                              AppColors.black.withValues(alpha: 0.3),
+                              AppColors.black.withValues(alpha: 0.8),
+                            ],
                       stops: const [0.0, 0.4, 1.0],
                     ),
                   ),
                 ),
 
                 // 3. Neon Glow Effect (subtle)
-                if (isLarge)
+                if (isLarge && !isDisabled)
                   Positioned(
                     top: -20,
                     right: -20,
@@ -168,7 +190,29 @@ class _BentoCard extends StatelessWidget {
                     ),
                   ),
 
-                // 4. Content
+                // 4. Coming soon badge
+                if (isDisabled && comingSoonLabel != null)
+                  Positioned(
+                    top: 10,
+                    right: 10,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.white.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        comingSoonLabel!,
+                        style: AppTypography.labelSmall.copyWith(
+                          color: AppColors.white.withValues(alpha: 0.8),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 10,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                // 5. Content
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -178,7 +222,9 @@ class _BentoCard extends StatelessWidget {
                       // Icon (no wrapper)
                       Icon(
                         icon,
-                        color: AppColors.white,
+                        color: isDisabled
+                            ? AppColors.white.withValues(alpha: 0.5)
+                            : AppColors.white,
                         size: isLarge ? 32 : 26,
                       ),
                       const Gap(12),
@@ -188,12 +234,16 @@ class _BentoCard extends StatelessWidget {
                         title,
                         style: isLarge 
                           ? AppTypography.headlineSmall.copyWith(
-                              color: AppColors.white,
+                              color: isDisabled
+                                  ? AppColors.white.withValues(alpha: 0.5)
+                                  : AppColors.white,
                               fontWeight: FontWeight.w700,
                               height: 1.1,
                             )
                           : AppTypography.titleMedium.copyWith(
-                              color: AppColors.white,
+                              color: isDisabled
+                                  ? AppColors.white.withValues(alpha: 0.5)
+                                  : AppColors.white,
                               fontWeight: FontWeight.w600,
                             ),
                       ),
@@ -203,7 +253,9 @@ class _BentoCard extends StatelessWidget {
                         Text(
                           subtitle!,
                           style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.neutral200,
+                            color: isDisabled
+                                ? AppColors.neutral200.withValues(alpha: 0.5)
+                                : AppColors.neutral200,
                           ),
                         ),
                       ],
