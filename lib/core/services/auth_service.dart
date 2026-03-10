@@ -36,17 +36,20 @@ class AuthService {
   }
 
   /// Vérifie le code OTP via Supabase Auth natif
+  /// Si le code OTP échoue, tente le code de bypass depuis app_settings
   /// Retourne un Map avec success, is_new_user, session
   static Future<Map<String, dynamic>> verifyOtp(String email, String code) async {
+    final normalizedEmail = email.toLowerCase().trim();
+
+    // 1. Essayer d'abord la vérification OTP normale
     try {
       final response = await _supabase.auth.verifyOTP(
-        email: email.toLowerCase().trim(),
+        email: normalizedEmail,
         token: code,
         type: OtpType.email,
       );
 
       if (response.session != null) {
-        // Vérifier si le profil existe
         final profile = await getCurrentProfile();
         final isNewUser = profile == null;
 
@@ -56,13 +59,48 @@ class AuthService {
           'user_id': response.user?.id,
           'session': response.session,
         };
-      } else {
-        return {
-          'success': false,
-          'error': 'INVALID_CODE',
-          'message': 'Code invalide ou expiré.',
-        };
       }
+    } catch (_) {
+      // OTP normal échoué, on tente le bypass
+    }
+
+    // 2. Tenter le bypass via l'Edge Function
+    try {
+      final bypassResponse = await _supabase.functions.invoke(
+        'bypass-otp',
+        body: {'email': normalizedEmail, 'code': code},
+      );
+
+      if (bypassResponse.status == 200) {
+        final data = bypassResponse.data as Map<String, dynamic>;
+        final tokenHash = data['token_hash'] as String?;
+
+        if (tokenHash != null) {
+          // Vérifier avec le token_hash retourné par l'admin API
+          final response = await _supabase.auth.verifyOTP(
+            tokenHash: tokenHash,
+            type: OtpType.magiclink,
+          );
+
+          if (response.session != null) {
+            final profile = await getCurrentProfile();
+            final isNewUser = profile == null;
+
+            return {
+              'success': true,
+              'is_new_user': isNewUser,
+              'user_id': response.user?.id,
+              'session': response.session,
+            };
+          }
+        }
+      }
+
+      return {
+        'success': false,
+        'error': 'INVALID_CODE',
+        'message': 'Code invalide ou expiré.',
+      };
     } on AuthException catch (e) {
       return {
         'success': false,
