@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +30,7 @@ Future<void> main() async {
   await Supabase.initialize(url: dotenv.env['SUPABASE_URL']!, anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
 
   // Initialiser les Push Notifications (mobile uniquement)
-  if (!kIsWeb) {
+  if (!kIsWeb && !Platform.isIOS) {
     await PushNotificationService().initialize(
       onTap: (data) {
         // Naviguer selon le type de notification

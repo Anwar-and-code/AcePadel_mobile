@@ -168,7 +168,7 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
             // Top section with logo, title, and OTP boxes
             Expanded(
-              flex: 3,
+              flex: 2,
               child: Padding(
                 padding: AppSpacing.screenPadding,
                 child: Column(
@@ -291,27 +291,29 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
             
             // Numeric keypad
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.md,
-              ),
-              decoration: BoxDecoration(
-                color: AppColors.neutral200,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(24),
-                  topRight: Radius.circular(24),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.sm,
+                  vertical: AppSpacing.md,
                 ),
-              ),
-              child: SafeArea(
-                top: false,
-                child: Column(
-                  children: [
-                    _buildKeypadRow(['1', '2', '3']),
-                    _buildKeypadRow(['4', '5', '6']),
-                    _buildKeypadRow(['7', '8', '9']),
-                    _buildKeypadRow(['', '0', 'back']),
-                  ],
+                decoration: BoxDecoration(
+                  color: AppColors.neutral200,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(24),
+                    topRight: Radius.circular(24),
+                  ),
+                ),
+                child: SafeArea(
+                  top: false,
+                  child: Column(
+                    children: [
+                      Expanded(child: _buildKeypadRow(['1', '2', '3'])),
+                      Expanded(child: _buildKeypadRow(['4', '5', '6'])),
+                      Expanded(child: _buildKeypadRow(['7', '8', '9'])),
+                      Expanded(child: _buildKeypadRow(['', '0', 'back'])),
+                    ],
+                  ),
                 ),
               ),
             ),
