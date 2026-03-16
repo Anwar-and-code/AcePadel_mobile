@@ -1,27 +1,34 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../firebase_options.dart';
+
 // Handler pour les messages en background (doit être top-level)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
-  print('[FCM] Background message: ${message.notification?.title}');
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 }
 
 class PushNotificationService {
   static final PushNotificationService _instance = PushNotificationService._internal();
+
   factory PushNotificationService() => _instance;
+
   PushNotificationService._internal();
 
   FirebaseMessaging? _messagingInstance;
+
   FirebaseMessaging get _messaging {
     _messagingInstance ??= FirebaseMessaging.instance;
     return _messagingInstance!;
   }
+
   final _localNotifications = FlutterLocalNotificationsPlugin();
   bool _initialized = false;
 
@@ -29,9 +36,7 @@ class PushNotificationService {
   Function(Map<String, dynamic> data)? onNotificationTap;
 
   /// Appeler une seule fois au démarrage de l'app (après Firebase.initializeApp)
-  Future<void> initialize({
-    Function(Map<String, dynamic> data)? onTap,
-  }) async {
+  Future<void> initialize({Function(Map<String, dynamic> data)? onTap}) async {
     if (_initialized) return;
     if (kIsWeb) return; // Firebase Messaging not supported on web
     _initialized = true;
@@ -44,17 +49,14 @@ class PushNotificationService {
     await _setupLocalNotifications();
 
     // Demander la permission
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-      provisional: false,
-    );
+    final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true, provisional: false);
+
+    await _messaging.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized ||
         settings.authorizationStatus == AuthorizationStatus.provisional) {
       // Récupérer et sauvegarder le token FCM
-      final token = await _messaging.getToken();
+      final token = await _getToken();
       if (token != null) {
         await _saveTokenToSupabase(token);
       }
@@ -66,6 +68,7 @@ class PushNotificationService {
     // --- Écouter les notifications ---
 
     // 1. App en FOREGROUND → afficher une notification locale
+    // FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
     FirebaseMessaging.onMessage.listen(_handleForegroundMessage);
 
     // 2. App en BACKGROUND → tap sur la notification
@@ -112,6 +115,8 @@ class PushNotificationService {
 
   /// Afficher la notification quand l'app est au premier plan
   void _handleForegroundMessage(RemoteMessage message) {
+    debugPrint('[FCM Notification] foreground received');
+
     final notification = message.notification;
     if (notification == null) return;
 
@@ -127,11 +132,7 @@ class PushNotificationService {
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',
         ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
       ),
     );
   }
@@ -145,21 +146,19 @@ class PushNotificationService {
 
   /// Sauvegarder le token FCM dans Supabase
   Future<void> _saveTokenToSupabase(String token) async {
+    debugPrint('[FCM Token] $token');
     try {
       final userId = Supabase.instance.client.auth.currentUser?.id;
       if (userId == null) return;
 
-      await Supabase.instance.client.from('fcm_tokens').upsert(
-        {
-          'user_id': userId,
-          'token': token,
-          'device_type': Platform.isIOS ? 'ios' : 'android',
-          'device_name': '${Platform.isIOS ? 'iPhone' : 'Android'}',
-          'is_active': true,
-          'updated_at': DateTime.now().toUtc().toIso8601String(),
-        },
-        onConflict: 'user_id,token',
-      );
+      await Supabase.instance.client.from('fcm_tokens').upsert({
+        'user_id': userId,
+        'token': token,
+        'device_type': Platform.isIOS ? 'ios' : 'android',
+        'device_name': '${Platform.isIOS ? 'iPhone' : 'Android'}',
+        'is_active': true,
+        'updated_at': DateTime.now().toUtc().toIso8601String(),
+      }, onConflict: 'user_id,token');
       print('[FCM] Token saved to Supabase');
     } catch (e) {
       print('[FCM] Error saving token: $e');
@@ -170,7 +169,7 @@ class PushNotificationService {
   Future<void> registerAfterLogin() async {
     if (kIsWeb) return;
     try {
-      final token = await _messaging.getToken();
+      final token = await _getToken();
       if (token != null) {
         await _saveTokenToSupabase(token);
       }
@@ -183,7 +182,7 @@ class PushNotificationService {
   Future<void> unregisterOnLogout() async {
     if (kIsWeb) return;
     try {
-      final token = await _messaging.getToken();
+      final token = await _getToken();
       if (token != null) {
         await Supabase.instance.client
             .from('fcm_tokens')
@@ -193,6 +192,29 @@ class PushNotificationService {
       }
     } catch (e) {
       print('[FCM] Error deactivating token: $e');
+    }
+  }
+
+  Future<String?> _getToken() async {
+    try {
+      // iOS requires APNS token first
+      if (Platform.isIOS) {
+        String? apnsToken = await _messaging.getAPNSToken();
+
+        int retry = 0;
+        while (apnsToken == null && retry < 10) {
+          await Future.delayed(const Duration(seconds: 1));
+          apnsToken = await _messaging.getAPNSToken();
+          retry++;
+        }
+        print('[FCM] APNS Token: $apnsToken');
+      }
+
+      final fcmToken = await _messaging.getToken();
+      return fcmToken;
+    } catch (e) {
+      print('[FCM] Error getting token: $e');
+      return null;
     }
   }
 }
