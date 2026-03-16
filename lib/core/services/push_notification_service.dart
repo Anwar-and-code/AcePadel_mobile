@@ -11,8 +11,8 @@ import '../../firebase_options.dart';
 // Handler pour les messages en background (doit être top-level)
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  debugPrint('[FCM Notification] background received');
 }
 
 class PushNotificationService {
@@ -49,6 +49,7 @@ class PushNotificationService {
     await _setupLocalNotifications();
 
     // Demander la permission
+    // final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true, provisional: false);
     final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true, provisional: false);
 
     await _messaging.setForegroundNotificationPresentationOptions(alert: true, badge: true, sound: true);
