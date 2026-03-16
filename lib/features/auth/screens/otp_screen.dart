@@ -305,16 +305,13 @@ class _OtpScreenState extends State<OtpScreen> {
                     topRight: Radius.circular(24),
                   ),
                 ),
-                child: SafeArea(
-                  top: false,
-                  child: Column(
-                    children: [
-                      Expanded(child: _buildKeypadRow(['1', '2', '3'])),
-                      Expanded(child: _buildKeypadRow(['4', '5', '6'])),
-                      Expanded(child: _buildKeypadRow(['7', '8', '9'])),
-                      Expanded(child: _buildKeypadRow(['', '0', 'back'])),
-                    ],
-                  ),
+                child: Column(
+                  children: [
+                    Expanded(child: _buildKeypadRow(['1', '2', '3'])),
+                    Expanded(child: _buildKeypadRow(['4', '5', '6'])),
+                    Expanded(child: _buildKeypadRow(['7', '8', '9'])),
+                    Expanded(child: _buildKeypadRow(['', '0', 'back'])),
+                  ],
                 ),
               ),
             ),

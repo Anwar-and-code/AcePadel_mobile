@@ -4,11 +4,7 @@ import '../branding/app_logo.dart';
 
 /// Navigation item data model
 class AppNavItem {
-  const AppNavItem({
-    required this.label,
-    required this.icon,
-    required this.activeIcon,
-  });
+  const AppNavItem({required this.label, required this.icon, required this.activeIcon});
 
   final String label;
   final IconData icon;
@@ -16,10 +12,10 @@ class AppNavItem {
 }
 
 /// PadelHouse Design System - Bottom Navigation Bar
-/// 
+///
 /// Based on the Home screen mockup showing:
 /// Accueil | Réservation | Événements | Contact
-/// 
+///
 /// Usage:
 /// ```dart
 /// AppBottomNavBar(
@@ -28,38 +24,17 @@ class AppNavItem {
 /// )
 /// ```
 class AppBottomNavBar extends StatelessWidget {
-  const AppBottomNavBar({
-    super.key,
-    required this.currentIndex,
-    required this.onTap,
-    this.items,
-  });
+  const AppBottomNavBar({super.key, required this.currentIndex, required this.onTap, this.items});
 
   final int currentIndex;
   final ValueChanged<int> onTap;
   final List<AppNavItem>? items;
 
   static const List<AppNavItem> defaultItems = [
-    AppNavItem(
-      label: 'Accueil',
-      icon: AppIcons.home,
-      activeIcon: AppIcons.homeFilled,
-    ),
-    AppNavItem(
-      label: 'Réservation',
-      icon: AppIcons.reservation,
-      activeIcon: AppIcons.reservationFilled,
-    ),
-    AppNavItem(
-      label: 'Événements',
-      icon: AppIcons.events,
-      activeIcon: AppIcons.eventsFilled,
-    ),
-    AppNavItem(
-      label: 'Contact',
-      icon: AppIcons.contact,
-      activeIcon: AppIcons.contactFilled,
-    ),
+    AppNavItem(label: 'Accueil', icon: AppIcons.home, activeIcon: AppIcons.homeFilled),
+    AppNavItem(label: 'Réservation', icon: AppIcons.reservation, activeIcon: AppIcons.reservationFilled),
+    AppNavItem(label: 'Événements', icon: AppIcons.events, activeIcon: AppIcons.eventsFilled),
+    AppNavItem(label: 'Contact', icon: AppIcons.contact, activeIcon: AppIcons.contactFilled),
   ];
 
   @override
@@ -67,28 +42,17 @@ class AppBottomNavBar extends StatelessWidget {
     final navItems = items ?? defaultItems;
 
     return Container(
-      decoration: BoxDecoration(
-        color: AppColors.navBarBackground,
-        boxShadow: AppShadows.navBarShadow,
-      ),
+      decoration: BoxDecoration(color: AppColors.navBarBackground, boxShadow: AppShadows.navBarShadow),
       child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewPadding.bottom,
-        ),
+        padding: EdgeInsets.only(bottom: AppSpacing.sm),
         child: Padding(
-          padding: const EdgeInsets.only(
-            bottom: AppSpacing.xs,
-          ),
+          padding: const EdgeInsets.only(bottom: AppSpacing.xs),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: List.generate(
               navItems.length,
               (index) => Expanded(
-                child: _NavBarItem(
-                  item: navItems[index],
-                  isActive: index == currentIndex,
-                  onTap: () => onTap(index),
-                ),
+                child: _NavBarItem(item: navItems[index], isActive: index == currentIndex, onTap: () => onTap(index)),
               ),
             ),
           ),
@@ -99,11 +63,7 @@ class AppBottomNavBar extends StatelessWidget {
 }
 
 class _NavBarItem extends StatelessWidget {
-  const _NavBarItem({
-    required this.item,
-    required this.isActive,
-    required this.onTap,
-  });
+  const _NavBarItem({required this.item, required this.isActive, required this.onTap});
 
   final AppNavItem item;
   final bool isActive;
@@ -116,19 +76,11 @@ class _NavBarItem extends StatelessWidget {
       child: AnimatedContainer(
         duration: AppAnimations.navBarDuration,
         curve: AppAnimations.navBarCurve,
-        padding: const EdgeInsets.only(
-          left: AppSpacing.md,
-          right: AppSpacing.md,
-          top: 0,
-          bottom: AppSpacing.xs,
-        ),
+        padding: const EdgeInsets.only(left: AppSpacing.md, right: AppSpacing.md, top: 0, bottom: AppSpacing.xs),
         decoration: BoxDecoration(
           color: Colors.transparent,
           border: Border(
-            top: BorderSide(
-              color: isActive ? AppColors.navBarItemActive : Colors.transparent,
-              width: 4.0,
-            ),
+            top: BorderSide(color: isActive ? AppColors.navBarItemActive : Colors.transparent, width: 4.0),
           ),
         ),
         child: Column(
@@ -141,9 +93,7 @@ class _NavBarItem extends StatelessWidget {
                 isActive ? item.activeIcon : item.icon,
                 key: ValueKey(isActive),
                 size: AppIcons.navBarIcon,
-                color: isActive 
-                    ? AppColors.navBarItemActive 
-                    : AppColors.navBarItemInactive,
+                color: isActive ? AppColors.navBarItemActive : AppColors.navBarItemInactive,
               ),
             ),
             AppSpacing.vGapXxs,
@@ -153,9 +103,7 @@ class _NavBarItem extends StatelessWidget {
               overflow: TextOverflow.visible,
               textAlign: TextAlign.center,
               style: AppTypography.navLabel.copyWith(
-                color: isActive 
-                    ? AppColors.navBarItemActive 
-                    : AppColors.navBarItemInactive,
+                color: isActive ? AppColors.navBarItemActive : AppColors.navBarItemInactive,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
                 fontSize: 11,
               ),
@@ -204,8 +152,6 @@ class AppTopBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 }
-
-
 
 /// Page indicator dots - For carousel/slider
 class AppPageIndicator extends StatelessWidget {
