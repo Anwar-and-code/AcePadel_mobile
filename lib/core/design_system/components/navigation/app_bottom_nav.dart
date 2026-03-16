@@ -71,13 +71,12 @@ class AppBottomNavBar extends StatelessWidget {
         color: AppColors.navBarBackground,
         boxShadow: AppShadows.navBarShadow,
       ),
-      child: SafeArea(
-        top: false,
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewPadding.bottom,
+        ),
         child: Padding(
           padding: const EdgeInsets.only(
-            left: 0,
-            right: 0,
-            top: 0,
             bottom: AppSpacing.xs,
           ),
           child: Row(

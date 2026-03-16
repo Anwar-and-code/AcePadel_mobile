@@ -149,6 +149,7 @@ class _OtpScreenState extends State<OtpScreen> {
     return Scaffold(
       backgroundColor: AppColors.backgroundPrimary,
       body: SafeArea(
+        bottom: false,
         child: Column(
           children: [
             // Back button
