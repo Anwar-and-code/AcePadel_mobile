@@ -7,7 +7,7 @@ enum AppButtonSize { small, medium, large }
 /// Button style variants
 enum AppButtonVariant { primary, secondary, outline, ghost }
 
-/// PadelHouse Design System - Primary Button Component
+/// AcePadel Design System - Primary Button Component
 /// 
 /// A customizable button component following the design system guidelines.
 /// 

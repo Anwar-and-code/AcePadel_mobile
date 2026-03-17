@@ -1,6 +1,6 @@
 # Configuration OAuth - Google & Microsoft
 
-Ce guide explique comment configurer l'authentification OAuth avec Google (Gmail) et Microsoft (Outlook) pour PadelHouse.
+Ce guide explique comment configurer l'authentification OAuth avec Google (Gmail) et Microsoft (Outlook) pour AcePadel.
 
 ## Prérequis
 
@@ -14,7 +14,7 @@ Ce guide explique comment configurer l'authentification OAuth avec Google (Gmail
 ### Étape 1: Accéder aux paramètres d'authentification
 
 1. Connectez-vous à [Supabase Dashboard](https://supabase.com/dashboard)
-2. Sélectionnez votre projet PadelHouse
+2. Sélectionnez votre projet AcePadel
 3. Allez dans **Authentication** → **Providers**
 
 ### Étape 2: Ajouter l'URL de redirection
@@ -22,7 +22,7 @@ Ce guide explique comment configurer l'authentification OAuth avec Google (Gmail
 1. Allez dans **Authentication** → **URL Configuration**
 2. Dans **Redirect URLs**, ajoutez:
    ```
-   io.padelhouse.app://auth-callback
+   io.acepadel.app://auth-callback
    ```
 
 ---
@@ -42,7 +42,7 @@ L'authentification Google utilise le **Google Sign-In natif** via Google Play Se
 1. Allez dans **APIs & Services** → **OAuth consent screen**
 2. Choisissez **External** (pour les utilisateurs externes)
 3. Remplissez les informations:
-   - **App name**: PadelHouse
+   - **App name**: AcePadel
    - **User support email**: votre email
    - **Developer contact**: votre email
 4. Ajoutez les scopes: `email`, `profile`, `openid`
@@ -55,15 +55,15 @@ Vous devez créer **3 types de Client ID** :
 #### A. Web Client ID (obligatoire pour Supabase)
 1. **APIs & Services** → **Credentials** → **Create Credentials** → **OAuth client ID**
 2. Type: **Web application**
-3. Nom: `PadelHouse Web`
+3. Nom: `AcePadel Web`
 4. **Authorized redirect URIs**: `https://<VOTRE_PROJECT_REF>.supabase.co/auth/v1/callback`
 5. Copiez le **Client ID** → c'est votre `GOOGLE_WEB_CLIENT_ID`
 
 #### B. Android Client ID
 1. **Create Credentials** → **OAuth client ID**
 2. Type: **Android**
-3. Nom: `PadelHouse Android`
-4. **Package name**: `com.padelhouse.armasoft`
+3. Nom: `AcePadel Android`
+4. **Package name**: `com.armasoft.acepadel`
 5. **SHA-1 certificate fingerprint**: 
    ```bash
    # Debug (développement)
@@ -77,8 +77,8 @@ Vous devez créer **3 types de Client ID** :
 #### C. iOS Client ID (si vous ciblez iOS)
 1. **Create Credentials** → **OAuth client ID**
 2. Type: **iOS**
-3. Nom: `PadelHouse iOS`
-4. **Bundle ID**: `io.padelhouse.app`
+3. Nom: `AcePadel iOS`
+4. **Bundle ID**: `io.acepadel.app`
 5. Copiez le **Client ID** → c'est votre `GOOGLE_IOS_CLIENT_ID`
 
 ### Étape 4: Configurer les variables d'environnement
@@ -107,7 +107,7 @@ GOOGLE_IOS_CLIENT_ID=xxxxx.apps.googleusercontent.com
 2. Recherchez **Azure Active Directory**
 3. Allez dans **App registrations** → **New registration**
 4. Remplissez:
-   - **Name**: PadelHouse
+   - **Name**: AcePadel
    - **Supported account types**: Accounts in any organizational directory and personal Microsoft accounts
    - **Redirect URI**: Web → `https://<VOTRE_PROJECT_REF>.supabase.co/auth/v1/callback`
 5. Cliquez sur **Register**
@@ -151,7 +151,7 @@ GOOGLE_IOS_CLIENT_ID=xxxxx.apps.googleusercontent.com
     <category android:name="android.intent.category.DEFAULT" />
     <category android:name="android.intent.category.BROWSABLE" />
     <data
-        android:scheme="io.padelhouse.app"
+        android:scheme="io.acepadel.app"
         android:host="auth-callback" />
 </intent-filter>
 ```
@@ -163,7 +163,7 @@ GOOGLE_IOS_CLIENT_ID=xxxxx.apps.googleusercontent.com
     <dict>
         <key>CFBundleURLSchemes</key>
         <array>
-            <string>io.padelhouse.app</string>
+            <string>io.acepadel.app</string>
         </array>
     </dict>
 </array>

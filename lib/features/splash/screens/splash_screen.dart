@@ -25,7 +25,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     
-    // Background transition: Brown -> White (Phase 1)
+    // Background transition: Gold -> White (Phase 1)
     _backgroundController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -71,10 +71,10 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   void _startAnimation() async {
-    // Phase 1: Hold brown background briefly
+    // Phase 1: Hold gold background briefly
     await Future.delayed(const Duration(milliseconds: 400));
     
-    // Phase 2: Transition background to white
+    // Phase 2: Transition background to white (off-white)
     _backgroundController.forward();
     
     // Phase 3: After background starts, animate logo
@@ -146,8 +146,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-/// Logo widget that displays the image logo
-/// Place your logo file at: assets/images/logo.png
+/// Logo widget for the splash screen — renders the brand logo directly
 class AppLogoImage extends StatelessWidget {
   final double? width;
   final double? height;
@@ -160,18 +159,9 @@ class AppLogoImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
-      'assets/images/logo.png',
-      width: width ?? 200,
-      height: height ?? 60,
-      fit: BoxFit.contain,
-      errorBuilder: (context, error, stackTrace) {
-        // Fallback to text logo if image not found
-        return const AppLogo(
-          size: AppLogoSize.xlarge,
-          color: AppColors.brandPrimary,
-        );
-      },
+    return const AppLogo(
+      size: AppLogoSize.xlarge,
+      variant: AppLogoVariant.stacked,
     );
   }
 }

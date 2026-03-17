@@ -11,7 +11,7 @@ class AppNavItem {
   final IconData activeIcon;
 }
 
-/// PadelHouse Design System - Bottom Navigation Bar
+/// AcePadel Design System - Bottom Navigation Bar
 ///
 /// Based on the Home screen mockup showing:
 /// Accueil | Réservation | Événements | Contact

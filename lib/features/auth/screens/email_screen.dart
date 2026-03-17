@@ -180,12 +180,8 @@ class _EmailScreenState extends State<EmailScreen> {
                     AppSpacing.vGapXl,
 
                     // Logo
-                    Image.asset(
-                      'assets/images/logo.png',
-                      height: 40,
-                      errorBuilder: (_, __, ___) => const AppLogo(
-                        size: AppLogoSize.medium,
-                      ),
+                    const AppLogo(
+                      size: AppLogoSize.medium,
                     ),
 
                     AppSpacing.vGapXxl,
@@ -195,7 +191,7 @@ class _EmailScreenState extends State<EmailScreen> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: AppColors.brandOlive,
+                        color: AppColors.brandDarkGold,
                         borderRadius: AppRadius.borderRadiusLg,
                       ),
                       child: const Icon(

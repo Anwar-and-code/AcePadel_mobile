@@ -66,14 +66,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
     final courts = [
       _FavoriteCourt(
         name: 'Court A',
-        location: 'PadelHouse Treichville',
+        location: 'AcePadel Treichville',
         rating: 4.8,
         imageUrl: AppImages.favoriteCourt1,
         isFavorite: true,
       ),
       _FavoriteCourt(
         name: 'Court B',
-        location: 'PadelHouse Treichville',
+        location: 'AcePadel Treichville',
         rating: 4.6,
         imageUrl: AppImages.favoriteCourt2,
         isFavorite: true,
@@ -107,14 +107,14 @@ class _FavoritesScreenState extends State<FavoritesScreen> with SingleTickerProv
       _FavoriteEvent(
         title: 'Tournoi Amical',
         date: '15 Jan 2026',
-        location: 'PadelHouse Treichville',
+        location: 'AcePadel Treichville',
         participants: 16,
         imageUrl: AppImages.favoriteEvent1,
       ),
       _FavoriteEvent(
         title: 'Cours Débutant',
         date: '20 Jan 2026',
-        location: 'PadelHouse Treichville',
+        location: 'AcePadel Treichville',
         participants: 8,
         imageUrl: AppImages.favoriteEvent2,
       ),

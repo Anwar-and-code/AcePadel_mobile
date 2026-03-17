@@ -4,7 +4,7 @@ import '../../tokens/tokens.dart';
 /// Avatar size variants
 enum AppAvatarSize { xs, sm, md, lg, xl }
 
-/// PadelHouse Design System - Avatar Component
+/// AcePadel Design System - Avatar Component
 /// 
 /// Based on the Home screen showing user avatar with greeting.
 /// 

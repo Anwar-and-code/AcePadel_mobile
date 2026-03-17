@@ -195,8 +195,8 @@ class _UpcomingReservationCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppColors.brandOlive,
-            AppColors.brandOlive.withValues(alpha: 0.8),
+            AppColors.brandDarkGold,
+            AppColors.brandDarkGold.withValues(alpha: 0.8),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -204,7 +204,7 @@ class _UpcomingReservationCard extends StatelessWidget {
         borderRadius: AppRadius.borderRadiusMd,
         boxShadow: [
           BoxShadow(
-            color: AppColors.brandOlive.withValues(alpha: 0.3),
+            color: AppColors.brandDarkGold.withValues(alpha: 0.3),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -277,7 +277,7 @@ class _UpcomingReservationCard extends StatelessWidget {
                         child: Text(
                           courtName,
                           style: AppTypography.headlineSmall.copyWith(
-                            color: AppColors.brandOlive,
+                            color: AppColors.brandDarkGold,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

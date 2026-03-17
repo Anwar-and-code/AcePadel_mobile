@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../tokens/tokens.dart';
 
-/// PadelHouse Design System - Text Field Component
+/// AcePadel Design System - Text Field Component
 /// 
 /// A customizable text field component following the design system guidelines.
 /// Based on the registration/inscription screens from the mockups.

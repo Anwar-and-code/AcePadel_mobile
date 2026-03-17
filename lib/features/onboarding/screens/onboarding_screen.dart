@@ -81,13 +81,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   // Logo
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 28,
-                    errorBuilder: (_, __, ___) => const AppLogo(
-                      size: AppLogoSize.small,
-                      color: AppColors.brandPrimary,
-                    ),
+                  const AppLogo(
+                    size: AppLogoSize.small,
                   ),
                   // Skip
                   TextButton(

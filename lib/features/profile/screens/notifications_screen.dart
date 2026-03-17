@@ -54,7 +54,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       id: '6',
       type: NotificationType.system,
       title: 'Mise à jour disponible',
-      message: 'Une nouvelle version de PadelHouse est disponible. Mettez à jour pour profiter des dernières fonctionnalités.',
+      message: 'Une nouvelle version de AcePadel est disponible. Mettez à jour pour profiter des dernières fonctionnalités.',
       time: 'Il y a 3 jours',
       isRead: true,
     ),

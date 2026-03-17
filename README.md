@@ -1,6 +1,6 @@
-# 🎾 PadelHouse — Application de réservation de padel
+# 🎾 AcePadel — Application de réservation de padel
 
-PadelHouse est une **application mobile et web** permettant la **réservation de terrains de padel** pour un club disposant de plusieurs terrains et de créneaux horaires dynamiques.  
+AcePadel est une **application mobile et web** permettant la **réservation de terrains de padel** pour un club disposant de plusieurs terrains et de créneaux horaires dynamiques.  
 La solution est conçue pour être **intuitive pour les joueurs**, **efficace pour les gestionnaires**, et **scalable dès la V1**.
 
 ---

@@ -1,8 +1,8 @@
-/// PadelHouse Router Utilities
+/// AcePadel Router Utilities
 /// 
 /// This barrel file exports all router utilities:
 /// ```dart
-/// import 'package:padelhouse/core/router/router.dart';
+/// import 'package:acepadel/core/router/router.dart';
 /// ```
 library;
 

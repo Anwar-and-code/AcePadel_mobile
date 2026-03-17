@@ -65,14 +65,14 @@ class BookingDetailsModal extends StatelessWidget {
           // Details with colored icons
           _CompactDetailRow(
             icon: Icons.tag,
-            iconColor: AppColors.brandOlive,
+            iconColor: AppColors.brandDarkGold,
             label: 'Référence',
             value: booking.reference,
           ),
           AppSpacing.vGapMd,
           _CompactDetailRow(
             icon: Icons.calendar_today,
-            iconColor: AppColors.brandOlive,
+            iconColor: AppColors.brandDarkGold,
             label: 'Date',
             value: _formatDate(booking.date),
           ),

@@ -1,4 +1,4 @@
-/// PadelHouse Design System - Image Assets
+/// AcePadel Design System - Image Assets
 ///
 /// Centralized image URLs for the application.
 /// All images reference PADEL-specific content stored in Supabase Storage.

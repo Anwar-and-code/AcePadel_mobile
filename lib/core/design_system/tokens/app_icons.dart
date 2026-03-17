@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-/// Design tokens for icons - PadelHouse Design System
+/// Design tokens for icons - AcePadel Design System
 /// Uses Phosphor Icons for a modern, consistent, flexible icon set
 /// Phosphor offers multiple weights: thin, light, regular, bold, fill, duotone
 abstract final class AppIcons {

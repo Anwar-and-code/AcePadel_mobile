@@ -2,32 +2,32 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 
-/// Design tokens for typography - PadelHouse Design System
-/// Based on Material 3 type scale with brand customizations
-/// 
+/// Design tokens for typography — AcePadel Design System
+/// Based on BRAND_GUIDE.html v2.0 §5
+///
 /// Font families:
-/// - Space Grotesk: Modern geometric font for headlines (sporty, dynamic)
-/// - Inter: Highly readable sans-serif for body text (designed for screens)
-/// 
-/// Scale: Follows Material 3 type scale ratios
+/// - Nunito: Rounded geometric sans-serif — ALL text (headlines, body, labels)
+/// - JetBrains Mono: Monospace — codes & numbers
+///
+/// Scale: Material 3 type scale with brand-specific sizes
 abstract final class AppTypography {
   // ==========================================================================
-  // FONT FAMILIES (using Google Fonts)
+  // FONT FAMILIES
   // ==========================================================================
-  
-  /// Primary font family for body text - Inter (highly readable)
-  static String get fontFamilyPrimary => GoogleFonts.inter().fontFamily!;
-  
-  /// Secondary font family for headings - Space Grotesk (modern, sporty)
-  static String get fontFamilySecondary => GoogleFonts.spaceGrotesk().fontFamily!;
-  
-  /// Monospace font family for code/numbers - JetBrains Mono
+
+  /// Primary font — Nunito (rounded geometric sans-serif)
+  static String get fontFamilyPrimary => GoogleFonts.nunito().fontFamily!;
+
+  /// Alias — headlines also use Nunito per brand guide
+  static String get fontFamilySecondary => GoogleFonts.nunito().fontFamily!;
+
+  /// Monospace font — JetBrains Mono (codes & numbers)
   static String get fontFamilyMono => GoogleFonts.jetBrainsMono().fontFamily!;
 
   // ==========================================================================
   // FONT WEIGHTS
   // ==========================================================================
-  
+
   static const FontWeight weightThin = FontWeight.w100;
   static const FontWeight weightExtraLight = FontWeight.w200;
   static const FontWeight weightLight = FontWeight.w300;
@@ -39,31 +39,29 @@ abstract final class AppTypography {
   static const FontWeight weightBlack = FontWeight.w900;
 
   // ==========================================================================
-  // FONT SIZES (Primitive tokens) - Increased for better readability
+  // FONT SIZES (from brand guide §5.2 hierarchy table)
   // ==========================================================================
-  
-  static const double fontSize10 = 11.0;
-  static const double fontSize11 = 12.0;
-  static const double fontSize12 = 13.0;
-  static const double fontSize13 = 14.0;
-  static const double fontSize14 = 15.0;
-  static const double fontSize16 = 17.0;
-  static const double fontSize18 = 19.0;
-  static const double fontSize20 = 21.0;
-  static const double fontSize22 = 23.0;
-  static const double fontSize24 = 26.0;
-  static const double fontSize28 = 30.0;
-  static const double fontSize32 = 34.0;
-  static const double fontSize36 = 38.0;
-  static const double fontSize40 = 42.0;
-  static const double fontSize48 = 50.0;
-  static const double fontSize56 = 58.0;
-  static const double fontSize64 = 66.0;
+
+  static const double fontSize10 = 10.0;
+  static const double fontSize11 = 11.0;
+  static const double fontSize12 = 12.0;
+  static const double fontSize14 = 14.0;
+  static const double fontSize16 = 16.0;
+  static const double fontSize18 = 18.0;
+  static const double fontSize20 = 20.0;
+  static const double fontSize22 = 22.0;
+  static const double fontSize24 = 24.0;
+  static const double fontSize26 = 26.0;
+  static const double fontSize28 = 28.0;
+  static const double fontSize32 = 32.0;
+  static const double fontSize36 = 36.0;
+  static const double fontSize48 = 48.0;
+  static const double fontSize56 = 56.0;
 
   // ==========================================================================
   // LINE HEIGHTS
   // ==========================================================================
-  
+
   static const double lineHeightTight = 1.1;
   static const double lineHeightSnug = 1.25;
   static const double lineHeightNormal = 1.4;
@@ -73,33 +71,33 @@ abstract final class AppTypography {
   // ==========================================================================
   // LETTER SPACING
   // ==========================================================================
-  
+
   static const double letterSpacingTight = -0.5;
   static const double letterSpacingNormal = 0.0;
   static const double letterSpacingWide = 0.5;
   static const double letterSpacingWider = 1.0;
 
   // ==========================================================================
-  // TEXT STYLES - DISPLAY (Hero text, splash screens) - Space Grotesk
+  // TEXT STYLES — DISPLAY (Splash, heroes) — Nunito Bold
   // ==========================================================================
-  
-  static TextStyle get displayLarge => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get displayLarge => GoogleFonts.nunito(
     fontSize: fontSize56,
     fontWeight: weightBold,
     height: lineHeightTight,
     letterSpacing: letterSpacingTight,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get displayMedium => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get displayMedium => GoogleFonts.nunito(
     fontSize: fontSize48,
     fontWeight: weightBold,
     height: lineHeightTight,
     letterSpacing: letterSpacingTight,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get displaySmall => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get displaySmall => GoogleFonts.nunito(
     fontSize: fontSize36,
     fontWeight: weightBold,
     height: lineHeightSnug,
@@ -108,26 +106,26 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - HEADLINE (Page titles, section headers) - Space Grotesk
+  // TEXT STYLES — HEADLINE (Page titles, sections) — Nunito Bold/SemiBold
   // ==========================================================================
-  
-  static TextStyle get headlineLarge => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get headlineLarge => GoogleFonts.nunito(
     fontSize: fontSize32,
     fontWeight: weightBold,
     height: lineHeightSnug,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get headlineMedium => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get headlineMedium => GoogleFonts.nunito(
     fontSize: fontSize28,
     fontWeight: weightSemiBold,
     height: lineHeightSnug,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get headlineSmall => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get headlineSmall => GoogleFonts.nunito(
     fontSize: fontSize24,
     fontWeight: weightSemiBold,
     height: lineHeightSnug,
@@ -136,26 +134,26 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - TITLE (Card titles, list headers) - Space Grotesk
+  // TEXT STYLES — TITLE (Card titles, list headers) — Nunito SemiBold/Medium
   // ==========================================================================
-  
-  static TextStyle get titleLarge => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get titleLarge => GoogleFonts.nunito(
     fontSize: fontSize22,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get titleMedium => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get titleMedium => GoogleFonts.nunito(
     fontSize: fontSize18,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get titleSmall => GoogleFonts.spaceGrotesk(
+
+  static TextStyle get titleSmall => GoogleFonts.nunito(
     fontSize: fontSize16,
     fontWeight: weightMedium,
     height: lineHeightNormal,
@@ -164,26 +162,26 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - BODY (Main content text) - Inter
+  // TEXT STYLES — BODY (Main content) — Nunito Regular
   // ==========================================================================
-  
-  static TextStyle get bodyLarge => GoogleFonts.inter(
+
+  static TextStyle get bodyLarge => GoogleFonts.nunito(
     fontSize: fontSize16,
     fontWeight: weightRegular,
     height: lineHeightRelaxed,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get bodyMedium => GoogleFonts.inter(
+
+  static TextStyle get bodyMedium => GoogleFonts.nunito(
     fontSize: fontSize14,
     fontWeight: weightRegular,
     height: lineHeightRelaxed,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get bodySmall => GoogleFonts.inter(
+
+  static TextStyle get bodySmall => GoogleFonts.nunito(
     fontSize: fontSize12,
     fontWeight: weightRegular,
     height: lineHeightRelaxed,
@@ -192,26 +190,26 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - LABEL (Buttons, form labels, navigation) - Inter
+  // TEXT STYLES — LABEL (Buttons, form labels, navigation) — Nunito Medium
   // ==========================================================================
-  
-  static TextStyle get labelLarge => GoogleFonts.inter(
+
+  static TextStyle get labelLarge => GoogleFonts.nunito(
     fontSize: fontSize16,
     fontWeight: weightMedium,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get labelMedium => GoogleFonts.inter(
+
+  static TextStyle get labelMedium => GoogleFonts.nunito(
     fontSize: fontSize14,
     fontWeight: weightMedium,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get labelSmall => GoogleFonts.inter(
+
+  static TextStyle get labelSmall => GoogleFonts.nunito(
     fontSize: fontSize12,
     fontWeight: weightMedium,
     height: lineHeightNormal,
@@ -220,18 +218,18 @@ abstract final class AppTypography {
   );
 
   // ==========================================================================
-  // TEXT STYLES - CAPTION & OVERLINE - Inter
+  // TEXT STYLES — CAPTION & OVERLINE
   // ==========================================================================
-  
-  static TextStyle get caption => GoogleFonts.inter(
+
+  static TextStyle get caption => GoogleFonts.nunito(
     fontSize: fontSize11,
     fontWeight: weightRegular,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textTertiary,
   );
-  
-  static TextStyle get overline => GoogleFonts.inter(
+
+  static TextStyle get overline => GoogleFonts.nunito(
     fontSize: fontSize10,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
@@ -242,91 +240,107 @@ abstract final class AppTypography {
   // ==========================================================================
   // COMPONENT-SPECIFIC TEXT STYLES
   // ==========================================================================
-  
-  // --- Button Text --- Inter (readable for actions)
-  static TextStyle get buttonLarge => GoogleFonts.inter(
+
+  // --- Button Text ---
+  static TextStyle get buttonLarge => GoogleFonts.nunito(
     fontSize: fontSize16,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
-  
-  static TextStyle get buttonMedium => GoogleFonts.inter(
+
+  static TextStyle get buttonMedium => GoogleFonts.nunito(
     fontSize: fontSize14,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
-  
-  static TextStyle get buttonSmall => GoogleFonts.inter(
+
+  static TextStyle get buttonSmall => GoogleFonts.nunito(
     fontSize: fontSize12,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
-  
-  // --- Input Text --- Inter (readable for forms)
-  static TextStyle get inputText => GoogleFonts.inter(
+
+  // --- Input Text ---
+  static TextStyle get inputText => GoogleFonts.nunito(
     fontSize: fontSize16,
     fontWeight: weightRegular,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textPrimary,
   );
-  
-  static TextStyle get inputLabel => GoogleFonts.inter(
+
+  static TextStyle get inputLabel => GoogleFonts.nunito(
     fontSize: fontSize14,
     fontWeight: weightMedium,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
     color: AppColors.textSecondary,
   );
-  
-  static TextStyle get inputHint => GoogleFonts.inter(
+
+  static TextStyle get inputHint => GoogleFonts.nunito(
     fontSize: fontSize16,
     fontWeight: weightRegular,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
     color: AppColors.inputPlaceholder,
   );
-  
-  static TextStyle get inputError => GoogleFonts.inter(
+
+  static TextStyle get inputError => GoogleFonts.nunito(
     fontSize: fontSize12,
     fontWeight: weightRegular,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
     color: AppColors.error,
   );
-  
-  // --- Navigation Text --- Inter
-  static TextStyle get navLabel => GoogleFonts.inter(
+
+  // --- Navigation Text ---
+  static TextStyle get navLabel => GoogleFonts.nunito(
     fontSize: fontSize12,
     fontWeight: weightMedium,
     height: lineHeightNormal,
     letterSpacing: letterSpacingNormal,
   );
-  
-  // --- Badge Text --- Inter
-  static TextStyle get badge => GoogleFonts.inter(
+
+  // --- Badge Text ---
+  static TextStyle get badge => GoogleFonts.nunito(
     fontSize: fontSize11,
     fontWeight: weightSemiBold,
     height: lineHeightNormal,
     letterSpacing: letterSpacingWide,
   );
-  
-  // --- App Bar Title (Brand logo style) --- Space Grotesk
-  static TextStyle get appBarTitle => GoogleFonts.spaceGrotesk(
-    fontSize: fontSize24,
-    fontWeight: weightMedium,
+
+  // --- Brand Name (logo text "acepadel") — Nunito ExtraBold §5.2 ---
+  static TextStyle get brandName => GoogleFonts.nunito(
+    fontSize: fontSize26,
+    fontWeight: weightExtraBold,
+    height: lineHeightTight,
+    letterSpacing: letterSpacingNormal,
+  );
+
+  // --- Brand Tagline — Nunito Light §5.2 ---
+  static TextStyle get brandTagline => GoogleFonts.nunito(
+    fontSize: fontSize12,
+    fontWeight: weightLight,
     height: lineHeightNormal,
-    letterSpacing: letterSpacingWide,
+    letterSpacing: letterSpacingWider,
+  );
+
+  // --- App Bar Title (Brand logo style) ---
+  static TextStyle get appBarTitle => GoogleFonts.nunito(
+    fontSize: fontSize24,
+    fontWeight: weightExtraBold,
+    height: lineHeightNormal,
+    letterSpacing: letterSpacingNormal,
     color: AppColors.brandPrimary,
   );
 
   // ==========================================================================
-  // HELPER METHOD - Get TextTheme for Material Theme
+  // HELPER METHOD — Get TextTheme for Material Theme
   // ==========================================================================
-  
+
   static TextTheme get textTheme => TextTheme(
     displayLarge: displayLarge,
     displayMedium: displayMedium,

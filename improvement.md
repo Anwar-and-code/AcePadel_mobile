@@ -1,7 +1,7 @@
-PadelHouse 2026: UI/UX Evolution Plan
+AcePadel 2026: UI/UX Evolution Plan
 IMPORTANT
 
-This is a strategic design document to elevate PadelHouse to a premium, state-of-the-art experience. No code changes are applied yet.
+This is a strategic design document to elevate AcePadel to a premium, state-of-the-art experience. No code changes are applied yet.
 
 1. Vision: "Modern Luxury Sport"
 We will shift the visual identity from a standard utility app to a premium lifestyle companion. The goal is to blend the warmth of the current physical branding (Brown/Gold) with the futuristic energy of modern padel (Neon/Glass).
@@ -27,7 +27,7 @@ Technical recommendation: Use flutter_layout_grid for creating these complex, re
 Static screens are obsolete. Every touch should elicit a response.
 
 3D & Spatial Booking
-The Concept: Instead of a 2D list of courts, show a 3D Interactive Map of the PadelHouse club.
+The Concept: Instead of a 2D list of courts, show a 3D Interactive Map of the AcePadel club.
 Interaction: Users can pan/zoom to select a specific court.
 Visuals: Courts glow green if available, red if taken. Sunlight/Shadows update based on the booking time selected.
 "Alive" Interface
@@ -66,4 +66,4 @@ Add Weather and Quick Actions widgets.
 Phase 3: The Feel (Interactions)
 Add flutter_animate to all lists and buttons.
 Add specific haptics.
-This plan moves PadelHouse from a functional utility to a visually arresting, premium experience that defines the standard for sports apps in 2026.
+This plan moves AcePadel from a functional utility to a visually arresting, premium experience that defines the standard for sports apps in 2026.

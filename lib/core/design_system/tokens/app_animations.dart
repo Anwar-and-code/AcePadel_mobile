@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Design tokens for animations - PadelHouse Design System
+/// Design tokens for animations - AcePadel Design System
 /// Based on Material 3 motion system with brand customizations
 abstract final class AppAnimations {
   // ==========================================================================

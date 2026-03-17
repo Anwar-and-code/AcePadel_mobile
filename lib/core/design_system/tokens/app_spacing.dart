@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Design tokens for spacing - PadelHouse Design System
+/// Design tokens for spacing - AcePadel Design System
 /// Based on a 4px base unit with a harmonic scale
 /// 
 /// Usage:

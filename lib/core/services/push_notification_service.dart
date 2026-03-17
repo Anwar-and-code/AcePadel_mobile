@@ -85,9 +85,9 @@ class PushNotificationService {
   /// Configurer flutter_local_notifications
   Future<void> _setupLocalNotifications() async {
     const androidChannel = AndroidNotificationChannel(
-      'padelhouse_notifications',
-      'PadelHouse Notifications',
-      description: 'Notifications de PadelHouse',
+      'acepadel_notifications',
+      'AcePadel Notifications',
+      description: 'Notifications de AcePadel',
       importance: Importance.high,
     );
 
@@ -127,8 +127,8 @@ class PushNotificationService {
       notification.body,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'padelhouse_notifications',
-          'PadelHouse Notifications',
+          'acepadel_notifications',
+          'AcePadel Notifications',
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/ic_launcher',

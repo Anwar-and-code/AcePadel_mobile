@@ -27,36 +27,13 @@ class AboutScreen extends StatelessWidget {
             AppSpacing.vGapXl,
 
             // App Logo & Version
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                color: AppColors.brandPrimary,
-                borderRadius: AppRadius.borderRadiusLg,
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.brandPrimary.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: ClipRRect(
-                borderRadius: AppRadius.borderRadiusLg,
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Icon(
-                    Icons.sports_tennis,
-                    size: 48,
-                    color: AppColors.white,
-                  ),
-                ),
-              ),
+            const AppLogo(
+              size: AppLogoSize.xlarge,
+              variant: AppLogoVariant.monogram,
             ),
             AppSpacing.vGapLg,
             Text(
-              'PadelHouse',
+              'AcePadel',
               style: AppTypography.headlineMedium.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -97,7 +74,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     AppSpacing.vGapMd,
                     Text(
-                      'PadelHouse est la première application de réservation de courts de padel en Côte d\'Ivoire. Notre mission est de démocratiser l\'accès au padel et de créer une communauté passionnée autour de ce sport en pleine expansion.',
+                      'AcePadel est la première application de réservation de courts de padel en Côte d\'Ivoire. Notre mission est de démocratiser l\'accès au padel et de créer une communauté passionnée autour de ce sport en pleine expansion.',
                       style: AppTypography.bodyMedium.copyWith(
                         color: AppColors.textSecondary,
                         height: 1.5,
@@ -232,19 +209,19 @@ class AboutScreen extends StatelessWidget {
                       _SocialButton(
                         icon: Icons.language,
                         label: 'Website',
-                        onTap: () => _showLinkMessage(context, 'www.padelhouse.ci'),
+                        onTap: () => _showLinkMessage(context, 'www.acepadel.ci'),
                       ),
                       AppSpacing.hGapMd,
                       _SocialButton(
                         icon: Icons.facebook,
                         label: 'Facebook',
-                        onTap: () => _showLinkMessage(context, 'facebook.com/padelhouse'),
+                        onTap: () => _showLinkMessage(context, 'facebook.com/acepadel'),
                       ),
                       AppSpacing.hGapMd,
                       _SocialButton(
                         icon: Icons.camera_alt,
                         label: 'Instagram',
-                        onTap: () => _showLinkMessage(context, '@padelhouse_ci'),
+                        onTap: () => _showLinkMessage(context, '@acepadel_ci'),
                       ),
                     ],
                   ),
@@ -262,7 +239,7 @@ class AboutScreen extends StatelessWidget {
                   Divider(color: AppColors.borderDefault),
                   AppSpacing.vGapMd,
                   Text(
-                    '© 2026 PadelHouse. Tous droits réservés.',
+                    '© 2026 AcePadel. Tous droits réservés.',
                     style: AppTypography.caption.copyWith(
                       color: AppColors.textTertiary,
                     ),

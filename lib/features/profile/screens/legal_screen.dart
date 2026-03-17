@@ -37,7 +37,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             _LegalSection(
               title: '1. Acceptation des conditions',
               content: '''
-En utilisant l'application PadelHouse, vous acceptez d'être lié par les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service.
+En utilisant l'application AcePadel, vous acceptez d'être lié par les présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser notre service.
 
 L'utilisation de notre application implique l'acceptation pleine et entière des présentes conditions générales d'utilisation.
 ''',
@@ -46,7 +46,7 @@ L'utilisation de notre application implique l'acceptation pleine et entière des
             _LegalSection(
               title: '2. Description du service',
               content: '''
-PadelHouse est une plateforme de réservation de courts de padel permettant aux utilisateurs de :
+AcePadel est une plateforme de réservation de courts de padel permettant aux utilisateurs de :
 • Réserver des créneaux horaires sur les courts disponibles
 • Gérer leurs réservations (modification, annulation)
 • Participer à des événements et tournois
@@ -91,7 +91,7 @@ Les utilisateurs s'engagent à :
             _LegalSection(
               title: '6. Propriété intellectuelle',
               content: '''
-Tous les éléments de l'application (logo, design, code, contenu) sont la propriété exclusive de PadelHouse et sont protégés par les lois sur la propriété intellectuelle.
+Tous les éléments de l'application (logo, design, code, contenu) sont la propriété exclusive de AcePadel et sont protégés par les lois sur la propriété intellectuelle.
 
 Toute reproduction, distribution ou utilisation non autorisée est strictement interdite.
 ''',
@@ -100,7 +100,7 @@ Toute reproduction, distribution ou utilisation non autorisée est strictement i
             _LegalSection(
               title: '7. Limitation de responsabilité',
               content: '''
-PadelHouse ne peut être tenu responsable :
+AcePadel ne peut être tenu responsable :
 • Des dommages indirects liés à l'utilisation du service
 • Des interruptions de service dues à des maintenances
 • Des actes de tiers ou des cas de force majeure
@@ -111,7 +111,7 @@ PadelHouse ne peut être tenu responsable :
             _LegalSection(
               title: '8. Modifications des conditions',
               content: '''
-PadelHouse se réserve le droit de modifier ces conditions à tout moment. Les utilisateurs seront informés des changements importants par notification dans l'application.
+AcePadel se réserve le droit de modifier ces conditions à tout moment. Les utilisateurs seront informés des changements importants par notification dans l'application.
 
 L'utilisation continue de l'application après modification vaut acceptation des nouvelles conditions.
 ''',
@@ -122,7 +122,7 @@ L'utilisation continue de l'application après modification vaut acceptation des
               content: '''
 Pour toute question concernant ces conditions d'utilisation, contactez-nous :
 
-Email : legal@padelhouse.ci
+Email : legal@acepadel.ci
 Téléphone : +225 07 99 99 88 88
 Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 ''',
@@ -132,7 +132,7 @@ Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 
             Center(
               child: Text(
-                '© 2026 PadelHouse. Tous droits réservés.',
+                '© 2026 AcePadel. Tous droits réservés.',
                 style: AppTypography.caption.copyWith(
                   color: AppColors.textTertiary,
                 ),
@@ -183,7 +183,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
             _LegalSection(
               title: '1. Introduction',
               content: '''
-PadelHouse s'engage à protéger la vie privée de ses utilisateurs. Cette politique de confidentialité explique comment nous collectons, utilisons et protégeons vos données personnelles.
+AcePadel s'engage à protéger la vie privée de ses utilisateurs. Cette politique de confidentialité explique comment nous collectons, utilisons et protégeons vos données personnelles.
 
 En utilisant notre application, vous acceptez les pratiques décrites dans cette politique.
 ''',
@@ -273,7 +273,7 @@ Conformément à la réglementation, vous disposez des droits suivants :
 • Droit d'opposition au traitement
 • Droit de retrait du consentement
 
-Pour exercer ces droits, contactez-nous à : privacy@padelhouse.ci
+Pour exercer ces droits, contactez-nous à : privacy@acepadel.ci
 ''',
             ),
 
@@ -305,7 +305,7 @@ Nous vous encourageons à consulter régulièrement cette page.
 Pour toute question concernant cette politique de confidentialité :
 
 Délégué à la Protection des Données
-Email : privacy@padelhouse.ci
+Email : privacy@acepadel.ci
 Téléphone : +225 07 99 99 88 88
 Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 ''',
@@ -315,7 +315,7 @@ Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 
             Center(
               child: Text(
-                '© 2026 PadelHouse. Tous droits réservés.',
+                '© 2026 AcePadel. Tous droits réservés.',
                 style: AppTypography.caption.copyWith(
                   color: AppColors.textTertiary,
                 ),

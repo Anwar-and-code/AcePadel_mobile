@@ -7,7 +7,7 @@
         <key>CFBundleDevelopmentRegion</key>
         <string>$(DEVELOPMENT_LANGUAGE)</string>
         <key>CFBundleDisplayName</key>
-        <string>Padel House</string>
+        <string>AcePadel</string>
         <key>CFBundleExecutable</key>
         <string>$(EXECUTABLE_NAME)</string>
         <key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
         <key>CFBundleInfoDictionaryVersion</key>
         <string>6.0</string>
         <key>CFBundleName</key>
-        <string>padelhouse</string>
+        <string>acepadel</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleShortVersionString</key>
@@ -59,11 +59,11 @@
         <key>UIMainStoryboardFile</key>
         <string>Main</string>
         <key>NSPhotoLibraryUsageDescription</key>
-        <string>PadelHouse vous permet de sélectionner une photo depuis votre galerie pour l’ajouter à votre profil ou l’attacher à une demande dans l’application.</string>
+        <string>AcePadel vous permet de sélectionner une photo depuis votre galerie pour l'ajouter à votre profil ou l'attacher à une demande dans l'application.</string>
         <key>NSMicrophoneUsageDescription</key>
-        <string>Le microphone est utilisé dans PadelHouse lorsque vous enregistrez un message vocal ou une vidéo afin d’inclure votre voix dans l’enregistrement.</string>
+        <string>Le microphone est utilisé dans AcePadel lorsque vous enregistrez un message vocal ou une vidéo afin d'inclure votre voix dans l'enregistrement.</string>
         <key>NSCameraUsageDescription</key>
-        <string>La caméra est utilisée pour prendre une photo ou enregistrer une vidéo directement dans PadelHouse, par exemple pour ajouter une photo à votre profil ou joindre une image à une demande.</string>
+        <string>La caméra est utilisée pour prendre une photo ou enregistrer une vidéo directement dans AcePadel, par exemple pour ajouter une photo à votre profil ou joindre une image à une demande.</string>
         <key>UISupportedInterfaceOrientations</key>
         <array>
             <string>UIInterfaceOrientationPortrait</string>

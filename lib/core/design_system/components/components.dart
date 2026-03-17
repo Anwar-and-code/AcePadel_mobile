@@ -1,8 +1,8 @@
-/// PadelHouse Design System - UI Components
+/// AcePadel Design System - UI Components
 /// 
 /// This barrel file exports all reusable UI components:
 /// ```dart
-/// import 'package:padelhouse/core/design_system/components/components.dart';
+/// import 'package:acepadel/core/design_system/components/components.dart';
 /// ```
 library;
 

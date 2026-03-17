@@ -1,8 +1,8 @@
-/// PadelHouse Design System - Theme
+/// AcePadel Design System - Theme
 /// 
 /// This barrel file exports all theme configurations:
 /// ```dart
-/// import 'package:padelhouse/core/design_system/theme/theme.dart';
+/// import 'package:acepadel/core/design_system/theme/theme.dart';
 /// ```
 library;
 

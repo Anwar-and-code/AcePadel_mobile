@@ -1,10 +1,10 @@
 {
-    "name": "padelhouse",
-    "short_name": "padelhouse",
+    "name": "acepadel",
+    "short_name": "acepadel",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#FFFFFF",
-    "theme_color": "#8B4513",
+    "theme_color": "#E8C547",
     "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,

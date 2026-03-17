@@ -21,7 +21,7 @@ class TourSteps {
 
   static const welcome = TourStep(
     id: 'welcome',
-    title: 'Bienvenue sur PadelHouse! 🎾',
+    title: 'Bienvenue sur AcePadel! 🎾',
     description: 'Naviguez entre les sections principales de l\'app grâce à la barre de navigation.',
     icon: Icons.waving_hand,
   );

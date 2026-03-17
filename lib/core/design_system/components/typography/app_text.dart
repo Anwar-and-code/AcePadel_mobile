@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../tokens/tokens.dart';
 
-/// PadelHouse Design System - Text Component
+/// AcePadel Design System - Text Component
 /// 
 /// Semantic text components for consistent typography usage.
 /// 

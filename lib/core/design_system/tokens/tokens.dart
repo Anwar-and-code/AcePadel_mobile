@@ -1,8 +1,8 @@
-/// PadelHouse Design System - Design Tokens
+/// AcePadel Design System - Design Tokens
 /// 
 /// This barrel file exports all design tokens for easy import:
 /// ```dart
-/// import 'package:padelhouse/core/design_system/tokens/tokens.dart';
+/// import 'package:acepadel/core/design_system/tokens/tokens.dart';
 /// ```
 library;
 

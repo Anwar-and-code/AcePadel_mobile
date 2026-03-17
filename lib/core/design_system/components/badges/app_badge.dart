@@ -7,7 +7,7 @@ enum AppBadgeVariant { primary, secondary, success, warning, error, info }
 /// Badge size variants
 enum AppBadgeSize { small, medium, large }
 
-/// PadelHouse Design System - Badge Component
+/// AcePadel Design System - Badge Component
 /// 
 /// Usage:
 /// ```dart

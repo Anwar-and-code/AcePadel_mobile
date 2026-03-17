@@ -4,7 +4,7 @@ import '../../tokens/tokens.dart';
 /// Card style variants
 enum AppCardVariant { elevated, outlined, filled }
 
-/// PadelHouse Design System - Card Component
+/// AcePadel Design System - Card Component
 /// 
 /// A versatile card component for displaying content.
 /// 

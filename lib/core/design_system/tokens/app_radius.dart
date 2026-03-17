@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Design tokens for border radius - PadelHouse Design System
+/// Design tokens for border radius - AcePadel Design System
 /// Based on Material 3 shape system with brand customizations
 abstract final class AppRadius {
   // ==========================================================================

@@ -300,7 +300,7 @@ class AuthService {
   }
 
   /// URL de callback pour OAuth (deep link)
-  static const String _oauthCallbackUrl = 'io.padelhouse.app://auth-callback';
+  static const String _oauthCallbackUrl = 'io.acepadel.app://auth-callback';
 
   /// Instance Google Sign-In
   static GoogleSignIn? _googleSignIn;

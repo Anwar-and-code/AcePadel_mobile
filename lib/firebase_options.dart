@@ -63,7 +63,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '15783635247',
     projectId: 'padelhouse-3b3d1',
     storageBucket: 'padelhouse-3b3d1.firebasestorage.app',
-    iosBundleId: 'com.armasoft.padelhouse',
+    iosBundleId: 'com.armasoft.acepadel',
   );
 
 }

@@ -4,7 +4,7 @@ import '../data/tour_steps.dart';
 
 /// Custom tooltip widget for the product tour
 /// 
-/// Styled to match PadelHouse design system with
+/// Styled to match AcePadel design system with
 /// brand colors, typography, and consistent spacing.
 class TourTooltip extends StatelessWidget {
   const TourTooltip({

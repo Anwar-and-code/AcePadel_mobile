@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.padelhouse" "\0"
-            VALUE "FileDescription", "padelhouse" "\0"
+            VALUE "CompanyName", "com.acepadel" "\0"
+            VALUE "FileDescription", "acepadel" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "padelhouse" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.padelhouse. All rights reserved." "\0"
-            VALUE "OriginalFilename", "padelhouse.exe" "\0"
-            VALUE "ProductName", "padelhouse" "\0"
+            VALUE "InternalName", "acepadel" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.acepadel. All rights reserved." "\0"
+            VALUE "OriginalFilename", "acepadel.exe" "\0"
+            VALUE "ProductName", "acepadel" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

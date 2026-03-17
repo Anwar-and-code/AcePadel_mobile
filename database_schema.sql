@@ -1,5 +1,5 @@
 -- ============================================================
--- PadelHouse - Full Database Schema Export
+-- AcePadel - Full Database Schema Export
 -- Project: vslisxnahktqaifdurcu
 -- Date: 2026-02-25
 -- ============================================================
@@ -174,7 +174,7 @@ CREATE TABLE public.reservation_payments (
 -- app_settings
 CREATE TABLE public.app_settings (
   id INTEGER PRIMARY KEY DEFAULT 1 CHECK (id = 1),
-  business_name TEXT DEFAULT 'Padel House',
+  business_name TEXT DEFAULT 'AcePadel',
   business_phone TEXT,
   business_email TEXT,
   business_address TEXT,
@@ -243,7 +243,7 @@ CREATE TABLE public.events (
   status event_status NOT NULL DEFAULT 'DRAFT'::event_status,
   start_date TIMESTAMPTZ NOT NULL,
   end_date TIMESTAMPTZ,
-  location TEXT NOT NULL DEFAULT 'PadelHouse Club',
+  location TEXT NOT NULL DEFAULT 'AcePadel Club',
   cover_image_url TEXT,
   is_featured BOOLEAN NOT NULL DEFAULT false,
   display_order INTEGER NOT NULL DEFAULT 0,

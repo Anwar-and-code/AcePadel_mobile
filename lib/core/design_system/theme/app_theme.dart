@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../tokens/tokens.dart';
 
-/// PadelHouse App Theme
+/// AcePadel App Theme
 /// 
 /// Provides Material 3 compliant ThemeData configurations
 /// based on the design system tokens.
@@ -19,8 +19,8 @@ class AppTheme {
     // Primary
     primary: AppColors.brandPrimary,
     onPrimary: AppColors.white,
-    primaryContainer: AppColors.brown100,
-    onPrimaryContainer: AppColors.brown900,
+    primaryContainer: AppColors.gold100,
+    onPrimaryContainer: AppColors.gold900,
     // Secondary
     secondary: AppColors.brandSecondary,
     onSecondary: AppColors.white,
@@ -28,9 +28,9 @@ class AppTheme {
     onSecondaryContainer: AppColors.gold900,
     // Tertiary
     tertiary: AppColors.brandTertiary,
-    onTertiary: AppColors.brown900,
-    tertiaryContainer: AppColors.brown50,
-    onTertiaryContainer: AppColors.brown800,
+    onTertiary: AppColors.neutral900,
+    tertiaryContainer: AppColors.gold50,
+    onTertiaryContainer: AppColors.gold800,
     // Error
     error: AppColors.error,
     onError: AppColors.white,
@@ -48,7 +48,7 @@ class AppTheme {
     shadow: AppColors.cardShadow,
     scrim: AppColors.black,
     // Inverse
-    inverseSurface: AppColors.brown900,
+    inverseSurface: AppColors.neutral900,
     onInverseSurface: AppColors.neutral50,
     inversePrimary: AppColors.gold300,
   );
@@ -58,28 +58,28 @@ class AppTheme {
     brightness: Brightness.dark,
     // Primary
     primary: AppColors.gold400,
-    onPrimary: AppColors.brown900,
-    primaryContainer: AppColors.brown700,
+    onPrimary: AppColors.neutral900,
+    primaryContainer: AppColors.neutral700,
     onPrimaryContainer: AppColors.gold100,
     // Secondary
     secondary: AppColors.gold300,
-    onSecondary: AppColors.brown900,
+    onSecondary: AppColors.neutral900,
     secondaryContainer: AppColors.gold700,
     onSecondaryContainer: AppColors.gold100,
     // Tertiary
-    tertiary: AppColors.brown300,
-    onTertiary: AppColors.brown900,
-    tertiaryContainer: AppColors.brown700,
-    onTertiaryContainer: AppColors.brown100,
+    tertiary: AppColors.gold300,
+    onTertiary: AppColors.neutral900,
+    tertiaryContainer: AppColors.neutral700,
+    onTertiaryContainer: AppColors.gold100,
     // Error
     error: Color(0xFFFFB4AB),
     onError: Color(0xFF690005),
     errorContainer: Color(0xFF93000A),
     onErrorContainer: Color(0xFFFFDAD6),
     // Surface
-    surface: AppColors.brown900,
+    surface: AppColors.neutral900,
     onSurface: AppColors.neutral100,
-    surfaceContainerHighest: AppColors.brown700,
+    surfaceContainerHighest: AppColors.neutral700,
     onSurfaceVariant: AppColors.neutral400,
     // Outline
     outline: AppColors.neutral600,
@@ -89,8 +89,8 @@ class AppTheme {
     scrim: AppColors.black,
     // Inverse
     inverseSurface: AppColors.neutral100,
-    onInverseSurface: AppColors.brown800,
-    inversePrimary: AppColors.brown600,
+    onInverseSurface: AppColors.neutral800,
+    inversePrimary: AppColors.gold600,
   );
 
   // ==========================================================================
@@ -340,7 +340,7 @@ class AppTheme {
     
     // Snackbar
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: AppColors.brown800,
+      backgroundColor: AppColors.neutral800,
       contentTextStyle: AppTypography.bodyMedium.copyWith(
         color: AppColors.white,
       ),
@@ -432,7 +432,7 @@ class AppTheme {
     // Tooltip
     tooltipTheme: TooltipThemeData(
       decoration: BoxDecoration(
-        color: AppColors.brown800,
+        color: AppColors.neutral800,
         borderRadius: AppRadius.borderRadiusSm,
       ),
       textStyle: AppTypography.bodySmall.copyWith(color: AppColors.white),
@@ -459,9 +459,9 @@ class AppTheme {
   static ThemeData get darkTheme => lightTheme.copyWith(
     colorScheme: darkColorScheme,
     brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.brown900,
+    scaffoldBackgroundColor: AppColors.neutral900,
     appBarTheme: lightTheme.appBarTheme.copyWith(
-      backgroundColor: AppColors.brown900,
+      backgroundColor: AppColors.neutral900,
       foregroundColor: AppColors.neutral100,
       systemOverlayStyle: SystemUiOverlayStyle.light,
     ),

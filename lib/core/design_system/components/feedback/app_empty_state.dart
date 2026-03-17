@@ -34,9 +34,9 @@ class AppEmptyState extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppSpacing.xl),
               decoration: BoxDecoration(
-                color: AppColors.glassSurface,
+                color: AppColors.surfaceSubtle,
                 borderRadius: BorderRadius.circular(32),
-                border: Border.all(color: AppColors.glassBorder),
+                border: Border.all(color: AppColors.borderSubtle),
                 boxShadow: [
                   BoxShadow(
                     color: AppColors.black.withValues(alpha: 0.05),

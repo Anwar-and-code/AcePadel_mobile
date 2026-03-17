@@ -54,18 +54,18 @@ Future<void> main() async {
     ),
   );
 
-  runApp(const PadelHouseApp());
+  runApp(const AcePadelApp());
 }
 
-class PadelHouseApp extends StatelessWidget {
-  const PadelHouseApp({super.key});
+class AcePadelApp extends StatelessWidget {
+  const AcePadelApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => ReservationProvider(),
       child: MaterialApp(
-        title: 'PadelHouse',
+        title: 'AcePadel',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,

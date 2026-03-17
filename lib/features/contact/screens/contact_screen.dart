@@ -41,14 +41,14 @@ class ContactScreen extends StatelessWidget {
             _ContactOption(
               icon: Icons.email_outlined,
               title: 'Email',
-              subtitle: 'contact@padelhouse.ci',
+              subtitle: 'contact@acepadel.ci',
               onTap: () {},
             ),
             AppSpacing.vGapSm,
             _ContactOption(
               icon: Icons.language,
               title: 'Site web',
-              subtitle: 'www.padelhouse.ci',
+              subtitle: 'www.acepadel.ci',
               onTap: () {},
             ),
 

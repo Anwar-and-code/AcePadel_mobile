@@ -181,7 +181,7 @@ class _BentoCard extends StatelessWidget {
                         shape: BoxShape.circle,
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.neonGlow,
+                            color: AppColors.brandPrimary.withValues(alpha: 0.25),
                             blurRadius: 50,
                             spreadRadius: 10,
                           ),

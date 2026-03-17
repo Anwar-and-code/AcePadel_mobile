@@ -279,7 +279,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
               width: 100,
               height: 100,
               decoration: BoxDecoration(
-                color: AppColors.brown100,
+                color: AppColors.gold100,
                 borderRadius: BorderRadius.circular(28),
               ),
               child: Icon(
@@ -381,7 +381,7 @@ class _ReplaysScreenState extends State<ReplaysScreen> with SingleTickerProvider
               width: 64,
               height: 64,
               decoration: BoxDecoration(
-                color: AppColors.brown100,
+                color: AppColors.gold100,
                 borderRadius: BorderRadius.circular(18),
               ),
               child: Icon(
@@ -1069,7 +1069,7 @@ class _PremiumReplayCard extends StatelessWidget {
     final colors = [
       AppColors.brandPrimary,
       AppColors.brandSecondary,
-      AppColors.brown600,
+      AppColors.gold600,
       AppColors.gold600,
     ];
     return colors[index % colors.length];

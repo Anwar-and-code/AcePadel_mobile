@@ -370,7 +370,7 @@ class EventDetailScreen extends StatelessWidget {
             ),
             AppSpacing.vGapLg,
             Text(
-              'Contacter PadelHouse',
+              'Contacter AcePadel',
               style: AppTypography.titleMedium.copyWith(
                 fontWeight: FontWeight.bold,
               ),

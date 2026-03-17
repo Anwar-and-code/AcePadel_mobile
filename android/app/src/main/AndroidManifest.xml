@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <application
-        android:label="PadelHouse"
+        android:label="AcePadel"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
@@ -31,7 +31,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="io.padelhouse.app"
+                    android:scheme="io.acepadel.app"
                     android:host="auth-callback" />
             </intent-filter>
         </activity>
@@ -43,7 +43,7 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="padelhouse_notifications" />
+            android:value="acepadel_notifications" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"

@@ -86,7 +86,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Email: support@padelhouse.ci'),
+                            content: Text('Email: support@acepadel.ci'),
                             backgroundColor: AppColors.brandPrimary,
                           ),
                         );
@@ -466,7 +466,7 @@ class _ChatSupportWidgetState extends State<_ChatSupportWidget> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Support PadelHouse',
+                      'Support AcePadel',
                       style: AppTypography.titleSmall.copyWith(
                         color: AppColors.white,
                         fontWeight: FontWeight.bold,

@@ -1,11 +1,11 @@
-/// PadelHouse Design System
+/// AcePadel Design System
 /// 
-/// A comprehensive design system for the PadelHouse application.
+/// A comprehensive design system for the AcePadel application.
 /// Built on Material 3 principles with custom brand tokens.
 /// 
 /// Usage:
 /// ```dart
-/// import 'package:padelhouse/core/design_system/design_system.dart';
+/// import 'package:acepadel/core/design_system/design_system.dart';
 /// ```
 /// 
 /// This exports:
