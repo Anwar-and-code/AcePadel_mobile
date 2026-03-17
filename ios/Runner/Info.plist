@@ -59,11 +59,11 @@
         <key>UIMainStoryboardFile</key>
         <string>Main</string>
         <key>NSPhotoLibraryUsageDescription</key>
-        <string>L'application a besoin d'accéder à votre galerie pour collecter des images</string>
+        <string>PadelHouse vous permet de sélectionner une photo depuis votre galerie pour l’ajouter à votre profil ou l’attacher à une demande dans l’application.</string>
         <key>NSMicrophoneUsageDescription</key>
-        <string>L'application a besoin d'accéder à votre microphone pour collecter des images</string>
+        <string>Le microphone est utilisé dans PadelHouse lorsque vous enregistrez un message vocal ou une vidéo afin d’inclure votre voix dans l’enregistrement.</string>
         <key>NSCameraUsageDescription</key>
-        <string>L'application a besoin d'accéder à votre appareil photo pour collecter des images</string>
+        <string>La caméra est utilisée pour prendre une photo ou enregistrer une vidéo directement dans PadelHouse, par exemple pour ajouter une photo à votre profil ou joindre une image à une demande.</string>
         <key>UISupportedInterfaceOrientations</key>
         <array>
             <string>UIInterfaceOrientationPortrait</string>
