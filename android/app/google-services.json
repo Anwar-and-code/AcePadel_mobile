@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "15783635247",
-    "project_id": "padelhouse-3b3d1",
-    "storage_bucket": "padelhouse-3b3d1.firebasestorage.app"
+    "project_number": "246594337210",
+    "project_id": "acepadel-8a155",
+    "storage_bucket": "acepadel-8a155.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:15783635247:android:b7d6398f9577c989e659da",
+        "mobilesdk_app_id": "1:246594337210:android:5994ae9a5e832cf2ec0583",
         "android_client_info": {
-          "package_name": "com.armasoft.padelhouse"
+          "package_name": "com.armasoft.acepadel"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAZWofKoOq7UugfockRfOr449FK1kFwViA"
+          "current_key": "AIzaSyA6F0p8vVd0Wo-O3ksIJ_yejsJzby-cyls"
         }
       ],
       "services": {

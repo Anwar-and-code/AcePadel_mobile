@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AcePadel - Code de vérification</title>
+  <!--[if mso]>
+  <style>
+    table, td { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; }
+  </style>
+  <![endif]-->
+</head>
+<body style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background-color:#F5F5F5;margin:0;padding:0;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+  <!-- Preheader (hidden preview text) -->
+  <span style="display:none;font-size:1px;color:#F5F5F5;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">
+    Votre code de vérification AcePadel : {{ .Token }}
+  </span>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F5F5F5;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+
+        <!-- Main Card -->
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:480px;background-color:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#1A1A1A;padding:36px 30px;text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+                <tr>
+                  <td style="text-align:center;">
+                    <!-- Gold Ball Icon -->
+                    <div style="width:56px;height:56px;background:linear-gradient(135deg,#E8C547,#D4AF37,#B8860B);border-radius:50%;margin:0 auto 16px auto;line-height:56px;text-align:center;">
+                      <span style="font-family:'Segoe UI',Tahoma,sans-serif;font-size:28px;font-weight:900;color:#FFFFFF;vertical-align:middle;">A</span>
+                    </div>
+                    <h1 style="margin:0;font-size:28px;font-weight:800;letter-spacing:0.5px;line-height:1;">
+                      <span style="color:#E8C547;">ace</span><span style="color:#FFFFFF;">padel</span>
+                    </h1>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Gold Accent Line -->
+          <tr>
+            <td style="height:3px;background:linear-gradient(90deg,#E8C547,#D4AF37,#B8860B,#D4AF37,#E8C547);font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding:40px 32px 36px 32px;text-align:center;">
+              <!-- Lock Icon -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom:20px;">
+                <tr>
+                  <td style="background-color:#FFF9E6;border-radius:50%;width:64px;height:64px;text-align:center;vertical-align:middle;">
+                    <span style="font-size:28px;line-height:64px;">&#x1F512;</span>
+                  </td>
+                </tr>
+              </table>
+
+              <h2 style="color:#1A1A1A;margin:0 0 8px 0;font-size:22px;font-weight:700;">Confirmez votre inscription</h2>
+              <p style="color:#6D6D6D;font-size:15px;line-height:1.6;margin:0 0 32px 0;">
+                Entrez ce code dans l'application pour confirmer votre adresse email
+              </p>
+
+              <!-- OTP Code Box -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                <tr>
+                  <td align="center">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#FFF9E6;border:2px solid #F5E6B8;border-radius:12px;padding:20px 36px;">
+                          <span style="font-family:'Courier New',Courier,monospace;font-size:38px;font-weight:800;letter-spacing:12px;color:#B8860B;">{{ .Token }}</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Expiration Notice -->
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-bottom:8px;">
+                <tr>
+                  <td style="background-color:#FCFAF6;border-radius:8px;padding:10px 20px;">
+                    <p style="color:#888888;font-size:13px;margin:0;">
+                      &#9200; Ce code expire dans <strong style="color:#D4AF37;">10 minutes</strong>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Divider -->
+          <tr>
+            <td style="padding:0 32px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="border-top:1px solid #E8E8E8;font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Security Notice -->
+          <tr>
+            <td style="padding:20px 32px 28px 32px;text-align:center;">
+              <p style="color:#B0B0B0;font-size:12px;line-height:1.6;margin:0;">
+                Si vous n'avez pas demandé ce code, vous pouvez ignorer cet email en toute sécurité.
+                <br>Ne partagez jamais ce code avec qui que ce soit.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#1A1A1A;padding:24px 30px;text-align:center;">
+              <p style="margin:0 0 6px 0;font-size:12px;">
+                <span style="color:#E8C547;font-weight:800;">ace</span><span style="color:#B0B0B0;font-weight:800;">padel</span>
+              </p>
+              <p style="color:#5D5D5D;font-size:11px;margin:0;">
+                L'excellence du padel
+              </p>
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin-top:12px;">
+                <tr>
+                  <td style="height:1px;width:40px;background:linear-gradient(90deg,transparent,#D4AF37,transparent);font-size:0;line-height:0;">&nbsp;</td>
+                </tr>
+              </table>
+              <p style="color:#3D3D3D;font-size:10px;margin:10px 0 0 0;">
+                &copy; 2025 AcePadel &mdash; Tous droits réservés
+              </p>
+            </td>
+          </tr>
+
+        </table>
+        <!-- End Main Card -->
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

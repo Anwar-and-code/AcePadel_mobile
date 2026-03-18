@@ -508,6 +508,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
                     terrain: court,
                     isSelected: isSelected,
                     isAvailable: isAvailable,
+                    price: slot.price,
                     onTap: isAvailable ? () {
                       provider.selectCourt(court);
                       setState(() => _isCourtExpanded = false);
@@ -531,6 +532,7 @@ class ReservationScreenV2State extends State<ReservationScreenV2> {
                       terrain: court,
                       isSelected: isSelected,
                       isAvailable: isAvailable,
+                      price: slot.price,
                       onTap: isAvailable ? () {
                         provider.selectCourt(court);
                         setState(() => _isCourtExpanded = false);
@@ -825,12 +827,12 @@ class _TimeSlotRow extends StatelessWidget {
   const _TimeSlotRow({required this.slot, required this.isSelected, required this.availableTerrains, this.onTap});
   final AvailableSlot slot;
   final bool isSelected;
-  final int availableTerrains; // number of available courts
+  final int availableTerrains;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final isDisabled = availableTerrains == 0; // availableTerrains = available courts count
+    final isDisabled = availableTerrains == 0;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -858,13 +860,10 @@ class _TimeSlotRow extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
-                decoration: BoxDecoration(
-                  color: isDisabled ? AppColors.neutral300 : isSelected ? AppColors.brandPrimary : AppColors.neutral900,
-                  borderRadius: AppRadius.borderRadiusSm,
-                ),
-                child: Text(slot.formattedPrice, style: AppTypography.labelMedium.copyWith(color: AppColors.white, fontWeight: FontWeight.w600)),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: isDisabled ? AppColors.neutral300 : isSelected ? AppColors.brandPrimary : AppColors.iconTertiary,
+                size: 20,
               ),
             ],
           ),
@@ -875,11 +874,22 @@ class _TimeSlotRow extends StatelessWidget {
 }
 
 class _CourtCard extends StatelessWidget {
-  const _CourtCard({required this.terrain, required this.isSelected, required this.isAvailable, this.onTap});
+  const _CourtCard({required this.terrain, required this.isSelected, required this.isAvailable, required this.price, this.onTap});
   final Court terrain;
   final bool isSelected;
   final bool isAvailable;
+  final int price;
   final VoidCallback? onTap;
+
+  String _formatPrice(int p) {
+    if (p >= 1000) {
+      final t = p ~/ 1000;
+      final r = p % 1000;
+      if (r == 0) return '$t 000 F';
+      return '$t ${r.toString().padLeft(3, '0')} F';
+    }
+    return '$p F';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -897,7 +907,16 @@ class _CourtCard extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(terrain.code, style: AppTypography.displaySmall.copyWith(color: !isAvailable ? AppColors.neutral400 : isSelected ? AppColors.white : AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 36), textAlign: TextAlign.center),
-            AppSpacing.vGapXs,
+            const SizedBox(height: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: !isAvailable ? AppColors.neutral200 : isSelected ? AppColors.white.withValues(alpha: 0.2) : AppColors.brandPrimary.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(_formatPrice(price), style: AppTypography.titleSmall.copyWith(color: !isAvailable ? AppColors.neutral400 : isSelected ? AppColors.white : AppColors.brandPrimary, fontWeight: FontWeight.bold, fontSize: 15)),
+            ),
+            const SizedBox(height: 4),
             Text(!isAvailable ? 'Réservé' : 'Disponible', style: AppTypography.caption.copyWith(color: !isAvailable ? AppColors.error : isSelected ? AppColors.white.withValues(alpha: 0.8) : AppColors.success, fontSize: 11)),
           ],
         ),

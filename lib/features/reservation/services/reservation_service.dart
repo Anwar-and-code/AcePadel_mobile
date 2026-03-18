@@ -132,8 +132,8 @@ class ReservationService {
           })
           .select('''
             *,
-            terrains!inner(code),
-            time_slots!inner(start_time, end_time, price)
+            terrains!inner(code, price_before_16, price_from_16),
+            time_slots!inner(start_time, end_time)
           ''')
           .single();
       
@@ -155,8 +155,8 @@ class ReservationService {
           .from('reservations')
           .select('''
             *,
-            terrains!inner(code),
-            time_slots!inner(start_time, end_time, price)
+            terrains!inner(code, price_before_16, price_from_16),
+            time_slots!inner(start_time, end_time)
           ''')
           .eq('user_id', userId)
           .order('reservation_date', ascending: false)
@@ -178,8 +178,8 @@ class ReservationService {
           .from('reservations')
           .select('''
             *,
-            terrains!inner(code),
-            time_slots!inner(start_time, end_time, price)
+            terrains!inner(code, price_before_16, price_from_16),
+            time_slots!inner(start_time, end_time)
           ''')
           .eq('user_id', userId)
           .gte('reservation_date', today)
@@ -203,8 +203,8 @@ class ReservationService {
           .from('reservations')
           .select('''
             *,
-            terrains!inner(code),
-            time_slots!inner(start_time, end_time, price)
+            terrains!inner(code, price_before_16, price_from_16),
+            time_slots!inner(start_time, end_time)
           ''')
           .eq('user_id', userId)
           .lt('reservation_date', today)
@@ -226,8 +226,8 @@ class ReservationService {
           .eq('id', reservationId)
           .select('''
             *,
-            terrains!inner(code),
-            time_slots!inner(start_time, end_time, price)
+            terrains!inner(code, price_before_16, price_from_16),
+            time_slots!inner(start_time, end_time)
           ''')
           .single();
       

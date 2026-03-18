@@ -267,18 +267,28 @@ class _UpcomingReservationCard extends StatelessWidget {
                   children: [
                     // Court badge
                     Container(
-                      width: 50,
-                      height: 50,
+                      width: 56,
+                      height: 56,
                       decoration: BoxDecoration(
                         color: AppColors.white,
                         borderRadius: AppRadius.borderRadiusSm,
                       ),
                       child: Center(
-                        child: Text(
-                          courtName,
-                          style: AppTypography.headlineSmall.copyWith(
-                            color: AppColors.brandDarkGold,
-                            fontWeight: FontWeight.bold,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Text(
+                              courtName,
+                              style: AppTypography.labelMedium.copyWith(
+                                color: AppColors.brandDarkGold,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                height: 1.2,
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                            ),
                           ),
                         ),
                       ),

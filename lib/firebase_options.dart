@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAZWofKoOq7UugfockRfOr449FK1kFwViA',
-    appId: '1:15783635247:android:b7d6398f9577c989e659da',
-    messagingSenderId: '15783635247',
-    projectId: 'padelhouse-3b3d1',
-    storageBucket: 'padelhouse-3b3d1.firebasestorage.app',
+    apiKey: 'AIzaSyA6F0p8vVd0Wo-O3ksIJ_yejsJzby-cyls',
+    appId: '1:246594337210:android:5994ae9a5e832cf2ec0583',
+    messagingSenderId: '246594337210',
+    projectId: 'acepadel-8a155',
+    storageBucket: 'acepadel-8a155.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyD65azXVjAIDs3ivjzuyDSjSa2NR5cXakU',
-    appId: '1:15783635247:ios:56809b7ea5659a17e659da',
-    messagingSenderId: '15783635247',
-    projectId: 'padelhouse-3b3d1',
-    storageBucket: 'padelhouse-3b3d1.firebasestorage.app',
+    apiKey: 'AIzaSyDIqW-SGpTbp-H0OzPBBYPosuM1P4-Cr50',
+    appId: '1:246594337210:ios:4303324ed94a4480ec0583',
+    messagingSenderId: '246594337210',
+    projectId: 'acepadel-8a155',
+    storageBucket: 'acepadel-8a155.firebasestorage.app',
     iosBundleId: 'com.armasoft.acepadel',
   );
 

@@ -125,6 +125,18 @@ class Reservation {
     final terrainData = json['terrains'] as Map<String, dynamic>?;
     final timeSlotData = json['time_slots'] as Map<String, dynamic>?;
 
+    // Compute price from terrain pricing based on time slot
+    int? computedPrice;
+    final startTimeStr = timeSlotData?['start_time'] as String?;
+    if (terrainData != null && startTimeStr != null) {
+      final hour = int.tryParse(startTimeStr.split(':')[0]) ?? 0;
+      final priceBefore16 = terrainData['price_before_16'] as int?;
+      final priceFrom16 = terrainData['price_from_16'] as int?;
+      if (priceBefore16 != null && priceFrom16 != null) {
+        computedPrice = hour < 16 ? priceBefore16 : priceFrom16;
+      }
+    }
+
     return Reservation(
       id: json['id'] as int,
       terrainId: json['terrain_id'] as int,
@@ -135,9 +147,9 @@ class Reservation {
       createdAt: DateTime.parse(json['created_at'] as String),
       updatedAt: DateTime.parse(json['updated_at'] as String),
       terrainCode: terrainData?['code'] as String?,
-      startTime: timeSlotData?['start_time'] as String?,
+      startTime: startTimeStr,
       endTime: timeSlotData?['end_time'] as String?,
-      price: timeSlotData?['price'] as int?,
+      price: computedPrice,
     );
   }
 
