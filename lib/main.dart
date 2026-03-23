@@ -31,7 +31,7 @@ Future<void> main() async {
   await Supabase.initialize(url: dotenv.env['SUPABASE_URL']!, anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
 
   // Charger les paramètres de l'application (business_number, etc.)
-  AppSettingsService.instance.loadSettings();
+  await AppSettingsService.instance.loadSettings();
 
   // Initialiser les Push Notifications (mobile uniquement)
   if (!kIsWeb) {

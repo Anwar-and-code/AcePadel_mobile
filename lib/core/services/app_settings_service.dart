@@ -34,25 +34,25 @@ class AppSettingsService extends ChangeNotifier {
   bool get isLoading => _isLoading;
   bool get isLoaded => _isLoaded;
 
-  /// Numéro pour les appels tel: (format international)
-  String get callNumber => _businessNumber ?? '';
-
-  /// Numéro pour WhatsApp (sans le +)
-  String get whatsappNumber {
-    final number = _businessNumber ?? '';
-    return number.startsWith('+') ? number.substring(1) : number;
+  /// Numéro local normalisé (0XXXXXXXXX)
+  String get _localNumber {
+    final raw = _businessNumber ?? '';
+    if (raw.startsWith('+225')) return raw.substring(4);
+    if (raw.startsWith('225') && raw.length > 10) return raw.substring(3);
+    return raw;
   }
+
+  /// Numéro pour les appels tel: (format international +225XXXXXXXXXX)
+  String get callNumber => '+225${_localNumber}';
+
+  /// Numéro pour WhatsApp (sans le +) : 225XXXXXXXXXX
+  String get whatsappNumber => '225${_localNumber}';
 
   /// Numéro formaté pour affichage (ex: +225 07 05 40 94 15)
   String get displayNumber {
-    if (_businessNumber == null || _businessNumber!.length < 5) {
-      return _businessPhone ?? '';
-    }
-    // Format: +225 XX XX XX XX XX
-    final raw = _businessNumber!;
-    final prefix = raw.substring(0, 4); // +225
-    final local = raw.substring(4);     // 0XXXXXXXXX
-    final buffer = StringBuffer('$prefix ');
+    final local = _localNumber;
+    if (local.isEmpty) return _businessPhone ?? '';
+    final buffer = StringBuffer('+225 ');
     for (int i = 0; i < local.length; i++) {
       buffer.write(local[i]);
       if ((i + 1) % 2 == 0 && i < local.length - 1) {
