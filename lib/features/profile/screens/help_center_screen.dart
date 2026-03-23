@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import '../../../core/services/app_settings_service.dart';
 
 class HelpCenterScreen extends StatefulWidget {
   const HelpCenterScreen({super.key});
@@ -103,7 +104,7 @@ class _HelpCenterScreenState extends State<HelpCenterScreen> {
                       onTap: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Tél: +225 07 99 99 88 88'),
+                            content: Text('Tél: ${AppSettingsService.instance.displayNumber}'),
                             backgroundColor: AppColors.brandPrimary,
                           ),
                         );

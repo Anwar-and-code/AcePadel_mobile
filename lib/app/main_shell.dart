@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:showcaseview/showcaseview.dart';
+import 'package:upgrader/upgrader.dart';
 import '../core/design_system/design_system.dart';
 import '../core/services/product_tour_service.dart';
 import '../core/services/user_profile_service.dart';
@@ -227,7 +228,18 @@ class _MainShellContentState extends State<_MainShellContent> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return UpgradeAlert(
+      upgrader: Upgrader(
+        durationUntilAlertAgain: const Duration(seconds: 0),
+        languageCode: 'fr',
+        countryCode: 'CI',
+      ),
+      showIgnore: false,
+      showLater: false,
+      showReleaseNotes: true,
+      barrierDismissible: false,
+      dialogStyle: UpgradeDialogStyle.material,
+      child: Scaffold(
         body: IndexedStack(
           index: widget.currentIndex,
           children: widget.screens,
@@ -254,6 +266,7 @@ class _MainShellContentState extends State<_MainShellContent> {
             items: widget.navItems,
           ),
         ),
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/design_system/design_system.dart';
+import '../../../core/services/app_settings_service.dart';
 
 class TermsOfServiceScreen extends StatelessWidget {
   const TermsOfServiceScreen({super.key});
@@ -123,7 +124,7 @@ L'utilisation continue de l'application après modification vaut acceptation des
 Pour toute question concernant ces conditions d'utilisation, contactez-nous :
 
 Email : legal@acepadel.ci
-Téléphone : +225 07 99 99 88 88
+Téléphone : ${AppSettingsService.instance.displayNumber}
 Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 ''',
             ),
@@ -306,7 +307,7 @@ Pour toute question concernant cette politique de confidentialité :
 
 Délégué à la Protection des Données
 Email : privacy@acepadel.ci
-Téléphone : +225 07 99 99 88 88
+Téléphone : ${AppSettingsService.instance.displayNumber}
 Adresse : Abidjan, Treichville, Zone 3, Rue Cava Artisanal
 ''',
             ),

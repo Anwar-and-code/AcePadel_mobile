@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/design_system/design_system.dart';
 import '../../../core/router/page_transitions.dart';
 import '../../../core/services/user_profile_service.dart';
+import '../../../core/services/app_settings_service.dart';
 import '../../../core/services/points_service.dart';
 import '../../events/services/event_service.dart';
 import '../../../core/widgets/points_badge.dart';
@@ -235,7 +236,10 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   }
 
   void _showCallDialog(BuildContext context) {
-    const phoneNumber = '+2250799998888';
+    final settings = AppSettingsService.instance;
+    final phoneNumber = settings.callNumber;
+    final whatsappNumber = settings.whatsappNumber;
+    final displayNumber = settings.displayNumber;
     
     showModalBottomSheet(
       context: context,
@@ -265,7 +269,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
             AppSpacing.vGapSm,
             Text(
-              '+225 07 99 99 88 88',
+              displayNumber,
               style: AppTypography.bodyMedium.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -329,7 +333,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                 child: InkWell(
                   onTap: () {
                     Navigator.pop(context);
-                    launchUrl(Uri.parse('https://wa.me/2250799998888'));
+                    launchUrl(Uri.parse('https://wa.me/$whatsappNumber'));
                   },
                   borderRadius: BorderRadius.circular(12),
                   child: Container(
